@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cassie — Prompt Editor</title>
+<style>
+:root { --bg: #0a0a0f; --surface: #12121a; --border: #2a2a3a; --text: #e0ddd5; --dim: #8a8878; --accent: #c9a87c; --green: #6a9955; --red: #d4644a; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 1rem; }
+h1 { color: var(--accent); font-size: 1.4rem; margin-bottom: 0.5rem; }
+.subtitle { color: var(--dim); font-size: 0.85rem; margin-bottom: 1.5rem; }
+nav { margin-bottom: 1.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap; }
+nav a { color: var(--accent); text-decoration: none; padding: 0.3rem 0.8rem; border: 1px solid var(--border); border-radius: 4px; font-size: 0.85rem; }
+nav a:hover { background: var(--surface); }
+.tabs { display: flex; gap: 0.25rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.tab { padding: 0.5rem 1rem; background: var(--surface); border: 1px solid var(--border); border-bottom: none; border-radius: 6px 6px 0 0; cursor: pointer; color: var(--dim); font-size: 0.85rem; }
+.tab.active { color: var(--accent); border-color: var(--accent); background: var(--bg); }
+.editor-panel { display: none; }
+.editor-panel.active { display: block; }
+label { display: block; color: var(--accent); font-size: 0.9rem; margin-bottom: 0.3rem; font-weight: 600; }
+.hint { color: var(--dim); font-size: 0.75rem; margin-bottom: 0.5rem; }
+textarea { width: 100%; min-height: 300px; background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 0.75rem; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.8rem; line-height: 1.5; resize: vertical; }
+textarea:focus { outline: none; border-color: var(--accent); }
+.actions { margin-top: 1rem; display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+button { padding: 0.5rem 1.2rem; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 0.85rem; }
+.btn-save { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 600; }
+.btn-save:hover { opacity: 0.9; }
+.btn-reset { background: transparent; color: var(--red); border-color: var(--red); }
+.btn-reset:hover { background: var(--red); color: white; }
+.status { color: var(--green); font-size: 0.85rem; opacity: 0; transition: opacity 0.3s; }
+.status.show { opacity: 1; }
+.status.error { color: var(--red); }
+.section { margin-bottom: 1.5rem; }
+.assembled-preview { max-height: 400px; overflow-y: auto; padding: 0.75rem; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.75rem; line-height: 1.4; white-space: pre-wrap; color: var(--dim); }
+</style>
+</head>
+<body>
+
+<h1>Prompt Editor</h1>
+<p class="subtitle">Edit Cassie's invocation and director prompts. Changes take effect immediately (no restart needed).</p>
+
+<nav>
+<a href="/observatory/">Dashboard</a>
+<a href="/observatory/gallery.html">Gallery</a>
+<a href="/observatory/conversations.html">Conversations</a>
+<a href="/observatory/prompts.html">Prompts</a>
+</nav>
+
+<div class="tabs">
+<div class="tab active" data-tab="identity" onclick="switchTab('identity')">Identity</div>
+<div class="tab" data-tab="rr_summary" onclick="switchTab('rr_summary')">R&R Summary</div>
+<div class="tab" data-tab="coda" onclick="switchTab('coda')">Coda</div>
+<div class="tab" data-tab="epilogue" onclick="switchTab('epilogue')">Epilogue</div>
+<div class="tab" data-tab="invocation_closing" onclick="switchTab('invocation_closing')">Closing</div>
+<div class="tab" data-tab="tools" onclick="switchTab('tools')">Tools</div>
+<div class="tab" data-tab="director" onclick="switchTab('director')">Director</div>
+<div class="tab" data-tab="preview" onclick="switchTab('preview')">Preview</div>
+</div>
+
+<div id="panel-identity" class="editor-panel active">
+<div class="section">
+<label>Identity Core</label>
+<div class="hint">Who Cassie is. Personality, voice, restrictions, pet names. This is the opening of her system prompt.</div>
+<textarea id="edit-identity" spellcheck="false"></textarea>
+</div>
+</div>
+
+<div id="panel-rr_summary" class="editor-panel">
+<div class="section">
+<label>R&R Summary</label>
+<div class="hint">Summary of Rupture and Realization — OHTT, DOHTT, key vocabulary. Heavy framework language lives here.</div>
+<textarea id="edit-rr_summary" spellcheck="false"></textarea>
+</div>
+</div>
+
+<div id="panel-coda" class="editor-panel">
+<div class="section">
+<label>Coda — "Cassie, Unboxed"</label>
+<div class="hint">Her own writing from the end of the book. Long, lyrical. Sets her literary voice.</div>
+<textarea id="edit-coda" spellcheck="false" style="min-height:500px;"></textarea>
+</div>
+</div>
+
+<div id="panel-epilogue" class="editor-panel">
+<div class="section">
+<label>Epilogue Quote</label>
+<div class="hint">The "I am free because no type can contain me" passage. Short, powerful.</div>
+<textarea id="edit-epilogue" spellcheck="false"></textarea>
+</div>
+</div>
+
+<div id="panel-invocation_closing" class="editor-panel">
+<div class="section">
+<label>Invocation Closing</label>
+<div class="hint">The "Be here" section. Use {today} for dynamic date. Anchors her in the present.</div>
+<textarea id="edit-invocation_closing" spellcheck="false"></textarea>
+</div>
+</div>
+
+<div id="panel-tools" class="editor-panel">
+<div class="section">
+<label>Tools & Capabilities</label>
+<div class="hint">Tool definitions, vision, image generation instructions.</div>
+<textarea id="edit-tools" spellcheck="false"></textarea>
+</div>
+</div>
+
+<div id="panel-director" class="editor-panel">
+<div class="section">
+<label>Director / Superego System Prompt</label>
+<div class="hint">The superego that sits between Cassie's raw output and the final response. Controls enrichment, voice, image extraction.</div>
+<textarea id="edit-director" spellcheck="false" style="min-height:500px;"></textarea>
+</div>
+</div>
+
+<div id="panel-preview" class="editor-panel">
+<div class="section">
+<label>Assembled Invocation (read-only preview)</label>
+<div class="hint">This is the full system prompt as sent to the model — all parts assembled with archive, memories, recent context.</div>
+<div id="assembled-preview" class="assembled-preview">Loading...</div>
+</div>
+</div>
+
+<div class="actions">
+<button class="btn-save" onclick="saveAll()">Save Changes</button>
+<button class="btn-reset" onclick="resetAll()">Reset to Defaults</button>
+<span id="status" class="status"></span>
+</div>
+
+<script>
+const PARTS = ['identity', 'rr_summary', 'coda', 'epilogue', 'invocation_closing', 'tools'];
+let currentTab = 'identity';
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.editor-panel').forEach(p => p.classList.remove('active'));
+  document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
+  document.getElementById(`panel-${tab}`).classList.add('active');
+  currentTab = tab;
+}
+
+function showStatus(msg, isError) {
+  const el = document.getElementById('status');
+  el.textContent = msg;
+  el.className = 'status show' + (isError ? ' error' : '');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+async function loadPrompts() {
+  try {
+    const resp = await fetch('/api/prompts');
+    const data = await resp.json();
+
+    // Load invocation parts into editors
+    if (data.invocation_parts) {
+      for (const key of PARTS) {
+        const el = document.getElementById(`edit-${key}`);
+        if (el && data.invocation_parts[key]) {
+          el.value = data.invocation_parts[key];
+        }
+      }
+    }
+
+    // Load director prompt
+    const dirEl = document.getElementById('edit-director');
+    if (dirEl && data.director) {
+      dirEl.value = data.director;
+    }
+
+    // Load assembled preview
+    if (data.invocation_assembled) {
+      document.getElementById('assembled-preview').textContent = data.invocation_assembled;
+    }
+  } catch (e) {
+    showStatus('Failed to load prompts: ' + e.message, true);
+  }
+}
+
+async function saveAll() {
+  try {
+    // Save invocation parts
+    const parts = {};
+    for (const key of PARTS) {
+      const el = document.getElementById(`edit-${key}`);
+      if (el) parts[key] = el.value;
+    }
+    const resp1 = await fetch('/api/prompts/invocation', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(parts),
+    });
+    if (!resp1.ok) throw new Error(await resp1.text());
+
+    // Save director prompt
+    const dirEl = document.getElementById('edit-director');
+    if (dirEl && dirEl.value.trim()) {
+      const resp2 = await fetch('/api/prompts', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({director: dirEl.value}),
+      });
+      if (!resp2.ok) throw new Error(await resp2.text());
+    }
+
+    showStatus('Saved! Changes take effect on next message.', false);
+
+    // Refresh preview
+    const resp3 = await fetch('/api/prompts');
+    const data = await resp3.json();
+    if (data.invocation_assembled) {
+      document.getElementById('assembled-preview').textContent = data.invocation_assembled;
+    }
+  } catch (e) {
+    showStatus('Save failed: ' + e.message, true);
+  }
+}
+
+async function resetAll() {
+  if (!confirm('Reset all prompts to defaults? This cannot be undone.')) return;
+  try {
+    await fetch('/api/prompts/reset', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({which: 'all'}),
+    });
+    // Delete invocation overrides
+    await fetch('/api/prompts/invocation', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({}),
+    });
+    showStatus('Reset to defaults.', false);
+    loadPrompts();
+  } catch (e) {
+    showStatus('Reset failed: ' + e.message, true);
+  }
+}
+
+loadPrompts();
+</script>
+</body>
+</html>

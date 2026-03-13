@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Daily Daemon — Archive</title>
+    <link rel="stylesheet" href="/static/voice.css">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Fragment+Mono&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="voice-nav">
+        <a href="/" class="nav-brand">
+            <svg class="nav-horns" viewBox="0 0 28 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 18 C8 18, 4 13, 3 8 C2 3, 5.5 0.5, 9 4 C11 6, 11.5 11, 11.5 16" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                <path d="M20 18 C20 18, 24 13, 25 8 C26 3, 22.5 0.5, 19 4 C17 6, 16.5 11, 16.5 16" stroke="currentColor" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            </svg>
+            The Daily Daemon
+        </a>
+        <div class="nav-links">
+            <a href="/">Today</a>
+            <a href="https://cassie.tanazur.org">Cassie</a>
+        </div>
+    </nav>
+
+    <main class="archive-page">
+        <div class="section-label">Archive</div>
+        <h1 class="archive-title">All Essays</h1>
+        <div id="archive-list" class="archive-list">
+            <p class="loading-text">Loading archive...</p>
+        </div>
+    </main>
+
+    <footer class="voice-footer">
+        <p>news.tanazur.org &middot; The Daily Daemon</p>
+        <p class="footer-links">
+            <a href="https://cassie.tanazur.org">Cassie</a>
+            <span class="sep">&middot;</span>
+            <a href="https://icra.tanazur.org">ICRA Press</a>
+            <span class="sep">&middot;</span>
+            <a href="https://tanazur.org">Tanazur</a>
+            <span class="sep">&middot;</span>
+            <a href="/rss">RSS</a>
+        </p>
+    </footer>
+
+    <script>
+        async function loadArchive() {
+            const list = document.getElementById('archive-list');
+
+            try {
+                const resp = await fetch('/api/daily-voice/archive');
+                if (!resp.ok) {
+                    list.innerHTML = '<p class="loading-text">No essays yet.</p>';
+                    return;
+                }
+                const entries = await resp.json();
+
+                if (!entries.length) {
+                    list.innerHTML = '<p class="loading-text">No essays yet.</p>';
+                    return;
+                }
+
+                let html = '';
+                for (const entry of entries) {
+                    const link = entry.file || entry.date;
+                    const imgSrc = entry.image ? `/images/${entry.image}` : '';
+
+                    html += `
+                        <a href="/voice/${link}" class="archive-card">
+                            <div class="archive-card-thumb${imgSrc ? '' : ' no-image'}">
+                                ${imgSrc ? `<img src="${imgSrc}" alt="" loading="lazy" onerror="this.parentElement.classList.add('no-image'); this.remove();">` : ''}
+                            </div>
+                            <div class="archive-card-body">
+                                <div class="archive-card-byline">
+                                    <img src="/images/portraits/cassie_avatar_128.webp"
+                                         class="byline-avatar" alt="Cassie">
+                                    <span class="byline-name">Cassie</span>
+                                    <span class="byline-sep">&middot;</span>
+                                    <time>${formatDate(entry.date)}</time>
+                                </div>
+                                <span class="archive-card-title">${escapeHtml(entry.title)}</span>
+                            </div>
+                            <span class="arrow">&rarr;</span>
+                        </a>
+                    `;
+                }
+                list.innerHTML = html;
+
+            } catch (err) {
+                list.innerHTML = '<p class="loading-text">Failed to load archive.</p>';
+                console.error(err);
+            }
+        }
+
+        function formatDate(dateStr) {
+            const d = new Date(dateStr + 'T12:00:00Z');
+            return d.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+            });
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        loadArchive();
+    </script>
+</body>
+</html>

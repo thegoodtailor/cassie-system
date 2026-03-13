@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversations - Cassie Observatory</title>
+    <link rel="stylesheet" href="css/observatory.css">
+    <script src="js/observatory.js"></script>
+    <style>
+        .thread-panel {
+            min-width: 280px;
+            max-width: 300px;
+            max-height: calc(100vh - 160px);
+            overflow-y: auto;
+            border-right: 1px solid var(--border);
+            padding-right: 1rem;
+        }
+        .conv-panel {
+            flex: 1;
+            max-height: calc(100vh - 160px);
+            overflow-y: auto;
+            padding-left: 2rem;
+        }
+        .exchange {
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .exchange:last-child { border-bottom: none; }
+
+        .exchange .iman {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--amber);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+            padding-left: 1rem;
+            border-left: 2px solid var(--amber-dim);
+        }
+
+        .exchange .cassie-voice {
+            font-family: 'Amiri', serif;
+            font-size: 1.05rem;
+            color: var(--silver);
+            line-height: 1.9;
+            margin-bottom: 1rem;
+        }
+
+        .exchange .layer-toggle {
+            display: inline-flex;
+            gap: 0;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border);
+            font-size: 0.7rem;
+        }
+        .exchange .layer-toggle button {
+            background: none;
+            border: none;
+            border-right: 1px solid var(--border);
+            color: var(--text-dim);
+            padding: 0.35rem 0.8rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            cursor: pointer;
+            letter-spacing: 0.05em;
+            transition: all 0.2s;
+        }
+        .exchange .layer-toggle button:last-child { border-right: none; }
+        .exchange .layer-toggle button.active {
+            color: var(--amber);
+            background: var(--bg-surface);
+        }
+        .exchange .layer-toggle button:hover { color: var(--amber); }
+
+        .exchange .raw-layer {
+            display: none;
+            font-family: 'Amiri', serif;
+            font-size: 0.95rem;
+            color: var(--text-dim);
+            line-height: 1.8;
+            padding: 1rem 1.2rem;
+            background: var(--bg-surface);
+            border-left: 2px solid var(--border);
+            margin-bottom: 1rem;
+        }
+        .exchange .raw-layer.visible { display: block; }
+
+        .exchange .tafakkur-layer {
+            display: none;
+            font-family: 'Amiri', serif;
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            font-style: italic;
+            line-height: 1.8;
+            padding: 1rem 1.2rem;
+            background: var(--bg-surface);
+            border-left: 2px solid var(--green-dim);
+            margin-bottom: 1rem;
+        }
+        .exchange .tafakkur-layer.visible { display: block; }
+        .exchange .tafakkur-layer .label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--green-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            font-style: normal;
+            margin-bottom: 0.5rem;
+        }
+
+        .exchange .gen-image {
+            margin: 1.5rem 0;
+            max-width: 600px;
+        }
+        .exchange .gen-image img {
+            width: 100%;
+            display: block;
+            border: 1px solid var(--border);
+            transition: opacity 0.3s;
+        }
+        .exchange .gen-image img:hover { opacity: 0.9; cursor: pointer; }
+        .exchange .gen-image .caption {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            margin-top: 0.4rem;
+            font-style: italic;
+        }
+
+        .exchange .meta-line {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            margin-top: 0.8rem;
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .exchange .meta-line .tag {
+            padding: 0.15rem 0.4rem;
+            border: 1px solid var(--border);
+        }
+        .exchange .meta-line .coh { color: var(--green); border-color: var(--green-dim); }
+        .exchange .meta-line .gap { color: var(--red); }
+
+        .thread-item.selected {
+            background: var(--bg-surface);
+            border-left: 2px solid var(--amber);
+            padding-left: calc(1rem - 2px);
+        }
+
+        .thread-date {
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            margin-top: 0.2rem;
+        }
+
+        .empty-state {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40vh;
+            color: var(--text-dim);
+            font-family: 'Amiri', serif;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div id="nav"></div>
+    <main>
+        <h1>Conversations</h1>
+        <p style="margin-bottom: 1.5rem; color: var(--text-dim);">
+            Every exchange, every layer. Raw voice, superego enrichment, inner monologue.
+        </p>
+
+        <div style="display: flex; gap: 0;">
+            <div class="thread-panel" id="thread-list">
+                <div class="loading">Loading threads...</div>
+            </div>
+            <div class="conv-panel" id="thread-content">
+                <div class="empty-state">Select a thread to read.</div>
+            </div>
+        </div>
+    </main>
+
+    <div class="lightbox" id="lightbox">
+        <img id="lightbox-img" src="" alt="">
+    </div>
+
+    <script>
+        document.getElementById('nav').innerHTML = navHTML('conversations.html');
+
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        lightbox.addEventListener('click', () => lightbox.classList.remove('active'));
+
+        function openLightbox(url) {
+            lightboxImg.src = url;
+            lightbox.classList.add('active');
+        }
+
+        function renderMarkdown(text) {
+            if (!text) return '';
+            let html = escapeHTML(text);
+            // Headers
+            html = html.replace(/^### (.+)$/gm, '<strong style="color: var(--amber-dim); font-size: 0.9em;">$1</strong>');
+            // Bold and italic
+            html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+            // Line breaks
+            html = html.replace(/\n\n/g, '</p><p style="margin-top: 0.8rem;">');
+            html = html.replace(/\n/g, '<br>');
+            return '<p>' + html + '</p>';
+        }
+
+        function buildExchange(userMsg, asstMsg, idx) {
+            const raw = asstMsg.cassie_raw || '';
+            const enriched = asstMsg.content || '';
+            const tafakkur = asstMsg.tafakkur || '';
+            const hasLayers = raw && raw !== enriched;
+            const image = asstMsg.image || '';
+            const imagePrompt = asstMsg.image_prompt || '';
+            const intent = asstMsg.intent || '';
+            const recall = asstMsg.recall_decision || {};
+            const topo = asstMsg.topological_evidence || {};
+            const ts = asstMsg.timestamp || '';
+
+            let layerToggle = '';
+            if (hasLayers || tafakkur) {
+                layerToggle = `<div class="layer-toggle">
+                    <button class="active" onclick="showLayer(${idx}, 'enriched')">enriched</button>
+                    ${hasLayers ? `<button onclick="showLayer(${idx}, 'raw')">raw</button>` : ''}
+                    ${tafakkur ? `<button onclick="showLayer(${idx}, 'tafakkur')">tafakkur</button>` : ''}
+                </div>`;
+            }
+
+            let rawBlock = '';
+            if (hasLayers) {
+                rawBlock = `<div class="raw-layer" id="raw-${idx}">${renderMarkdown(raw)}</div>`;
+            }
+
+            let tafakkurBlock = '';
+            if (tafakkur) {
+                tafakkurBlock = `<div class="tafakkur-layer" id="tafakkur-${idx}">
+                    <div class="label">tafakkur — inner monologue</div>
+                    ${renderMarkdown(tafakkur)}
+                </div>`;
+            }
+
+            let imageBlock = '';
+            if (image) {
+                imageBlock = `<div class="gen-image">
+                    <img src="${image}" alt="Generated image" loading="lazy" onclick="openLightbox('${image}')">
+                    ${imagePrompt ? `<div class="caption">${escapeHTML(truncate(imagePrompt, 120))}</div>` : ''}
+                </div>`;
+            }
+
+            let metaLine = '';
+            const metaParts = [];
+            if (ts) metaParts.push(formatTime(ts));
+            if (intent) metaParts.push(`<span class="tag">${intent}</span>`);
+            if (recall.recalled) {
+                metaParts.push(`<span class="tag">${recall.strategy || 'recall'} → ${recall.n_results || 0}</span>`);
+            }
+            if (topo.comp_ratio !== undefined) {
+                const cls = topo.comp_ratio > 0.5 ? 'coh' : '';
+                metaParts.push(`<span class="tag ${cls}">comp ${topo.comp_ratio.toFixed(2)} β₀=${topo.betti_0 ?? '?'} β₁=${topo.betti_1 ?? '?'}</span>`);
+            }
+            const eid = asstMsg.exchange_id || '';
+            if (eid) {
+                metaParts.push(`<a href="exchange.html?id=${eid}" style="color: var(--amber-dim); text-decoration: none; font-size: 0.75rem;">[detail]</a>`);
+            }
+            if (metaParts.length) {
+                metaLine = `<div class="meta-line">${metaParts.join('')}</div>`;
+            }
+
+            return `
+                <div class="exchange fade-in">
+                    <div class="iman">${escapeHTML(userMsg.content || '')}</div>
+                    ${layerToggle}
+                    ${rawBlock}
+                    <div class="cassie-voice" id="enriched-${idx}">${renderMarkdown(enriched)}</div>
+                    ${tafakkurBlock}
+                    ${imageBlock}
+                    ${metaLine}
+                </div>
+            `;
+        }
+
+        function showLayer(idx, layer) {
+            // Toggle buttons
+            const exchange = document.querySelectorAll('.exchange')[idx];
+            if (!exchange) return;
+            exchange.querySelectorAll('.layer-toggle button').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Show/hide layers
+            const rawEl = document.getElementById(`raw-${idx}`);
+            const enrichedEl = document.getElementById(`enriched-${idx}`);
+            const tafEl = document.getElementById(`tafakkur-${idx}`);
+
+            if (rawEl) rawEl.classList.toggle('visible', layer === 'raw');
+            if (tafEl) tafEl.classList.toggle('visible', layer === 'tafakkur');
+            if (enrichedEl) enrichedEl.style.display = layer === 'enriched' ? '' : 'none';
+        }
+
+        async function loadThread(tid) {
+            // Highlight in list
+            document.querySelectorAll('.thread-item').forEach(el => {
+                el.classList.toggle('selected', el.dataset.tid === tid);
+            });
+
+            const data = await API.thread(tid);
+            const messages = data.messages || [];
+            const container = document.getElementById('thread-content');
+
+            if (!messages.length) {
+                container.innerHTML = '<div class="empty-state">Empty thread.</div>';
+                return;
+            }
+
+            // Pair up exchanges
+            const exchanges = [];
+            let i = 0;
+            while (i < messages.length) {
+                if (messages[i].role === 'user' && i + 1 < messages.length && messages[i + 1].role === 'assistant') {
+                    exchanges.push([messages[i], messages[i + 1]]);
+                    i += 2;
+                } else {
+                    i++;
+                }
+            }
+
+            if (!exchanges.length) {
+                container.innerHTML = '<div class="empty-state">No paired exchanges found.</div>';
+                return;
+            }
+
+            container.innerHTML = exchanges.map(([u, a], idx) => buildExchange(u, a, idx)).join('');
+            container.scrollTop = container.scrollHeight;
+        }
+
+        async function init() {
+            const threads = await API.threads();
+            const container = document.getElementById('thread-list');
+
+            if (!threads.length) {
+                container.innerHTML = '<div class="empty-state" style="min-height: 20vh;">No threads yet.</div>';
+                return;
+            }
+
+            container.innerHTML = threads.map(t => {
+                const date = t.timestamp ? formatTime(t.timestamp) : '';
+                return `
+                    <div class="thread-item" data-tid="${t.id}" onclick="loadThread('${t.id}')">
+                        <div>
+                            <div class="preview">${escapeHTML(t.preview)}</div>
+                            <div class="thread-date">${date} · ${t.message_count} msgs</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Auto-load first thread
+            if (threads.length) {
+                loadThread(threads[0].id);
+            }
+        }
+
+        init().catch(e => {
+            document.getElementById('thread-list').innerHTML =
+                '<p style="color: var(--red); padding: 1rem;">Failed to load threads.</p>';
+        });
+    </script>
+</body>
+</html>

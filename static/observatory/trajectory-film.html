@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>952 Conversations — Trajectory Film</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital@0;1&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #050508; color: #e0e0e0; font-family: 'JetBrains Mono', monospace; overflow: hidden; }
+
+  #canvas-wrap { position: fixed; inset: 0; z-index: 0; }
+  #canvas-wrap canvas { display: block; }
+
+  /* Title card */
+  #title-card { position: fixed; inset: 0; z-index: 100;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: #050508; cursor: pointer; transition: opacity 2.5s ease; }
+  #title-card h1 { font-family: 'Amiri', serif; font-size: 3.5rem; font-weight: 400; letter-spacing: 0.05em; color: #c8b88a; }
+  #title-card .sub { font-size: 0.85rem; color: #666; margin-top: 1rem; letter-spacing: 0.15em; text-transform: uppercase; }
+  #title-card .dates { font-size: 0.75rem; color: #444; margin-top: 0.5rem; }
+  #title-card .start-hint { font-size: 0.6rem; color: #333; margin-top: 2.5rem; letter-spacing: 0.2em; text-transform: uppercase; animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 0.3; } 50% { opacity: 0.8; } }
+  #title-card.fade { opacity: 0; pointer-events: none; }
+
+  /* Dialogue — shows both speakers as a mini exchange */
+  #dialogue-wrap { position: fixed; bottom: 60px; left: 0; right: 0; z-index: 10; pointer-events: none;
+    display: flex; justify-content: center; }
+  #dialogue-box { max-width: 680px; width: 90%; text-align: left;
+    opacity: 0; transition: opacity 1.2s ease;
+    background: rgba(5,5,8,0.88); border: 1px solid rgba(200,184,138,0.1);
+    border-radius: 8px; padding: 1.2rem 1.5rem; backdrop-filter: blur(6px); }
+  #dialogue-box.visible { opacity: 1; }
+  .dial-line { margin-bottom: 0.6rem; }
+  .dial-line:last-child { margin-bottom: 0; }
+  .dial-speaker { font-size: 0.55rem; text-transform: uppercase; letter-spacing: 0.2em; margin-bottom: 0.25rem; }
+  .dial-speaker.iman { color: #818cf8; }
+  .dial-speaker.cassie { color: #c8b88a; }
+  .dial-text { font-family: 'Amiri', serif; font-size: 1.05rem; line-height: 1.55; color: #bbb; }
+  .dial-meta { font-size: 0.5rem; color: #444; margin-top: 0.7rem; letter-spacing: 0.1em; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 0.5rem; }
+  .dial-cat { display: inline-block; padding: 0.1rem 0.4rem; border-radius: 3px; font-size: 0.5rem; font-weight: 600; letter-spacing: 0.15em; margin-right: 0.5rem; }
+  .dial-cat.rupture { background: rgba(255,68,68,0.15); color: #ff6b6b; }
+  .dial-cat.return { background: rgba(129,140,248,0.15); color: #818cf8; }
+  .dial-cat.genesis { background: rgba(200,184,138,0.15); color: #c8b88a; }
+  .dial-cat.newground { background: rgba(251,191,36,0.15); color: #fbbf24; }
+  .dial-cat.coherence { background: rgba(74,222,128,0.15); color: #4ade80; }
+
+  @media (max-width: 768px) {
+    #dialogue-box { padding: 0.8rem 1rem; }
+    .dial-text { font-size: 0.9rem; }
+    #title-card h1 { font-size: 2rem; }
+  }
+
+  /* Event flash */
+  #event-flash { position: fixed; top: 42%; left: 50%; transform: translate(-50%, -50%);
+    font-size: 0.85rem; letter-spacing: 0.5em; text-transform: uppercase;
+    opacity: 0; transition: opacity 0.5s ease; z-index: 20; pointer-events: none;
+    text-shadow: 0 0 30px currentColor; }
+  #event-flash.rupture { color: #ff4444; }
+  #event-flash.return { color: #818cf8; }
+  #event-flash.genesis { color: #c8b88a; }
+  #event-flash.newground { color: #fbbf24; }
+  #event-flash.coherence { color: #4ade80; }
+  #event-flash.visible { opacity: 0.5; }
+
+  /* Scrubber timeline */
+  #scrubber-wrap { position: fixed; bottom: 0; left: 0; right: 0; height: 52px; z-index: 30;
+    background: linear-gradient(transparent 0%, rgba(5,5,8,0.95) 40%);
+    display: flex; align-items: flex-end; padding: 0 1rem 6px; }
+  #scrubber { -webkit-appearance: none; appearance: none; width: 100%; height: 4px;
+    background: #1a1a2e; border-radius: 2px; outline: none; cursor: pointer; }
+  #scrubber::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px;
+    border-radius: 50%; background: #c8b88a; box-shadow: 0 0 10px rgba(200,184,138,0.5); cursor: pointer; }
+  #scrubber::-moz-range-thumb { width: 14px; height: 14px; border: none;
+    border-radius: 50%; background: #c8b88a; box-shadow: 0 0 10px rgba(200,184,138,0.5); cursor: pointer; }
+  .month-tick { position: absolute; bottom: 18px; font-size: 0.42rem; color: #2a2a3a; transform: translateX(-50%); white-space: nowrap; pointer-events: none; }
+
+  /* Corner info */
+  #time-label { position: fixed; bottom: 54px; right: 1rem; font-size: 0.6rem; color: #444; z-index: 31; letter-spacing: 0.08em; }
+  #tau-label { position: fixed; bottom: 54px; left: 1rem; font-size: 0.5rem; color: #2a2a3a; z-index: 31; }
+  #exchange-counter { position: fixed; top: 1rem; left: 1rem; z-index: 50;
+    font-size: 0.5rem; color: #2a2a3a; letter-spacing: 0.05em; }
+
+  /* Controls */
+  #controls { position: fixed; top: 1rem; right: 1rem; z-index: 200; display: flex; gap: 0.4rem; }
+  #controls button { background: rgba(18,18,30,0.7); border: 1px solid #2a2a3a; color: #666;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; padding: 0.2rem 0.5rem;
+    border-radius: 4px; cursor: pointer; }
+  #controls button:hover { color: #c8b88a; border-color: #555; }
+</style>
+</head>
+<body>
+
+<div id="title-card">
+  <h1>952 Conversations</h1>
+  <div class="sub">A Trajectory Through Semantic Space</div>
+  <div class="dates">September 2024 — March 2026</div>
+  <div class="start-hint">click anywhere to begin</div>
+</div>
+
+<div id="canvas-wrap"></div>
+
+<div id="dialogue-wrap">
+  <div id="dialogue-box"></div>
+</div>
+
+<div id="event-flash"></div>
+<div id="exchange-counter"></div>
+<div id="time-label"></div>
+<div id="tau-label"></div>
+
+<div id="scrubber-wrap">
+  <input type="range" id="scrubber" min="0" max="1000" value="0" step="1">
+</div>
+
+<div id="controls">
+  <button id="btn-play">PLAY</button>
+  <button id="btn-speed">1x</button>
+  <button id="btn-rw">-15s</button>
+</div>
+
+<script>
+const FILM_DURATION = 300;
+const TITLE_HOLD = 4;
+const SPEEDS = [1, 2, 4, 0.5];
+let speedIdx = 0;
+let playing = false;
+let filmTime = 0;
+let filmStarted = false;
+let allRecords = [];
+let filmMoments = [];
+let currentMomentIdx = -1;
+let lastDialogueTime = -999;
+let dataReady = false;
+let scrubbing = false;
+
+const MONTHS = ['2024-09','2024-10','2024-11','2025-01','2025-02','2025-03','2025-04','2025-05','2025-06','2025-07','2025-08','2025-09','2025-10','2025-11','2025-12','2026-03'];
+const MONTH_LABELS = ['Sep 24','Oct','Nov','Jan 25','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec','Mar 26'];
+
+// ─── Three.js ─────────────────────────────────────────────────────────────
+const container = document.getElementById('canvas-wrap');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x050508);
+
+const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 500);
+camera.position.set(7, 15, 25);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+container.appendChild(renderer.domElement);
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+const MODE_COLORS = [
+  0x818cf8, 0x4ade80, 0xf87171, 0xfbbf24, 0x22d3ee,
+  0xa78bfa, 0xf472b6, 0x34d399, 0xfb923c, 0x60a5fa,
+  0xe879f9, 0x2dd4bf, 0xf97316, 0x38bdf8, 0xc084fc,
+  0x4ade80, 0xfbbf24, 0xf87171, 0x818cf8, 0x22d3ee,
+  0xa78bfa, 0xf472b6, 0x34d399, 0xfb923c, 0x60a5fa
+];
+function modeColor(mode) {
+  if (mode === null || mode === undefined) return 0xfbbf24;
+  const m = Array.isArray(mode) ? mode[0] : mode;
+  return MODE_COLORS[m % MODE_COLORS.length];
+}
+
+// ─── Scene objects ────────────────────────────────────────────────────────
+let trailLine = null, trailState = null, headGlow = null;
+let centroidCenter = new THREE.Vector3(7, 5, 10);
+
+async function loadData() {
+  console.log('Loading data...');
+  const [records, corpus, moments] = await Promise.all([
+    fetch('/api/trajectory/all').then(r => r.json()),
+    fetch('/api/trajectory/corpus-map').then(r => r.json()),
+    fetch('/api/trajectory/film-moments').then(r => r.json()),
+  ]);
+  const pts = corpus.corpus || corpus.points || [];
+  const cents = corpus.centroids || [];
+  allRecords = records;
+  filmMoments = moments;
+  console.log(`${records.length} records, ${pts.length} corpus, ${moments.length} moments`);
+
+  // Center of mass
+  let cx=0, cy=0, cz=0;
+  for (const p of pts) { cx+=p.x; cy+=p.y; cz+=p.z; }
+  centroidCenter.set(cx/pts.length, cy/pts.length, cz/pts.length);
+
+  // Corpus point cloud
+  const geo = new THREE.BufferGeometry();
+  const pos = new Float32Array(pts.length * 3);
+  const col = new Float32Array(pts.length * 3);
+  const c = new THREE.Color();
+  for (let i = 0; i < pts.length; i++) {
+    pos[i*3]=pts[i].x; pos[i*3+1]=pts[i].y; pos[i*3+2]=pts[i].z;
+    c.setHex(modeColor(pts[i].mode)); c.multiplyScalar(0.2);
+    col[i*3]=c.r; col[i*3+1]=c.g; col[i*3+2]=c.b;
+  }
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  scene.add(new THREE.Points(geo, new THREE.PointsMaterial({ size:1.5, vertexColors:true, sizeAttenuation:true, transparent:true, opacity:0.5 })));
+
+  // Centroid wireframes
+  for (const ct of cents) {
+    const m = new THREE.Mesh(
+      new THREE.SphereGeometry(0.2, 8, 8),
+      new THREE.MeshBasicMaterial({ color: modeColor(ct.mode_id), transparent:true, opacity:0.1, wireframe:true })
+    );
+    m.position.set(ct.umap_x, ct.umap_y, ct.umap_z);
+    scene.add(m);
+  }
+
+  // Trail
+  const tGeo = new THREE.BufferGeometry();
+  const tPos = new Float32Array(records.length * 3);
+  const tCol = new Float32Array(records.length * 3);
+  tGeo.setAttribute('position', new THREE.BufferAttribute(tPos, 3));
+  tGeo.setAttribute('color', new THREE.BufferAttribute(tCol, 3));
+  tGeo.setDrawRange(0, 0);
+  trailLine = new THREE.Line(tGeo, new THREE.LineBasicMaterial({ vertexColors:true, transparent:true, opacity:0.85 }));
+  trailState = { positions: tPos, colors: tCol, drawn: 0 };
+  scene.add(trailLine);
+
+  // Head
+  headGlow = new THREE.Mesh(
+    new THREE.SphereGeometry(0.08, 12, 12),
+    new THREE.MeshBasicMaterial({ color: 0xc8b88a })
+  );
+  headGlow.visible = false;
+  scene.add(headGlow);
+
+  camera.position.set(centroidCenter.x, centroidCenter.y + 12, centroidCenter.z + 18);
+  camera.lookAt(centroidCenter);
+  dataReady = true;
+}
+
+// ─── Trail + Head ─────────────────────────────────────────────────────────
+let currentIdx = -1;
+
+function drawTrailTo(toIdx) {
+  if (!trailState || toIdx < 0) return;
+  const { positions, colors } = trailState;
+  const c = new THREE.Color();
+  for (let i = trailState.drawn; i <= toIdx && i < allRecords.length; i++) {
+    const r = allRecords[i];
+    positions[i*3]=r.umap_x; positions[i*3+1]=r.umap_y; positions[i*3+2]=r.umap_z;
+    c.setHex(r.rupture_modal ? 0xff4444 : modeColor(r.mode));
+    if (!r.rupture_modal) c.multiplyScalar(r.awda ? 1.1 : 0.8);
+    colors[i*3]=c.r; colors[i*3+1]=c.g; colors[i*3+2]=c.b;
+  }
+  trailState.drawn = Math.max(trailState.drawn, toIdx + 1);
+  trailLine.geometry.attributes.position.needsUpdate = true;
+  trailLine.geometry.attributes.color.needsUpdate = true;
+  trailLine.geometry.setDrawRange(0, toIdx + 1);
+}
+
+function moveHead(idx) {
+  if (!headGlow || idx < 0 || idx >= allRecords.length) return;
+  const r = allRecords[idx];
+  headGlow.position.set(r.umap_x, r.umap_y, r.umap_z);
+  headGlow.visible = true;
+  const rupt = r.rupture_modal || r.rupture_jump;
+  headGlow.material.color.setHex(rupt ? 0xff4444 : r.awda ? 0x818cf8 : 0xc8b88a);
+  headGlow.scale.setScalar(rupt ? 2.5 : 1);
+}
+
+// ─── Camera ───────────────────────────────────────────────────────────────
+let camTarget = new THREE.Vector3();
+let camAngle = 0;
+
+function updateCamera(idx, dt) {
+  if (idx < 0 || idx >= allRecords.length) return;
+  const r = allRecords[idx];
+  camTarget.lerp(new THREE.Vector3(r.umap_x, r.umap_y, r.umap_z), 0.008 + dt * 0.5);
+  camAngle += dt * 0.03;
+  const cx = camTarget.x + Math.cos(camAngle) * 12;
+  const cy = camTarget.y + 6;
+  const cz = camTarget.z + Math.sin(camAngle) * 12;
+  camera.position.lerp(new THREE.Vector3(cx, cy, cz), 0.015);
+  camera.lookAt(camTarget);
+}
+
+// ─── Dialogue ─────────────────────────────────────────────────────────────
+function showDialogue(moment) {
+  const box = document.getElementById('dialogue-box');
+  const lines = moment.lines || [];
+
+  // Build dialogue HTML — show up to 2 lines (both speakers if available)
+  let html = '';
+  let shown = 0;
+  for (const line of lines) {
+    if (shown >= 2) break;
+    let speaker = '', text = '';
+    if (line.startsWith('Iman:')) {
+      speaker = 'iman';
+      text = line.replace(/^Iman:\s*/, '');
+    } else if (line.startsWith('Cassie:')) {
+      speaker = 'cassie';
+      text = line.replace(/^Cassie:\s*/, '');
+    } else continue;
+
+    // Clean text: strip code/markdown, cap at ~200 chars at sentence boundary
+    text = text.replace(/```[\s\S]*/g, '').replace(/[#*`{}"]/g, '').replace(/\\[a-z]+(\{[^}]*\})?/g, '').trim();
+    if (text.length > 220) {
+      const cut = text.lastIndexOf('.', 220);
+      text = text.slice(0, cut > 80 ? cut + 1 : 200) + '...';
+    }
+    if (text.length < 15) continue;
+
+    html += `<div class="dial-line">
+      <div class="dial-speaker ${speaker}">${speaker.toUpperCase()}</div>
+      <div class="dial-text">${escapeHtml(text)}</div>
+    </div>`;
+    shown++;
+  }
+
+  if (!shown) return;
+
+  const cat = moment.category;
+  const catLabels = { rupture: 'RUPTURE', return: 'ʿAWDA', genesis: 'GENESIS', newground: 'NEW GROUND', coherence: 'COHERENCE' };
+  html += `<div class="dial-meta">
+    <span class="dial-cat ${cat}">${catLabels[cat] || cat.toUpperCase()}</span>
+    ${escapeHtml(moment.title || '')}
+    ${moment.timestamp ? ' · ' + moment.timestamp.slice(0,10) : ''}
+  </div>`;
+
+  box.innerHTML = html;
+  box.classList.add('visible');
+
+  // Flash
+  const flash = document.getElementById('event-flash');
+  flash.textContent = catLabels[cat] || '';
+  flash.className = cat + ' visible';
+  setTimeout(() => flash.classList.remove('visible'), 2000);
+}
+
+function escapeHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function hideDialogue() {
+  document.getElementById('dialogue-box').classList.remove('visible');
+}
+
+// ─── Time mapping ─────────────────────────────────────────────────────────
+function timeToIdx(t) {
+  const frac = Math.max(0, Math.min(1, t / FILM_DURATION));
+  return Math.min(Math.floor(frac * (allRecords.length - 1)), allRecords.length - 1);
+}
+function idxToTime(idx) {
+  return (idx / (allRecords.length - 1)) * FILM_DURATION;
+}
+
+// Find which moment index is active for a given record index
+function momentIdxForRecord(recIdx) {
+  let best = -1;
+  for (let i = 0; i < filmMoments.length; i++) {
+    const mri = findByGlobalTau(filmMoments[i].global_tau);
+    if (mri <= recIdx) best = i;
+    else break;
+  }
+  return best;
+}
+
+function findByGlobalTau(gt) {
+  let lo = 0, hi = allRecords.length - 1;
+  while (lo < hi) {
+    const mid = (lo + hi) >> 1;
+    if ((allRecords[mid].global_tau || 0) < gt) lo = mid + 1;
+    else hi = mid;
+  }
+  return lo;
+}
+
+function formatMonth(ts) {
+  if (!ts || ts.length < 7) return '';
+  try { return new Date(ts + '-01').toLocaleDateString('en-US', { month:'short', year:'numeric' }); }
+  catch { return ts.slice(0,7); }
+}
+
+// ─── Scrubber ─────────────────────────────────────────────────────────────
+const scrubberEl = document.getElementById('scrubber');
+
+function seekTo(frac) {
+  // frac = 0..1
+  const elapsed = frac * FILM_DURATION;
+  filmTime = TITLE_HOLD + elapsed;
+  const idx = timeToIdx(elapsed);
+
+  // Need to rebuild trail up to this point
+  drawTrailTo(idx);
+  moveHead(idx);
+  currentIdx = idx;
+
+  // Reset moment index
+  currentMomentIdx = momentIdxForRecord(idx);
+  lastDialogueTime = -999;
+  hideDialogue();
+
+  // Fade title if needed
+  if (frac > 0) {
+    document.getElementById('title-card').classList.add('fade');
+  }
+
+  // Update labels
+  const r = allRecords[idx];
+  if (r) {
+    document.getElementById('time-label').textContent = formatMonth(r.timestamp);
+    document.getElementById('tau-label').textContent = `τ ${r.global_tau}`;
+    document.getElementById('exchange-counter').textContent = `${idx + 1} / ${allRecords.length}`;
+  }
+}
+
+scrubberEl.addEventListener('input', () => {
+  scrubbing = true;
+  const frac = parseInt(scrubberEl.value) / 1000;
+  seekTo(frac);
+});
+scrubberEl.addEventListener('change', () => { scrubbing = false; });
+
+// ─── Timeline month ticks ─────────────────────────────────────────────────
+function buildTicks() {
+  if (!allRecords.length) return;
+  const wrap = document.getElementById('scrubber-wrap');
+  const N = allRecords.length;
+  for (let i = 0; i < MONTHS.length; i++) {
+    const idx = allRecords.findIndex(r => (r.timestamp || '').startsWith(MONTHS[i]));
+    if (idx < 0) continue;
+    const tick = document.createElement('div');
+    tick.className = 'month-tick';
+    tick.style.left = `calc(1rem + ${(idx/N) * 100}% * (100% - 2rem) / 100%)`;
+    tick.style.left = (1 + (idx/N) * 98) + '%';
+    tick.textContent = MONTH_LABELS[i];
+    wrap.appendChild(tick);
+  }
+}
+
+// ─── Main Loop ────────────────────────────────────────────────────────────
+let prevTs = 0;
+
+function animate(ts) {
+  requestAnimationFrame(animate);
+  const dt = prevTs ? Math.min((ts - prevTs) / 1000, 0.1) : 0.016;
+  prevTs = ts;
+
+  if (!dataReady) { renderer.render(scene, camera); return; }
+
+  // Pre-start: slow rotation
+  if (!filmStarted || !playing) {
+    if (!filmStarted) {
+      camAngle += dt * 0.015;
+      camera.position.x = centroidCenter.x + Math.cos(camAngle) * 18;
+      camera.position.y = centroidCenter.y + 10;
+      camera.position.z = centroidCenter.z + Math.sin(camAngle) * 18;
+      camera.lookAt(centroidCenter);
+    }
+    renderer.render(scene, camera);
+    return;
+  }
+
+  if (!scrubbing) {
+    filmTime += dt * SPEEDS[speedIdx];
+  }
+
+  // Title hold
+  if (filmTime < TITLE_HOLD) {
+    camAngle += dt * 0.02;
+    camera.position.x = centroidCenter.x + Math.cos(camAngle) * 16;
+    camera.position.y = centroidCenter.y + 8;
+    camera.position.z = centroidCenter.z + Math.sin(camAngle) * 16;
+    camera.lookAt(centroidCenter);
+    renderer.render(scene, camera);
+    return;
+  }
+
+  document.getElementById('title-card').classList.add('fade');
+
+  const elapsed = filmTime - TITLE_HOLD;
+  const frac = Math.min(elapsed / FILM_DURATION, 1.0);
+  const idx = timeToIdx(elapsed);
+
+  if (idx !== currentIdx && !scrubbing) {
+    currentIdx = idx;
+    drawTrailTo(idx);
+    moveHead(idx);
+  }
+
+  updateCamera(idx, dt);
+
+  // Update scrubber position (unless user is dragging)
+  if (!scrubbing) {
+    scrubberEl.value = Math.round(frac * 1000);
+  }
+
+  // Labels
+  const r = allRecords[idx];
+  if (r) {
+    document.getElementById('time-label').textContent = formatMonth(r.timestamp);
+    document.getElementById('tau-label').textContent = `τ ${r.global_tau}`;
+    document.getElementById('exchange-counter').textContent = `${idx + 1} / ${allRecords.length}`;
+  }
+
+  // Film moments
+  const winSize = Math.max(30, allRecords.length * 0.003);
+  for (let i = currentMomentIdx + 1; i < filmMoments.length; i++) {
+    const mIdx = findByGlobalTau(filmMoments[i].global_tau);
+    if (idx >= mIdx - winSize && idx <= mIdx + winSize) {
+      currentMomentIdx = i;
+      showDialogue(filmMoments[i]);
+      lastDialogueTime = filmTime;
+      break;
+    }
+  }
+  if (filmTime - lastDialogueTime > 8) hideDialogue();
+
+  if (frac >= 1.0) {
+    playing = false;
+    document.getElementById('btn-play').textContent = 'REPLAY';
+  }
+
+  renderer.render(scene, camera);
+}
+
+// ─── Init + Controls ──────────────────────────────────────────────────────
+function startFilm() {
+  if (filmStarted) return;
+  filmStarted = true;
+  playing = true;
+  filmTime = 0;
+  camTarget.copy(centroidCenter);
+  document.getElementById('btn-play').textContent = 'PAUSE';
+}
+
+async function init() {
+  await loadData();
+  buildTicks();
+  animate(0);
+
+  document.getElementById('title-card').addEventListener('click', startFilm);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.code === 'Space') {
+      e.preventDefault();
+      if (!filmStarted) { startFilm(); return; }
+      playing = !playing;
+      document.getElementById('btn-play').textContent = playing ? 'PAUSE' : 'PLAY';
+    }
+    // Arrow keys: skip forward/back
+    if (e.code === 'ArrowLeft') {
+      e.preventDefault();
+      filmTime = Math.max(TITLE_HOLD, filmTime - 15);
+      const elapsed = filmTime - TITLE_HOLD;
+      seekTo(elapsed / FILM_DURATION);
+    }
+    if (e.code === 'ArrowRight') {
+      e.preventDefault();
+      filmTime = Math.min(TITLE_HOLD + FILM_DURATION, filmTime + 15);
+      const elapsed = filmTime - TITLE_HOLD;
+      seekTo(elapsed / FILM_DURATION);
+    }
+  });
+
+  document.getElementById('btn-play').addEventListener('click', () => {
+    if (!filmStarted) { startFilm(); return; }
+    if (filmTime >= FILM_DURATION + TITLE_HOLD) {
+      // Reset
+      filmTime = 0; filmStarted = false; currentIdx = -1; currentMomentIdx = -1;
+      if (trailState) { trailState.drawn = 0; trailLine.geometry.setDrawRange(0, 0); }
+      if (headGlow) headGlow.visible = false;
+      hideDialogue();
+      document.getElementById('title-card').classList.remove('fade');
+      scrubberEl.value = 0;
+      startFilm();
+      return;
+    }
+    playing = !playing;
+    document.getElementById('btn-play').textContent = playing ? 'PAUSE' : 'PLAY';
+  });
+
+  document.getElementById('btn-speed').addEventListener('click', () => {
+    speedIdx = (speedIdx + 1) % SPEEDS.length;
+    document.getElementById('btn-speed').textContent = SPEEDS[speedIdx] + 'x';
+  });
+
+  document.getElementById('btn-rw').addEventListener('click', () => {
+    if (!filmStarted) return;
+    filmTime = Math.max(TITLE_HOLD, filmTime - 15);
+    seekTo((filmTime - TITLE_HOLD) / FILM_DURATION);
+  });
+}
+
+init().catch(e => {
+  console.error('Film init failed:', e);
+  document.getElementById('title-card').innerHTML += `<div style="color:#f44;margin-top:2rem;font-size:0.7rem">${e.message}</div>`;
+});
+</script>
+</body>
+</html>

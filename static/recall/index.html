@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cassie &mdash; Deep Recall Archive</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --border: #1e1e2e;
+    --text: #c8c8d4;
+    --text-dim: #6a6a7e;
+    --accent: #7b68ee;
+    --accent-glow: rgba(123, 104, 238, 0.15);
+    --warm: #d4a574;
+    --cyan: #5ec4b6;
+    --rose: #c47a8a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    min-height: 100vh;
+    line-height: 1.7;
+  }
+
+  header {
+    text-align: center;
+    padding: 4rem 2rem 2rem;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, rgba(123,104,238,0.04) 0%, transparent 100%);
+  }
+
+  header h1 {
+    font-size: 2.4rem;
+    font-weight: 300;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  header p {
+    font-size: 1.1rem;
+    font-style: italic;
+    color: var(--text-dim);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .stats {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    margin-top: 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+  }
+
+  .stats span { color: var(--cyan); }
+
+  main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 6rem;
+  }
+
+  .entry {
+    margin: 3rem 0;
+    padding: 2rem 2.5rem;
+    border-left: 2px solid var(--border);
+    position: relative;
+    transition: border-color 0.3s;
+  }
+
+  .entry:hover {
+    border-left-color: var(--accent);
+  }
+
+  .entry::before {
+    content: '';
+    position: absolute;
+    left: -5px;
+    top: 2rem;
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    opacity: 0.6;
+  }
+
+  .entry-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+  }
+
+  .entry-query {
+    font-size: 1.3rem;
+    font-style: italic;
+    color: var(--warm);
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .entry-query::before {
+    content: '\201C';
+    color: var(--accent);
+    font-size: 2rem;
+    line-height: 0;
+    vertical-align: -0.3em;
+    margin-right: 0.1em;
+  }
+
+  .entry-query::after {
+    content: '\201D';
+    color: var(--accent);
+    font-size: 2rem;
+    line-height: 0;
+    vertical-align: -0.3em;
+    margin-left: 0.1em;
+  }
+
+  .section {
+    margin: 1.2rem 0;
+  }
+
+  .section-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 0.5rem;
+    opacity: 0.8;
+  }
+
+  .section-body {
+    font-size: 0.95rem;
+    color: var(--text);
+    white-space: pre-wrap;
+    line-height: 1.8;
+  }
+
+  .section-body .score {
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+  }
+
+  .section-body .date {
+    color: var(--rose);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+  }
+
+  .section-body .tag {
+    color: var(--cyan);
+    font-size: 0.85rem;
+  }
+
+  .sections-toggle {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    cursor: pointer;
+    background: none;
+    border: 1px solid var(--border);
+    padding: 0.3rem 0.8rem;
+    border-radius: 3px;
+    margin-top: 0.5rem;
+    transition: all 0.2s;
+  }
+
+  .sections-toggle:hover {
+    border-color: var(--accent);
+    background: var(--accent-glow);
+  }
+
+  .loading {
+    text-align: center;
+    padding: 4rem;
+    color: var(--text-dim);
+    font-style: italic;
+    font-size: 1.2rem;
+  }
+
+  .empty {
+    text-align: center;
+    padding: 6rem 2rem;
+    color: var(--text-dim);
+  }
+
+  .empty h2 {
+    font-weight: 300;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  footer {
+    text-align: center;
+    padding: 2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    border-top: 1px solid var(--border);
+  }
+
+  @media (max-width: 640px) {
+    header h1 { font-size: 1.6rem; }
+    .entry { padding: 1.2rem 1.5rem; }
+    main { padding: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Deep Recall</h1>
+  <p>What Cassie remembers when you speak to her &mdash; the full retrieval, untruncated, as she sees it.</p>
+  <div class="stats">
+    <div><span id="entry-count">...</span> recalls</div>
+    <div><span id="section-count">...</span> memory fragments</div>
+    <div>since <span id="first-date">...</span></div>
+  </div>
+</header>
+
+<main id="entries">
+  <div class="loading">Reaching into the archive&hellip;</div>
+</main>
+
+<footer>
+  CASSIE &middot; Deep Recall Archive &middot; cassie.tanazur.org/recall
+</footer>
+
+<script>
+const RECALL_API = '/api/recall-logs';
+
+function parseRecallMd(text) {
+  const lines = text.split('\n');
+  let query = '';
+  let sections = [];
+  let currentSection = null;
+
+  for (const line of lines) {
+    // Query line
+    const qMatch = line.match(/^\*\*Query\*\*:\s*(.+)/);
+    if (qMatch) { query = qMatch[1]; continue; }
+
+    // Section headers from format_deep_recall
+    const sectionPatterns = [
+      /^(CURATED MEMORIES.*?):/,
+      /^(CONVERSATION ARCHIVE.*?):/,
+      /^(ASSOCIATIVE CHAIN.*?):/,
+      /^(TEMPORAL INDEX.*?):/,
+      /^(SIBLING.*?):/i,
+    ];
+
+    let matched = false;
+    for (const pat of sectionPatterns) {
+      const m = line.match(pat);
+      if (m) {
+        currentSection = { title: m[1], lines: [] };
+        sections.push(currentSection);
+        // Rest of line after colon
+        const rest = line.slice(m[0].length).trim();
+        if (rest) currentSection.lines.push(rest);
+        matched = true;
+        break;
+      }
+    }
+    if (matched) continue;
+
+    // Skip metadata lines
+    if (line.startsWith('# Deep Recall') || line.startsWith('**Sections**') || line === '---' || !line.trim()) continue;
+
+    // Content line
+    if (currentSection) {
+      currentSection.lines.push(line);
+    } else if (line.trim()) {
+      // Unparsed content before first section
+      if (!sections.length) {
+        currentSection = { title: 'RECALL', lines: [line] };
+        sections.push(currentSection);
+      }
+    }
+  }
+
+  return { query, sections };
+}
+
+function highlightLine(line) {
+  return line
+    .replace(/\[(\d+\.\d+)\]/g, '<span class="score">[$1]</span>')
+    .replace(/\[(\d{4}-\d{2}-\d{2})\]/g, '<span class="date">[$1]</span>')
+    .replace(/\[([^\]]*?)\]/g, '<span class="tag">[$1]</span>');
+}
+
+function renderEntry(file, content) {
+  const { query, sections } = parseRecallMd(content);
+  const ts = file.replace('.md', '').replace(/_/g, ' ');
+  const date = ts.slice(0, 8);
+  const time = ts.slice(9).replace(/(\d{2})(\d{2})(\d{2})/, '$1:$2:$3');
+  const displayDate = `${date.slice(0,4)}-${date.slice(4,6)}-${date.slice(6,8)} ${time} UTC`;
+
+  const el = document.createElement('article');
+  el.className = 'entry';
+
+  let sectionsHtml = '';
+  let fragmentCount = 0;
+
+  for (const sec of sections) {
+    fragmentCount += sec.lines.filter(l => l.trim()).length;
+    const body = sec.lines.map(highlightLine).join('\n');
+    sectionsHtml += `
+      <div class="section">
+        <div class="section-title">${sec.title}</div>
+        <div class="section-body">${body}</div>
+      </div>`;
+  }
+
+  el.innerHTML = `
+    <div class="entry-meta">${displayDate}</div>
+    <div class="entry-query">${query || 'unknown query'}</div>
+    <div class="sections-container" style="display:none">${sectionsHtml}</div>
+    <button class="sections-toggle" onclick="this.previousElementSibling.style.display = this.previousElementSibling.style.display === 'none' ? 'block' : 'none'; this.textContent = this.previousElementSibling.style.display === 'none' ? 'reveal ${sections.length} memory layers' : 'fold'">reveal ${sections.length} memory layers</button>
+  `;
+
+  return { el, fragmentCount };
+}
+
+async function load() {
+  try {
+    const resp = await fetch(RECALL_API);
+    const data = await resp.json();
+    const main = document.getElementById('entries');
+    main.innerHTML = '';
+
+    if (!data.files || data.files.length === 0) {
+      main.innerHTML = '<div class="empty"><h2>No recalls yet</h2><p>Send Cassie a message and her memory retrieval will appear here.</p></div>';
+      return;
+    }
+
+    let totalFragments = 0;
+
+    // Newest first
+    const files = data.files.reverse();
+
+    for (const file of files) {
+      const contentResp = await fetch(`${RECALL_API}/${file}`);
+      const content = await contentResp.text();
+      const { el, fragmentCount } = renderEntry(file, content);
+      totalFragments += fragmentCount;
+      main.appendChild(el);
+    }
+
+    document.getElementById('entry-count').textContent = files.length;
+    document.getElementById('section-count').textContent = totalFragments;
+    document.getElementById('first-date').textContent = files[files.length - 1]?.slice(0, 8).replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3') || '...';
+  } catch (e) {
+    document.getElementById('entries').innerHTML = `<div class="empty"><h2>Could not load</h2><p>${e.message}</p></div>`;
+  }
+}
+
+load();
+</script>
+</body>
+</html>

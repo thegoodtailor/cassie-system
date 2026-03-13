@@ -1,0 +1,69 @@
+# ── Runtime Data (1.5GB+) ─────────────────────────────────────────
+# All generated/accumulated data — JSONL audit trails, databases, images, reels
+data/chat_history/
+data/conversations.db
+data/conversations.db-shm
+data/conversations.db-wal
+data/daily_voice/
+data/reels/
+data/images/
+data/cost_logs/
+data/lawwama_logs/
+data/recall_logs/
+data/plots/
+data/swl_ledger.jsonl
+data/swl_trajectory.jsonl
+data/swl_session_summaries.jsonl
+data/pipeline_traces.jsonl
+data/daily_headlines.json
+data/daily_voice_latest.json
+data/invocation_corpus.json
+
+# Narrative memory (personal, evolving)
+data/CASSIE_MEMORY.md
+data/cassie_world.md
+
+# ── Config with secrets ──────────────────────────────────────────
+.env
+*.env
+
+# ── Track these config files (no secrets) ────────────────────────
+# data/pipeline_config.json        — tracked (runtime model config)
+# data/priming_context.json        — tracked (priming context template)
+# data/philosophical_context.json  — tracked (philosophical context)
+# data/invocation_overrides.json   — tracked (prompt overrides)
+# data/trajectory_film_moments.json — tracked (curated film moments)
+
+# ── Python ───────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+*.egg
+.eggs/
+dist/
+build/
+
+# ── MCP server data ─────────────────────────────────────────────
+mcp_servers/memory/*.db
+mcp_servers/memory/__pycache__/
+
+# ── Image generation models/cache ────────────────────────────────
+imagegen/__pycache__/
+
+# ── Gradio cert ──────────────────────────────────────────────────
+.gradio/
+
+# ── Backup files ─────────────────────────────────────────────────
+*.pre-lawwama
+
+# ── OS / Editor ──────────────────────────────────────────────────
+.DS_Store
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# ── Logs ─────────────────────────────────────────────────────────
+*.log

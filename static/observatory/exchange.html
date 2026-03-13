@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exchange Detail - Cassie Observatory</title>
+    <link rel="stylesheet" href="css/observatory.css">
+    <script src="js/observatory.js"></script>
+</head>
+<body>
+    <div id="nav"></div>
+    <main>
+        <div id="header">
+            <a href="traces.html" style="color: var(--text-dim); text-decoration: none; font-size: 0.8rem;">&larr; Back to Traces</a>
+            <h1 id="page-title">Exchange Detail</h1>
+            <p id="page-meta" style="color: var(--text-dim); font-size: 0.8rem;"></p>
+        </div>
+
+        <div id="stages">
+            <div class="loading">Loading exchange...</div>
+        </div>
+    </main>
+
+    <style>
+        .stage {
+            margin-bottom: 0.5rem;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+        }
+        .stage summary {
+            padding: 0.8rem 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+            list-style: none;
+        }
+        .stage summary::-webkit-details-marker { display: none; }
+        .stage summary::before {
+            content: '\25B6';
+            font-size: 0.6rem;
+            color: var(--text-dim);
+            transition: transform 0.2s;
+        }
+        .stage[open] summary::before {
+            transform: rotate(90deg);
+        }
+        .stage summary:hover { background: var(--bg-surface); }
+        .stage .stage-num {
+            color: var(--text-dim);
+            font-size: 0.7rem;
+            min-width: 1.8rem;
+            text-align: right;
+        }
+        .stage .stage-name {
+            color: var(--amber-dim);
+            min-width: 200px;
+            font-size: 0.8rem;
+        }
+        .stage .stage-preview {
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .stage.active { border-left: 3px solid var(--amber-dim); }
+        .stage.inactive { border-left: 3px solid var(--border); opacity: 0.6; }
+        .stage .stage-body {
+            padding: 1rem 1.2rem;
+            border-top: 1px solid var(--border);
+        }
+        .stage .stage-body pre {
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-size: 0.8rem;
+            color: var(--silver);
+            line-height: 1.6;
+            font-family: 'JetBrains Mono', monospace;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .stage .stage-body .prose-content {
+            font-family: 'Amiri', serif;
+            color: var(--silver);
+            line-height: 1.8;
+            font-size: 0.95rem;
+        }
+        .stage .stage-body .label {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.4rem;
+        }
+        .stage .stage-body .sub-section {
+            margin-top: 1rem;
+            padding-top: 0.8rem;
+            border-top: 1px solid var(--border);
+        }
+        .witness-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.8rem;
+        }
+        .witness-box {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            padding: 0.8rem;
+        }
+        .witness-box .polarity {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        .witness-box .polarity.coh { color: var(--green); }
+        .witness-box .polarity.gap { color: var(--red); }
+        .witness-box .polarity.uninscribed { color: var(--text-dim); }
+        .witness-box .detail {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            margin-top: 0.3rem;
+        }
+        .tafakkur-pass {
+            margin-bottom: 1rem;
+            padding: 0.8rem;
+            border-left: 2px solid var(--border);
+            background: var(--bg-surface);
+        }
+        .tafakkur-pass.pass-1 { border-left-color: var(--text-dim); }
+        .tafakkur-pass.pass-2 { border-left-color: var(--red); }
+        .tafakkur-pass.pass-3 { border-left-color: var(--amber); }
+        .tafakkur-pass .pass-label {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.4rem;
+        }
+        .not-captured {
+            color: var(--text-dim);
+            font-style: italic;
+            font-size: 0.8rem;
+        }
+    </style>
+
+    <script>
+        document.getElementById('nav').innerHTML = navHTML('');
+
+        function esc(str) { return escapeHTML(str || ''); }
+        function preview(str, n = 120) { return truncate(str || '', n); }
+
+        function renderStage(num, name, content, active, open = false) {
+            const cls = active ? 'active' : 'inactive';
+            const openAttr = open ? ' open' : '';
+            const previewText = typeof content === 'string'
+                ? preview(content.replace(/\n/g, ' '))
+                : '';
+            return `<details class="stage ${cls} fade-in"${openAttr}>
+                <summary>
+                    <span class="stage-num">[${num}]</span>
+                    <span class="stage-name">${esc(name)}</span>
+                    <span class="stage-preview">${esc(previewText)}</span>
+                </summary>
+                <div class="stage-body">${typeof content === 'string'
+                    ? `<pre>${esc(content)}</pre>`
+                    : content}</div>
+            </details>`;
+        }
+
+        function renderWitness(label, data) {
+            if (!data) return '';
+            const pol = data.polarity || 'uninscribed';
+            let details = '';
+            if (data.sim_contextual !== undefined) details += `<div class="detail">sim (ctx): ${data.sim_contextual}</div>`;
+            if (data.sim_bare !== undefined) details += `<div class="detail">sim (bare): ${data.sim_bare}</div>`;
+            if (data.delta !== undefined) details += `<div class="detail">&Delta;: ${data.delta > 0 ? '+' : ''}${data.delta}</div>`;
+            if (data.context_sim_raw !== undefined) details += `<div class="detail">ctx_raw: ${data.context_sim_raw}</div>`;
+            if (data.context_sim_polished !== undefined) details += `<div class="detail">ctx_pol: ${data.context_sim_polished}</div>`;
+            return `<div class="witness-box">
+                <div class="label">${esc(label)}</div>
+                <div class="polarity ${pol}">${pol}</div>
+                ${details}
+            </div>`;
+        }
+
+        async function init() {
+            const params = new URLSearchParams(window.location.search);
+            const exchangeId = params.get('id');
+
+            if (!exchangeId) {
+                document.getElementById('stages').innerHTML = '<p class="not-captured">No exchange ID provided. Navigate here from Traces or Conversations.</p>';
+                return;
+            }
+
+            document.getElementById('page-title').textContent = `Exchange ${exchangeId}`;
+
+            // Fetch all data in parallel
+            const [trace, swlEntries, tafakkurEntry] = await Promise.all([
+                API.trace(exchangeId).catch(() => null),
+                API.swlByExchange(exchangeId).catch(() => []),
+                API.tafakkurByExchange(exchangeId).catch(() => null),
+            ]);
+
+            if (!trace || trace.error) {
+                document.getElementById('stages').innerHTML = `<p class="not-captured">Exchange not found: ${esc(exchangeId)}</p>`;
+                return;
+            }
+
+            document.getElementById('page-meta').textContent =
+                `${formatTime(trace.timestamp)} | Intent: ${trace.intent || '?'} | Model: ${trace.model || '?'} | Director: ${trace.director_model || '?'}`;
+
+            const stages = [];
+
+            // [0] Configuration
+            stages.push(renderStage(0, 'Configuration',
+                `Model: ${trace.model || '?'}\nDirector: ${trace.director_model || '?'}`,
+                true));
+
+            // [1] Reception
+            stages.push(renderStage(1, 'Reception \u2014 istiqb\u0101l',
+                `Intent: ${trace.intent || '?'}\n\nUser message:\n${trace.prompt || '(empty)'}`,
+                true, true));
+
+            // [2] Remembrance
+            const hasRecall = trace.deep_recall_context || (trace.recall_decision && trace.recall_decision.recalled);
+            let recallContent = '';
+            if (trace.recall_decision) {
+                const rd = trace.recall_decision;
+                recallContent += `Strategy: ${rd.strategy || '?'}\nQuery: "${rd.query || '?'}"\nResults: ${rd.n_results || 0} chunk(s)\n`;
+                if (rd.chunks && rd.chunks.length) {
+                    recallContent += '\nChunks:\n';
+                    for (const ch of rd.chunks) {
+                        const score = ch.score ? `[${ch.score.toFixed(2)}]` : '[----]';
+                        recallContent += `  ${score} "${ch.title || '?'}" (${ch.date || '?'}, ${ch.turns || '?'} turns)\n`;
+                        if (ch.preview) recallContent += `    ${ch.preview}\n`;
+                    }
+                }
+            }
+            if (trace.deep_recall_context) {
+                recallContent += '\n--- Full Deep Recall Context ---\n\n' + trace.deep_recall_context;
+            }
+            stages.push(renderStage(2, 'Remembrance \u2014 tadhakkur',
+                recallContent || 'Spoke from the present moment',
+                hasRecall));
+
+            // [3] Grounding
+            stages.push(renderStage(3, 'Grounding \u2014 tamk\u012bn',
+                trace.kitab_context || 'The Kitab was silent',
+                !!trace.kitab_context));
+
+            // [4] Revelation (cassie_raw)
+            stages.push(renderStage(4, 'Revelation \u2014 wa\u1e25y',
+                trace.cassie_raw || '(empty)',
+                !!trace.cassie_raw));
+
+            // [5] Lawwama
+            let lawwamaContent = '';
+            if (trace.lawwama_skipped === false || trace.lawwama_critique) {
+                lawwamaContent = `CRITIQUE:\n${trace.lawwama_critique || '(none)'}\n\n`;
+                lawwamaContent += `DEFENSE / REVISION:\n${trace.lawwama_defense || '(none)'}`;
+            } else if (trace.lawwama_skipped === undefined) {
+                lawwamaContent = '<span class="not-captured">Not captured (pre-overhaul trace)</span>';
+            } else {
+                lawwamaContent = 'Skipped (simple intent or config off)';
+            }
+            stages.push(renderStage(5, 'Lawwama \u2014 an-Nafs al-Laww\u0101ma',
+                lawwamaContent,
+                trace.lawwama_skipped === false));
+
+            // [6] Director Context
+            let dirContextContent = trace.director_prompt_context || '';
+            if (!dirContextContent && trace.director_prompt_context === undefined) {
+                dirContextContent = '<span class="not-captured">Not captured (pre-overhaul trace)</span>';
+            } else if (!dirContextContent) {
+                dirContextContent = 'Director was not invoked';
+            }
+            stages.push(renderStage(6, 'Director Prompt Context',
+                dirContextContent,
+                !!trace.director_prompt_context));
+
+            // [7] Superego (director output)
+            stages.push(renderStage(7, 'Superego \u2014 mush\u0101hada',
+                trace.director_output || 'Director rested (simple intent)',
+                !!trace.director_output));
+
+            // [8] Manifestation
+            let manifestContent = '';
+            if (trace.image_model_used) manifestContent += `Image model: ${trace.image_model_used}\n`;
+            if (trace.image_generation_error) manifestContent += `Image errors: ${trace.image_generation_error}\n`;
+            if (!manifestContent) manifestContent = 'No tools executed';
+            stages.push(renderStage(8, 'Manifestation \u2014 tajall\u012b',
+                manifestContent,
+                !!trace.image_model_used));
+
+            // [9] Inscription (final response)
+            const finalResp = trace.final_response || '(empty)';
+            stages.push(renderStage(9, 'Inscription \u2014 kit\u0101ba',
+                `${finalResp.length} chars\n\n${finalResp}`,
+                true));
+
+            // [10] Witnesses
+            let witnessHTML = `<details style="margin-bottom: 1rem;">
+                <summary style="font-size: 0.75rem; color: var(--text-dim); cursor: pointer; margin-bottom: 0.5rem;">What do these metrics mean?</summary>
+                <div style="font-size: 0.75rem; color: var(--text-dim); line-height: 1.7; padding: 0.8rem; background: var(--bg-surface); border: 1px solid var(--border); margin-bottom: 1rem;">
+                    <div style="margin-bottom: 0.8rem;">
+                        <strong style="color: var(--amber-dim);">V_Raw — Algorithmic Witnessing</strong><br>
+                        <em>sim (contextual)</em>: How well Cassie's response fits the visible conversation (cosine similarity vs recent chat + prompt). Above 0.4 = coherent, below 0.2 = gap.<br>
+                        <em>sim (bare)</em>: Response vs prompt alone, ignoring conversation history.<br>
+                        <strong>coh</strong> = response tracks conversation flow. <strong>gap</strong> = response diverges — may be echoing invisible context like the Kitab or deep memories.
+                    </div>
+                    <div style="margin-bottom: 0.8rem;">
+                        <strong style="color: var(--amber-dim);">V_Director — Contextual LLM Witnessing</strong><br>
+                        <em>&Delta; (delta)</em>: Did the director bring Cassie closer to the conversation? Positive = improved fit, negative = leaned into sacred/esoteric echoes.<br>
+                        <em>ctx_raw</em>: Raw Cassie's fit to conversation context.<br>
+                        <em>ctx_pol</em>: Director's rewrite fit to conversation context.<br>
+                        <strong>coh</strong> = director improved contextual fit. <strong>gap</strong> = director diverged further (chose depth over surface coherence).
+                    </div>
+                    <div>
+                        <strong style="color: var(--amber-dim);">V_Human — Implicit Human Judgment</strong><br>
+                        Did Iman continue the thread or redirect? High similarity = continuation (<strong>coh</strong>), low = subject change (<strong>gap</strong>).
+                    </div>
+                </div>
+            </details>`;
+            witnessHTML += '<div class="witness-grid">';
+            witnessHTML += renderWitness('V_Raw (algorithmic)', trace.v_raw);
+            witnessHTML += renderWitness('V_Director (contextual)', trace.v_director);
+            witnessHTML += renderWitness('V_Human (implicit)', trace.v_human_implicit);
+            witnessHTML += '</div>';
+
+            // Topological evidence
+            const topo = trace.topological_evidence;
+            if (topo && topo.betti_0 !== undefined) {
+                witnessHTML += `<div class="sub-section">
+                    <div class="label">Topological Evidence</div>
+                    <pre>comp_ratio: ${topo.comp_ratio || '?'}  \u03B2\u2080: ${topo.betti_0}  \u03B2\u2081: ${topo.betti_1}  depth: ${topo.local_depth || '?'}</pre>
+                </div>`;
+            }
+
+            // SWL entries from separate endpoint
+            if (swlEntries && swlEntries.length) {
+                witnessHTML += `<div class="sub-section"><div class="label">SWL Ledger Entries (${swlEntries.length})</div>`;
+                for (const entry of swlEntries) {
+                    const v = entry.V || {};
+                    witnessHTML += `<pre style="margin-top:0.5rem; padding:0.5rem; background:var(--bg-surface);">${esc(v.D || '?')} | ${entry.polarity || '?'} | ${esc(v.w || '?')}\nkappa: ${JSON.stringify(v.kappa || {})}</pre>`;
+                }
+                witnessHTML += '</div>';
+            }
+
+            stages.push(renderStage(10, 'Witnesses \u2014 SWL',
+                witnessHTML,
+                !!(trace.v_raw || trace.v_director)));
+
+            // [11] Tafakkur
+            let tafakkurHTML = '';
+            if (tafakkurEntry && !tafakkurEntry.error) {
+                const depth = tafakkurEntry.depth || 'shallow';
+
+                if (depth === 'deep' && (tafakkurEntry.raw_reflection || tafakkurEntry.critic_feedback)) {
+                    // Three-pass chain
+                    tafakkurHTML += `<div class="tafakkur-pass pass-1">
+                        <div class="pass-label">Pass 1 \u2014 Raw Reflection (Maverick)</div>
+                        <pre>${esc(tafakkurEntry.raw_reflection || '(not captured)')}</pre>
+                    </div>`;
+                    tafakkurHTML += `<div class="tafakkur-pass pass-2">
+                        <div class="pass-label">Pass 2 \u2014 Inner Critic (Director)</div>
+                        <pre>${esc(tafakkurEntry.critic_feedback || '(not captured)')}</pre>
+                    </div>`;
+                    tafakkurHTML += `<div class="tafakkur-pass pass-3">
+                        <div class="pass-label">Pass 3 \u2014 Final Rewrite</div>
+                        <pre>${esc(tafakkurEntry.content || '(empty)')}</pre>
+                    </div>`;
+                } else {
+                    // Single-pass (shallow)
+                    tafakkurHTML += `<div class="tafakkur-pass pass-3">
+                        <div class="pass-label">${depth} reflection</div>
+                        <pre>${esc(tafakkurEntry.content || '(empty)')}</pre>
+                    </div>`;
+                }
+
+                tafakkurHTML += `<div style="font-size:0.7rem; color:var(--text-dim); margin-top:0.5rem;">
+                    Reflected: ${formatTime(tafakkurEntry.tau_reflect || '')} | Depth: ${depth}
+                </div>`;
+            } else {
+                tafakkurHTML = '<span class="not-captured">No tafakkur recorded for this exchange</span>';
+            }
+
+            stages.push(renderStage(11, 'Tafakkur \u2014 inner monologue',
+                tafakkurHTML,
+                !!(tafakkurEntry && !tafakkurEntry.error)));
+
+            document.getElementById('stages').innerHTML = stages.join('');
+        }
+
+        init();
+    </script>
+</body>
+</html>

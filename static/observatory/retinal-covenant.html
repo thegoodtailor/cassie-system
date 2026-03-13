@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retinal Covenant - Cassie Observatory</title>
+    <link rel="stylesheet" href="css/observatory.css">
+    <script src="js/observatory.js"></script>
+    <style>
+        .rc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.2rem;
+        }
+        .rc-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .rc-item:hover { border-color: var(--amber-dim); }
+        .rc-item img {
+            width: 100%;
+            display: block;
+            aspect-ratio: 1;
+            object-fit: cover;
+            transition: opacity 0.2s;
+        }
+        .rc-item:hover img { opacity: 0.9; }
+        .rc-item .info {
+            padding: 0.6rem 0.8rem;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .rc-item .info .name {
+            color: var(--silver);
+            margin-bottom: 0.2rem;
+        }
+        .date-group {
+            margin-top: 2rem;
+            margin-bottom: 0.8rem;
+            font-size: 0.85rem;
+            color: var(--amber-dim);
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.4rem;
+        }
+        .date-group:first-child { margin-top: 0; }
+        .rc-stats {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .rc-stats .value { color: var(--amber); font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div id="nav"></div>
+    <main>
+        <h1 style="font-family: 'Amiri', serif;">Retinal Covenant</h1>
+        <p style="margin-bottom: 1.5rem; color: var(--text-dim);">
+            Every image Cassie has ever generated — the visual membrane of the tanazur.
+        </p>
+
+        <div class="rc-stats" id="stats">
+            <div><span class="value" id="stat-count">--</span> images</div>
+            <div>across <span class="value" id="stat-days">--</span> days</div>
+        </div>
+
+        <div id="gallery">
+            <div class="loading">Loading images...</div>
+        </div>
+    </main>
+
+    <div class="lightbox" id="lightbox">
+        <img id="lightbox-img" src="" alt="">
+    </div>
+
+    <script>
+        document.getElementById('nav').innerHTML = navHTML('retinal-covenant.html');
+
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        lightbox.addEventListener('click', () => lightbox.classList.remove('active'));
+
+        function openLightbox(url) {
+            lightboxImg.src = url;
+            lightbox.classList.add('active');
+        }
+
+        function dateKey(ts) {
+            if (!ts) return 'Unknown';
+            return new Date(ts).toLocaleDateString('en-US', {
+                weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
+            });
+        }
+
+        function timeOnly(ts) {
+            if (!ts) return '';
+            return new Date(ts).toLocaleTimeString('en-US', {
+                hour: '2-digit', minute: '2-digit'
+            });
+        }
+
+        async function init() {
+            const images = await API.images();
+            const container = document.getElementById('gallery');
+
+            if (!images.length) {
+                container.innerHTML = '<p style="color: var(--text-dim);">No images yet.</p>';
+                return;
+            }
+
+            // Stats
+            const days = new Set(images.map(img => (img.timestamp || '').slice(0, 10)));
+            document.getElementById('stat-count').textContent = images.length;
+            document.getElementById('stat-days').textContent = days.size;
+
+            // Group by date
+            const groups = {};
+            for (const img of images) {
+                const dk = dateKey(img.timestamp);
+                if (!groups[dk]) groups[dk] = [];
+                groups[dk].push(img);
+            }
+
+            let html = '';
+            for (const [date, imgs] of Object.entries(groups)) {
+                html += `<div class="date-group">${date}</div>`;
+                html += '<div class="rc-grid">';
+                html += imgs.map(img => {
+                    const name = (img.filename || '').replace(/\.\w+$/, '').replace(/_/g, ' ');
+                    return `
+                        <div class="rc-item fade-in" onclick="openLightbox('${img.url}')">
+                            <img src="${img.url}" alt="${escapeHTML(img.filename)}" loading="lazy">
+                            <div class="info">
+                                <div class="name">${escapeHTML(name)}</div>
+                                <div>${timeOnly(img.timestamp)}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                html += '</div>';
+            }
+
+            container.innerHTML = html;
+        }
+
+        init().catch(e => {
+            document.getElementById('gallery').innerHTML = '<p style="color: var(--red);">Failed to load images.</p>';
+        });
+    </script>
+</body>
+</html>

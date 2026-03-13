@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Session Trajectory — Observatory</title>
+<link rel="stylesheet" href="css/observatory.css">
+<script src="js/observatory.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<style>
+  .trajectory-layout { display: grid; grid-template-columns: 1fr 300px; gap: 1rem; }
+  #map-container { width: 100%; height: 500px; background: #080810; border-radius: 8px; border: 1px solid var(--border); position: relative; overflow: hidden; }
+  #map-container canvas { display: block; }
+  #timeline-container { width: 100%; height: 140px; background: var(--card); border-radius: 8px; border: 1px solid var(--border); margin-top: 1rem; padding: 0.5rem; overflow: hidden; }
+  #side-panel { background: var(--card); border-radius: 8px; border: 1px solid var(--border); padding: 1rem; max-height: 660px; overflow-y: auto; }
+  .session-select { display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; }
+  .session-select select { background: var(--card); color: var(--text); border: 1px solid var(--border); border-radius: 4px; padding: 0.4rem 0.8rem; font-family: inherit; }
+  .session-select button { background: var(--accent); color: var(--bg); border: none; border-radius: 4px; padding: 0.4rem 0.8rem; cursor: pointer; font-family: inherit; }
+  .session-select button:hover { opacity: 0.8; }
+  .scrubber { width: 100%; margin-top: 0.5rem; }
+  .scrubber input[type=range] { width: 100%; accent-color: var(--accent); }
+  .scrubber-info { font-size: 0.75rem; color: var(--dim); margin-top: 0.3rem; display: flex; justify-content: space-between; }
+  .stat-row { display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap; }
+  .stat-pill { background: var(--bg); border: 1px solid var(--border); border-radius: 20px; padding: 0.3rem 0.7rem; font-size: 0.75rem; }
+  .stat-pill .val { color: var(--accent); font-weight: 600; }
+  .neighbor-card { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 0.7rem; margin-bottom: 0.5rem; }
+  .neighbor-card .date { color: var(--dim); font-size: 0.7rem; }
+  .neighbor-card .text { font-size: 0.78rem; line-height: 1.4; margin-top: 0.3rem; }
+  .exchange-detail { font-size: 0.8rem; }
+  .exchange-detail dt { color: var(--dim); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.5rem; }
+  .exchange-detail dd { margin: 0.2rem 0 0 0; }
+  .badge { display: inline-block; padding: 0.15rem 0.4rem; border-radius: 3px; font-size: 0.65rem; font-weight: 600; text-transform: uppercase; }
+  .badge-coh { background: rgba(74, 222, 128, 0.2); color: #4ade80; }
+  .badge-gap { background: rgba(248, 113, 113, 0.2); color: #f87171; }
+  .badge-uninscribed { background: rgba(102, 102, 128, 0.2); color: #666680; }
+  .badge-rupture { background: rgba(248, 113, 113, 0.3); color: #ff6b6b; }
+  .badge-awda { background: rgba(129, 140, 248, 0.2); color: #818cf8; }
+  .badge-newground { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+  .legend { display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 0.5rem; font-size: 0.7rem; color: var(--dim); }
+  .legend span { display: flex; align-items: center; gap: 0.3rem; }
+  .legend .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .camera-controls { position: absolute; top: 8px; right: 8px; z-index: 10; display: flex; gap: 4px; }
+  .camera-controls button { background: rgba(18,18,26,0.8); color: var(--dim); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-size: 0.65rem; cursor: pointer; }
+  .camera-controls button:hover { color: var(--accent); }
+  h2 { margin-top: 1.5rem; margin-bottom: 0.5rem; }
+  .loading-msg { color: var(--dim); font-style: italic; text-align: center; padding: 2rem; }
+</style>
+</head>
+<body>
+<div id="nav"></div>
+<main>
+  <h1>Session Trajectory</h1>
+  <p style="color: var(--dim); font-size: 0.85rem; margin-bottom: 1rem;">
+    Movement through semantic space — basins, ruptures, returns.
+  </p>
+
+  <div class="session-select">
+    <select id="session-picker"><option value="">Loading sessions...</option></select>
+    <button id="btn-process" title="Process new traces">Refresh</button>
+  </div>
+
+  <div class="stat-row" id="session-stats"></div>
+
+  <div class="legend" id="legend"></div>
+
+  <div class="trajectory-layout">
+    <div>
+      <div id="map-container">
+        <div class="camera-controls">
+          <button id="cam-top">Top</button>
+          <button id="cam-persp">3D</button>
+          <button id="cam-reset">Reset</button>
+        </div>
+        <div class="loading-msg" id="map-loading">Loading corpus map...</div>
+      </div>
+      <div class="scrubber">
+        <input type="range" id="scrubber" min="0" max="0" value="0">
+        <div class="scrubber-info">
+          <span id="scrub-left">--</span>
+          <span id="scrub-right">--</span>
+        </div>
+      </div>
+      <div id="timeline-container">
+        <svg id="timeline-svg" width="100%" height="120"></svg>
+      </div>
+    </div>
+    <div id="side-panel">
+      <h3 style="margin-top:0; font-size: 0.9rem;">Exchange Detail</h3>
+      <div id="exchange-detail" class="exchange-detail">
+        <p style="color: var(--dim); font-size: 0.8rem;">Click a point on the map or timeline.</p>
+      </div>
+      <h3 style="font-size: 0.9rem; margin-top: 1rem;">Nearest Archive</h3>
+      <div id="neighbors">
+        <p style="color: var(--dim); font-size: 0.8rem;">Select an exchange to see neighbors.</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+document.getElementById('nav').innerHTML = navHTML('trajectory.html');
+
+// ── Mode Colors ──────────────────────────────────────────────────────────
+const MODE_COLORS = [
+  '#e6194b','#3cb44b','#ffe119','#4363d8','#f58231',
+  '#911eb4','#42d4f4','#f032e6','#bfef45','#fabed4',
+  '#469990','#dcbeff','#9A6324','#fffac8','#800000',
+  '#aaffc3','#808000','#ffd8b1','#000075','#a9a9a9',
+  '#e6beff','#1f77b4','#ff7f0e','#2ca02c','#d62728',
+];
+const SATELLITE_COLOR = '#333340';
+const NEWGROUND_COLOR = '#fbbf24';
+
+function modeColor(m) {
+  if (m === null || m === undefined) return NEWGROUND_COLOR;
+  if (Array.isArray(m)) return modeColor(m[0]);
+  if (m < 0) return SATELLITE_COLOR;
+  return MODE_COLORS[m % MODE_COLORS.length];
+}
+
+// ── State ────────────────────────────────────────────────────────────────
+let corpusData = null;
+let sessionRecords = [];
+let currentTau = 0;
+let isAllSessions = false;  // true when viewing all sessions combined
+
+// Three.js objects
+let scene, camera, renderer, controls;
+let corpusPoints, centroidGroup, trajectoryGroup;
+let exchangeMarkers = [];
+
+// ── Three.js Setup ───────────────────────────────────────────────────────
+function initThree() {
+  const container = document.getElementById('map-container');
+  const w = container.clientWidth;
+  const h = container.clientHeight;
+
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x080810);
+
+  camera = new THREE.PerspectiveCamera(60, w / h, 0.1, 1000);
+  camera.position.set(8, 8, 16);
+
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setSize(w, h);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  container.appendChild(renderer.domElement);
+
+  controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.05;
+
+  // Ambient + directional light
+  scene.add(new THREE.AmbientLight(0x404060, 0.5));
+  const dl = new THREE.DirectionalLight(0xffffff, 0.6);
+  dl.position.set(10, 20, 10);
+  scene.add(dl);
+
+  // Resize handler
+  window.addEventListener('resize', () => {
+    const w2 = container.clientWidth;
+    const h2 = container.clientHeight;
+    camera.aspect = w2 / h2;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w2, h2);
+  });
+
+  animate();
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+
+// ── Corpus Background ────────────────────────────────────────────────────
+function renderCorpus(data) {
+  const { corpus, centroids } = data;
+
+  // Instanced points for corpus (grey dots)
+  const geo = new THREE.BufferGeometry();
+  const positions = new Float32Array(corpus.length * 3);
+  const colors = new Float32Array(corpus.length * 3);
+  const grey = new THREE.Color(0x333340);
+  for (let i = 0; i < corpus.length; i++) {
+    positions[i * 3] = corpus[i].x;
+    positions[i * 3 + 1] = corpus[i].y;
+    positions[i * 3 + 2] = corpus[i].z;
+    const c = corpus[i].mode >= 0 ? new THREE.Color(modeColor(corpus[i].mode)) : grey;
+    colors[i * 3] = c.r;
+    colors[i * 3 + 1] = c.g;
+    colors[i * 3 + 2] = c.b;
+  }
+  geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+  const mat = new THREE.PointsMaterial({
+    size: 0.04,
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.15,
+    sizeAttenuation: true,
+  });
+  corpusPoints = new THREE.Points(geo, mat);
+  scene.add(corpusPoints);
+
+  // Centroid spheres
+  centroidGroup = new THREE.Group();
+  for (const c of centroids) {
+    if (c.umap_x === undefined) continue;
+    const radius = Math.max(0.08, Math.min(0.3, c.occupancy / 1000));
+    const sphere = new THREE.Mesh(
+      new THREE.SphereGeometry(radius, 16, 16),
+      new THREE.MeshPhongMaterial({
+        color: new THREE.Color(modeColor(c.mode_id)),
+        transparent: true,
+        opacity: 0.3,
+        wireframe: false,
+      })
+    );
+    sphere.position.set(c.umap_x, c.umap_y, c.umap_z);
+    sphere.userData = c;
+    centroidGroup.add(sphere);
+  }
+  scene.add(centroidGroup);
+
+  // Center camera on data
+  const xs = corpus.map(p => p.x), ys = corpus.map(p => p.y), zs = corpus.map(p => p.z);
+  const cx = (Math.min(...xs) + Math.max(...xs)) / 2;
+  const cy = (Math.min(...ys) + Math.max(...ys)) / 2;
+  const cz = (Math.min(...zs) + Math.max(...zs)) / 2;
+  controls.target.set(cx, cy, cz);
+  camera.position.set(cx + 6, cy + 6, cz + 12);
+  controls.update();
+}
+
+// ── Trajectory Rendering ─────────────────────────────────────────────────
+function renderTrajectory(records, upToTau) {
+  // Clear old trajectory
+  if (trajectoryGroup) scene.remove(trajectoryGroup);
+  trajectoryGroup = new THREE.Group();
+  exchangeMarkers = [];
+
+  const visible = isAllSessions
+    ? records.filter(r => (r.global_tau !== undefined ? r.global_tau : records.indexOf(r)) <= upToTau)
+    : records.filter(r => r.tau <= upToTau);
+  if (visible.length === 0) { scene.add(trajectoryGroup); return; }
+
+  // Path line
+  const pathPoints = visible.map(r => new THREE.Vector3(r.umap_x, r.umap_y, r.umap_z));
+
+  // Draw segments: red for rupture, gold for jump, session boundary = no line
+  for (let i = 0; i < pathPoints.length - 1; i++) {
+    const r = visible[i + 1];
+    const isSessionBoundary = isAllSessions && visible[i].session_id !== r.session_id;
+
+    if (isSessionBoundary || r.rupture_modal) continue; // gap in path
+
+    let color = 0x666680;
+    if (r.rupture_jump) color = 0xffaa00;
+    else color = 0x8888aa;
+
+    const segGeo = new THREE.BufferGeometry().setFromPoints([pathPoints[i], pathPoints[i + 1]]);
+    const segMat = new THREE.LineBasicMaterial({ color, linewidth: 1, transparent: true, opacity: 0.6 });
+    trajectoryGroup.add(new THREE.Line(segGeo, segMat));
+  }
+
+  // Exchange markers
+  for (const r of visible) {
+    const size = Math.max(0.06, 0.2 * (1 - r.mode_dist));
+    let color, wireframe = false;
+
+    if (r.mode === null) {
+      color = NEWGROUND_COLOR;
+      wireframe = true;
+    } else {
+      color = modeColor(r.mode);
+    }
+
+    const markerGeo = new THREE.SphereGeometry(size, 12, 12);
+    const markerMat = new THREE.MeshPhongMaterial({ color, wireframe, transparent: true, opacity: 0.85 });
+    const marker = new THREE.Mesh(markerGeo, markerMat);
+    marker.position.set(r.umap_x, r.umap_y, r.umap_z);
+    marker.userData = r;
+    trajectoryGroup.add(marker);
+    exchangeMarkers.push(marker);
+
+    // Highlight current position
+    const rIdx = isAllSessions ? (r.global_tau !== undefined ? r.global_tau : visible.indexOf(r)) : r.tau;
+    if (rIdx === upToTau) {
+      const ringGeo = new THREE.RingGeometry(size + 0.04, size + 0.08, 24);
+      const ringMat = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide, transparent: true, opacity: 0.8 });
+      const ring = new THREE.Mesh(ringGeo, ringMat);
+      ring.position.copy(marker.position);
+      ring.lookAt(camera.position);
+      trajectoryGroup.add(ring);
+    }
+
+    // Compression diamond
+    if (r.context_compressed) {
+      const diaGeo = new THREE.OctahedronGeometry(0.08);
+      const diaMat = new THREE.MeshPhongMaterial({ color: 0x42d4f4, transparent: true, opacity: 0.7 });
+      const dia = new THREE.Mesh(diaGeo, diaMat);
+      dia.position.copy(marker.position);
+      dia.position.y += size + 0.1;
+      trajectoryGroup.add(dia);
+    }
+  }
+
+  // ʿAwda arcs
+  for (const r of visible) {
+    if (!r.awda || r.awda_root_tau === null) continue;
+    const root = isAllSessions
+      ? visible.find(v => v.session_id === r.session_id && v.tau === r.awda_root_tau)
+      : visible.find(v => v.tau === r.awda_root_tau);
+    if (!root) continue;
+
+    const start = new THREE.Vector3(root.umap_x, root.umap_y, root.umap_z);
+    const end = new THREE.Vector3(r.umap_x, r.umap_y, r.umap_z);
+    const mid = start.clone().add(end).multiplyScalar(0.5);
+    mid.y += 0.5; // arc above
+
+    const curve = new THREE.QuadraticBezierCurve3(start, mid, end);
+    const pts = curve.getPoints(20);
+    const arcGeo = new THREE.BufferGeometry().setFromPoints(pts);
+    const arcMat = new THREE.LineDashedMaterial({ color: 0x818cf8, dashSize: 0.1, gapSize: 0.05, transparent: true, opacity: 0.4 });
+    const arc = new THREE.Line(arcGeo, arcMat);
+    arc.computeLineDistances();
+    trajectoryGroup.add(arc);
+  }
+
+  scene.add(trajectoryGroup);
+}
+
+// ── Timeline (SVG) ───────────────────────────────────────────────────────
+function renderTimeline(records) {
+  const svg = document.getElementById('timeline-svg');
+  const container = document.getElementById('timeline-container');
+  const W = container.clientWidth - 16;
+  const H = 120;
+  svg.setAttribute('width', W);
+  svg.setAttribute('height', H);
+  svg.innerHTML = '';
+
+  if (records.length === 0) return;
+
+  // Fit all bars within container width — no horizontal scroll
+  const totalSpace = W - 40;
+  const barW = Math.max(1, Math.min(20, totalSpace / records.length * 0.8));
+  const gap = Math.max(0, Math.min(2, totalSpace / records.length * 0.2));
+  const maxH = H - 30;
+
+  const dense = records.length > 500; // dense mode: skip decorations for performance
+
+  for (let i = 0; i < records.length; i++) {
+    const r = records[i];
+    const x = 20 + i * (barW + gap);
+    const h = maxH * Math.max(0.1, 1 - r.mode_dist);
+    const y = H - 10 - h;
+    const color = modeColor(r.mode);
+
+    // Session boundary divider (skip labels in dense mode)
+    if (isAllSessions && i > 0 && records[i].session_id !== records[i - 1].session_id) {
+      const divLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      divLine.setAttribute('x1', x - gap / 2); divLine.setAttribute('y1', 5);
+      divLine.setAttribute('x2', x - gap / 2); divLine.setAttribute('y2', H - 5);
+      divLine.setAttribute('stroke', '#d4a574');
+      divLine.setAttribute('stroke-width', '0.5');
+      divLine.setAttribute('stroke-dasharray', '2,2');
+      divLine.setAttribute('opacity', '0.3');
+      svg.appendChild(divLine);
+    }
+
+    // Connecting lines — skip in dense mode (too many, bars are adjacent anyway)
+    if (!dense) {
+      const isNextSessionBoundary = isAllSessions && i < records.length - 1 && records[i].session_id !== records[i + 1].session_id;
+      if (i < records.length - 1 && !records[i + 1].rupture_modal && !isNextSessionBoundary) {
+        const nx = 20 + (i + 1) * (barW + gap);
+        const dc = records[i].delta_comp;
+        const thickness = dc !== null ? Math.max(0.5, 3 * (1 - dc)) : 1;
+        const lineColor = records[i + 1].rupture_jump ? '#ffaa00' : '#444';
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', x + barW); line.setAttribute('y1', y + h / 2);
+        line.setAttribute('x2', nx); line.setAttribute('y2', H - 10 - maxH * Math.max(0.1, 1 - records[i + 1].mode_dist) + (maxH * Math.max(0.1, 1 - records[i + 1].mode_dist)) / 2);
+        line.setAttribute('stroke', lineColor);
+        line.setAttribute('stroke-width', thickness);
+        svg.appendChild(line);
+      }
+    }
+
+    // Bar
+    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    rect.setAttribute('x', x); rect.setAttribute('y', y);
+    rect.setAttribute('width', Math.max(barW, 1)); rect.setAttribute('height', h);
+    rect.setAttribute('fill', color);
+    if (barW >= 3) rect.setAttribute('rx', 1);
+    const barIdx = isAllSessions ? (r.global_tau !== undefined ? r.global_tau : i) : r.tau;
+    rect.setAttribute('opacity', barIdx === currentTau ? '1' : (dense ? '0.7' : '0.6'));
+    rect.setAttribute('cursor', 'pointer');
+    rect.addEventListener('click', () => selectTau(barIdx));
+    svg.appendChild(rect);
+
+    // Lawwama dot — skip in dense mode
+    if (!dense && r.lawwama_fired) {
+      const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      dot.setAttribute('cx', x + barW / 2); dot.setAttribute('cy', H - 5);
+      dot.setAttribute('r', 3); dot.setAttribute('fill', '#f87171');
+      svg.appendChild(dot);
+    }
+
+    // ʿAwda arc — skip in dense mode (thousands of arcs would be unreadable)
+    if (!dense && r.awda && r.awda_root_tau !== null) {
+      let rootIdx = r.awda_root_tau;
+      if (isAllSessions) {
+        rootIdx = records.findIndex(rec => rec.session_id === r.session_id && rec.tau === r.awda_root_tau);
+        if (rootIdx < 0) rootIdx = r.awda_root_tau;
+      }
+      const rootX = 20 + rootIdx * (barW + gap) + barW / 2;
+      const curX = x + barW / 2;
+      const midX = (rootX + curX) / 2;
+      const arcY = 8;
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', `M ${rootX} ${y} Q ${midX} ${arcY} ${curX} ${y}`);
+      path.setAttribute('fill', 'none');
+      path.setAttribute('stroke', '#818cf8');
+      path.setAttribute('stroke-width', '1');
+      path.setAttribute('stroke-dasharray', '3,2');
+      path.setAttribute('opacity', '0.5');
+      svg.appendChild(path);
+    }
+  }
+}
+
+// ── Selection ────────────────────────────────────────────────────────────
+function selectTau(tau) {
+  currentTau = tau;
+  document.getElementById('scrubber').value = tau;
+  renderTrajectory(sessionRecords, tau);
+  renderTimeline(sessionRecords);
+  updateScrubberInfo(tau);
+  updateExchangeDetail(tau);
+}
+
+function _findRecord(tau) {
+  if (isAllSessions) {
+    return sessionRecords.find(r => r.global_tau === tau) || sessionRecords[tau];
+  }
+  return sessionRecords[tau];
+}
+
+function updateScrubberInfo(tau) {
+  const r = _findRecord(tau);
+  if (!r) return;
+  const sessionTag = isAllSessions ? `S${r.session_id} · ` : '';
+  const left = `${sessionTag}${r.mode_label || 'Unknown'} · dist=${r.mode_dist.toFixed(3)}`;
+  const badges = [];
+  if (r.comp_polarity) badges.push(r.comp_polarity);
+  if (r.rupture_modal) badges.push('rupture');
+  if (r.awda) badges.push('ʿawda');
+  const right = badges.join(' · ') || '—';
+  document.getElementById('scrub-left').textContent = left;
+  document.getElementById('scrub-right').textContent = right;
+}
+
+function updateExchangeDetail(tau) {
+  const r = _findRecord(tau);
+  if (!r) return;
+  const polarityClass = r.comp_polarity ? `badge-${r.comp_polarity}` : '';
+
+  const sessionLabel = isAllSessions ? ` · S${r.session_id}` : '';
+  let html = `<dl>
+    <dt>Exchange</dt><dd>${r.exchange_id} (tau=${r.tau}${sessionLabel})</dd>
+    <dt>Time</dt><dd>${formatTime(r.timestamp)}</dd>
+    <dt>Mode</dt><dd style="color:${modeColor(r.mode)}">${r.mode_label || '—'}</dd>
+    <dt>Basin Distance</dt><dd>${r.mode_dist.toFixed(4)}</dd>
+    <dt>Comp Gap (delta_comp)</dt><dd>${r.delta_comp !== null ? r.delta_comp.toFixed(4) : '—'} <span class="badge ${polarityClass}">${r.comp_polarity || '—'}</span></dd>
+    <dt>Jump Distance</dt><dd>${r.distance_jump.toFixed(4)}</dd>`;
+
+  if (r.rupture_modal) html += `<dt>Rupture</dt><dd><span class="badge badge-rupture">MODAL RUPTURE</span></dd>`;
+  if (r.rupture_jump) html += `<dt>Jump</dt><dd><span class="badge badge-rupture">JUMP RUPTURE</span></dd>`;
+  if (r.awda) html += `<dt>ʿAwda</dt><dd><span class="badge badge-awda">RETURN</span> to tau=${r.awda_root_tau}</dd>`;
+  if (r.mode === null) html += `<dt>Territory</dt><dd><span class="badge badge-newground">NEW GROUND</span></dd>`;
+  if (r.lawwama_fired) html += `<dt>Lawwama</dt><dd>${r.lawwama_verdict || 'fired'}</dd>`;
+  if (r.v_director_delta) html += `<dt>Director Delta</dt><dd>${r.v_director_delta.toFixed(4)}</dd>`;
+  if (r.recall_modal_mismatch !== null) html += `<dt>Recall Mismatch</dt><dd>${(r.recall_modal_mismatch * 100).toFixed(0)}%</dd>`;
+
+  html += `</dl>`;
+  document.getElementById('exchange-detail').innerHTML = html;
+
+  // Fetch neighbors
+  const neighborsDiv = document.getElementById('neighbors');
+  neighborsDiv.innerHTML = '<p style="color:var(--dim);font-size:0.8rem;">Loading...</p>';
+  API.trajectoryNeighbors(r.exchange_id).then(data => {
+    if (data.error) {
+      neighborsDiv.innerHTML = `<p style="color:var(--dim);font-size:0.8rem;">${data.error}</p>`;
+      return;
+    }
+    neighborsDiv.innerHTML = data.map(n => `
+      <div class="neighbor-card">
+        <div class="date">${n.date || '—'} · ${n.title || ''}</div>
+        <div class="text">${escapeHTML(n.text_preview)}</div>
+      </div>
+    `).join('');
+  }).catch(() => {
+    neighborsDiv.innerHTML = '<p style="color:var(--dim);font-size:0.8rem;">Failed to load.</p>';
+  });
+}
+
+// ── Raycasting (click on 3D markers) ─────────────────────────────────────
+function setupRaycasting() {
+  const container = document.getElementById('map-container');
+  const raycaster = new THREE.Raycaster();
+  raycaster.params.Points.threshold = 0.2;
+  const mouse = new THREE.Vector2();
+
+  container.addEventListener('click', (e) => {
+    const rect = renderer.domElement.getBoundingClientRect();
+    mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+
+    const hits = raycaster.intersectObjects(exchangeMarkers);
+    if (hits.length > 0) {
+      const ud = hits[0].object.userData;
+      const idx = isAllSessions ? (ud.global_tau !== undefined ? ud.global_tau : 0) : ud.tau;
+      if (idx !== undefined) selectTau(idx);
+    }
+  });
+}
+
+// ── Camera Presets ────────────────────────────────────────────────────────
+document.getElementById('cam-top').addEventListener('click', () => {
+  const t = controls.target;
+  camera.position.set(t.x, t.y + 20, t.z);
+  controls.update();
+});
+document.getElementById('cam-persp').addEventListener('click', () => {
+  const t = controls.target;
+  camera.position.set(t.x + 6, t.y + 6, t.z + 12);
+  controls.update();
+});
+document.getElementById('cam-reset').addEventListener('click', () => {
+  if (!corpusData) return;
+  const pts = corpusData.corpus;
+  const cx = pts.reduce((s, p) => s + p.x, 0) / pts.length;
+  const cy = pts.reduce((s, p) => s + p.y, 0) / pts.length;
+  const cz = pts.reduce((s, p) => s + p.z, 0) / pts.length;
+  controls.target.set(cx, cy, cz);
+  camera.position.set(cx + 6, cy + 6, cz + 12);
+  controls.update();
+});
+
+// ── Init ─────────────────────────────────────────────────────────────────
+async function init() {
+  initThree();
+  setupRaycasting();
+
+  // Load corpus map (background layer)
+  corpusData = await API.trajectoryCorpusMap();
+  document.getElementById('map-loading').style.display = 'none';
+  renderCorpus(corpusData);
+
+  // Build legend from centroids
+  const legend = document.getElementById('legend');
+  const topCentroids = corpusData.centroids
+    .sort((a, b) => b.occupancy - a.occupancy)
+    .slice(0, 10);
+  legend.innerHTML = topCentroids.map(c =>
+    `<span><span class="dot" style="background:${modeColor(c.mode_id)}"></span>M${c.mode_id} (${c.occupancy})</span>`
+  ).join('') + `<span><span class="dot" style="background:${NEWGROUND_COLOR}"></span>New Ground</span>`;
+
+  // Load sessions
+  const sessions = await API.trajectorySessions();
+  const picker = document.getElementById('session-picker');
+  if (sessions.length === 0) {
+    picker.innerHTML = '<option value="">No sessions yet</option>';
+    return;
+  }
+
+  const totalExchanges = sessions.reduce((s, x) => s + x.exchange_count, 0);
+  const totalRuptures = sessions.reduce((s, x) => s + x.rupture_count, 0);
+  const totalAwda = sessions.reduce((s, x) => s + x.awda_count, 0);
+  picker.innerHTML = `<option value="all">All Sessions — ${totalExchanges}ex, ${totalRuptures}rupt, ${totalAwda}awda</option>` +
+    sessions.map(s =>
+      `<option value="${s.session_id}">Session ${s.session_id} — ${s.exchange_count}ex, ${s.rupture_count}rupt, ${s.awda_count}awda (${formatTime(s.start_time)})</option>`
+    ).join('');
+
+  // Load all sessions by default
+  picker.value = 'all';
+  await loadSession('all', null);
+
+  // Session picker change
+  picker.addEventListener('change', async () => {
+    const val = picker.value;
+    if (val === 'all') {
+      await loadSession('all', null);
+    } else {
+      const sid = parseInt(val);
+      const summary = sessions.find(s => s.session_id === sid);
+      await loadSession(sid, summary);
+    }
+  });
+
+  // Scrubber
+  document.getElementById('scrubber').addEventListener('input', (e) => {
+    selectTau(parseInt(e.target.value));
+  });
+
+  // Refresh button
+  document.getElementById('btn-process').addEventListener('click', async () => {
+    document.getElementById('btn-process').textContent = 'Processing...';
+    await API.trajectoryProcess();
+    setTimeout(() => location.reload(), 3000);
+  });
+}
+
+async function loadSession(sessionId, summary) {
+  if (sessionId === 'all') {
+    isAllSessions = true;
+    const resp = await fetch('/api/trajectory/all');
+    sessionRecords = await resp.json();
+  } else {
+    isAllSessions = false;
+    sessionRecords = await API.trajectorySession(sessionId);
+  }
+  if (sessionRecords.length === 0) return;
+
+  // Stats
+  const stats = document.getElementById('session-stats');
+  const s = summary || {};
+  if (isAllSessions) {
+    const uniqueSessions = new Set(sessionRecords.map(r => r.session_id)).size;
+    const ruptures = sessionRecords.filter(r => r.rupture_modal).length;
+    const awdas = sessionRecords.filter(r => r.awda).length;
+    const modes = new Set(sessionRecords.filter(r => r.mode !== null).map(r => Array.isArray(r.mode) ? r.mode[0] : r.mode)).size;
+    const gaps = sessionRecords.filter(r => r.comp_polarity === 'gap').length;
+    stats.innerHTML = `
+      <div class="stat-pill"><span class="val">${sessionRecords.length}</span> exchanges</div>
+      <div class="stat-pill"><span class="val">${uniqueSessions}</span> sessions</div>
+      <div class="stat-pill"><span class="val">${ruptures}</span> ruptures</div>
+      <div class="stat-pill"><span class="val">${awdas}</span> returns</div>
+      <div class="stat-pill"><span class="val">${modes}</span> modes</div>
+      <div class="stat-pill"><span class="val">${gaps}</span> comp gaps</div>
+    `;
+  } else {
+    stats.innerHTML = `
+      <div class="stat-pill"><span class="val">${s.exchange_count || sessionRecords.length}</span> exchanges</div>
+      <div class="stat-pill"><span class="val">${s.rupture_count || 0}</span> ruptures</div>
+      <div class="stat-pill"><span class="val">${s.awda_count || 0}</span> returns</div>
+      <div class="stat-pill"><span class="val">${s.unique_modes_visited || 0}</span> modes</div>
+      <div class="stat-pill">gap rate <span class="val">${((s.gap_rate_comp || 0) * 100).toFixed(0)}%</span></div>
+      <div class="stat-pill">lawwama <span class="val">${((s.lawwama_rate || 0) * 100).toFixed(0)}%</span></div>
+    `;
+  }
+
+  // Set scrubber — use global_tau if available, otherwise array index
+  const maxIdx = isAllSessions ? sessionRecords.length - 1 : sessionRecords.length - 1;
+  const scrubber = document.getElementById('scrubber');
+  scrubber.min = 0;
+  scrubber.max = maxIdx;
+  scrubber.value = maxIdx;
+  currentTau = maxIdx;
+
+  renderTrajectory(sessionRecords, currentTau);
+  renderTimeline(sessionRecords);
+  updateScrubberInfo(currentTau);
+  updateExchangeDetail(currentTau);
+}
+
+init().catch(e => console.error('Init failed:', e));
+</script>
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cost Dashboard — Observatory</title>
+<style>
+  :root { --bg: #0a0a0f; --card: #12121a; --border: #1e1e2e; --text: #c8c8d8; --accent: #d4a574; --green: #4ade80; --red: #f87171; --dim: #666680; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', 'SF Mono', monospace; padding: 2rem; }
+  h1 { color: var(--accent); font-size: 1.4rem; margin-bottom: 0.3rem; }
+  .subtitle { color: var(--dim); font-size: 0.85rem; margin-bottom: 2rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1.2rem; }
+  .card .label { color: var(--dim); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.4rem; }
+  .card .value { font-size: 1.8rem; font-weight: 700; color: var(--accent); }
+  .card .detail { color: var(--dim); font-size: 0.8rem; margin-top: 0.3rem; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 2rem; }
+  th { text-align: left; color: var(--dim); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--border); }
+  td { padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+  tr:hover { background: rgba(212, 165, 116, 0.05); }
+  .cost { color: var(--accent); font-weight: 600; }
+  .tokens { color: var(--dim); }
+  h2 { color: var(--text); font-size: 1.1rem; margin: 1.5rem 0 0.8rem; }
+  .bar-chart { margin-bottom: 2rem; }
+  .bar-row { display: flex; align-items: center; margin-bottom: 0.4rem; }
+  .bar-label { width: 160px; font-size: 0.8rem; color: var(--dim); text-align: right; padding-right: 1rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bar-track { flex: 1; height: 20px; background: var(--card); border-radius: 3px; overflow: hidden; }
+  .bar-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.5s; min-width: 2px; }
+  .bar-value { width: 80px; font-size: 0.8rem; color: var(--accent); padding-left: 0.8rem; }
+  .daily-chart { display: flex; align-items: flex-end; gap: 3px; height: 120px; margin-bottom: 0.5rem; }
+  .daily-bar { flex: 1; background: var(--accent); border-radius: 2px 2px 0 0; min-width: 8px; cursor: pointer; transition: opacity 0.2s; position: relative; }
+  .daily-bar:hover { opacity: 0.8; }
+  .daily-bar .tooltip { display: none; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: var(--card); border: 1px solid var(--border); padding: 0.4rem 0.6rem; border-radius: 4px; font-size: 0.7rem; white-space: nowrap; z-index: 10; }
+  .daily-bar:hover .tooltip { display: block; }
+  .daily-labels { display: flex; gap: 3px; }
+  .daily-labels span { flex: 1; font-size: 0.6rem; color: var(--dim); text-align: center; min-width: 8px; }
+  .openrouter-balance { display: flex; align-items: center; gap: 0.5rem; }
+  .loading { color: var(--dim); font-style: italic; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .nav { margin-bottom: 1.5rem; font-size: 0.8rem; }
+</style>
+</head>
+<body>
+<div class="nav"><a href="/observatory/">← Observatory</a></div>
+<h1>Cost Dashboard</h1>
+<p class="subtitle">OpenRouter API spend — all pipeline calls tracked</p>
+
+<div class="grid" id="summary-cards">
+  <div class="card"><div class="label">Today</div><div class="value loading" id="today-cost">...</div><div class="detail" id="today-calls"></div></div>
+  <div class="card"><div class="label">This Week</div><div class="value loading" id="week-cost">...</div><div class="detail" id="week-calls"></div></div>
+  <div class="card"><div class="label">This Month</div><div class="value loading" id="month-cost">...</div><div class="detail" id="month-calls"></div></div>
+  <div class="card"><div class="label">OpenRouter Balance</div><div class="value loading" id="or-balance">...</div><div class="detail" id="or-usage"></div></div>
+</div>
+
+<h2>Daily Spend (Last 30 Days)</h2>
+<div class="daily-chart" id="daily-chart"></div>
+<div class="daily-labels" id="daily-labels"></div>
+
+<h2>Today — By Pipeline Stage</h2>
+<div class="bar-chart" id="stage-bars"></div>
+
+<h2>Today — By Model</h2>
+<div class="bar-chart" id="model-bars"></div>
+
+<h2>Today — Call Log</h2>
+<table id="stage-table">
+  <thead><tr><th>Stage</th><th>Model</th><th>Calls</th><th>Tokens</th><th>Cost</th></tr></thead>
+  <tbody id="stage-tbody"></tbody>
+</table>
+
+<script>
+const fmt = (n) => n < 0.01 ? `$${n.toFixed(4)}` : `$${n.toFixed(2)}`;
+const fmtK = (n) => n > 1000 ? `${(n/1000).toFixed(1)}k` : n;
+
+async function load() {
+  try {
+    const [rangeResp, todayResp] = await Promise.all([
+      fetch('/api/costs?days=30'),
+      fetch('/api/costs/today'),
+    ]);
+    const range = await rangeResp.json();
+    const today = await todayResp.json();
+
+    // Summary cards
+    document.getElementById('today-cost').textContent = fmt(today.total_cost);
+    document.getElementById('today-cost').classList.remove('loading');
+    document.getElementById('today-calls').textContent = `${today.total_calls} calls`;
+
+    // Week/month from range
+    const now = new Date();
+    let weekCost = 0, weekCalls = 0, monthCost = 0, monthCalls = 0;
+    for (const d of range.daily) {
+      const date = new Date(d.date);
+      const daysAgo = (now - date) / 86400000;
+      if (daysAgo <= 7) { weekCost += d.total_cost; weekCalls += d.total_calls; }
+      monthCost += d.total_cost; monthCalls += d.total_calls;
+    }
+    document.getElementById('week-cost').textContent = fmt(weekCost);
+    document.getElementById('week-cost').classList.remove('loading');
+    document.getElementById('week-calls').textContent = `${weekCalls} calls`;
+    document.getElementById('month-cost').textContent = fmt(monthCost);
+    document.getElementById('month-cost').classList.remove('loading');
+    document.getElementById('month-calls').textContent = `${monthCalls} calls`;
+
+    // Daily chart
+    const chart = document.getElementById('daily-chart');
+    const labels = document.getElementById('daily-labels');
+    const maxCost = Math.max(...range.daily.map(d => d.total_cost), 0.01);
+    // Fill in missing days
+    const days = [];
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date(now); d.setDate(d.getDate() - i);
+      const ds = d.toISOString().slice(0, 10);
+      const found = range.daily.find(x => x.date === ds);
+      days.push({ date: ds, cost: found ? found.total_cost : 0, calls: found ? found.total_calls : 0 });
+    }
+    for (const d of days) {
+      const pct = (d.cost / maxCost) * 100;
+      const bar = document.createElement('div');
+      bar.className = 'daily-bar';
+      bar.style.height = `${Math.max(pct, 1)}%`;
+      bar.innerHTML = `<div class="tooltip">${d.date}<br>${fmt(d.cost)} · ${d.calls} calls</div>`;
+      chart.appendChild(bar);
+      const lbl = document.createElement('span');
+      const dt = new Date(d.date);
+      lbl.textContent = (dt.getDate() === 1 || days.indexOf(d) === 0) ? `${dt.getDate()}/${dt.getMonth()+1}` : '';
+      labels.appendChild(lbl);
+    }
+
+    // Stage bars
+    renderBars('stage-bars', today.by_stage);
+    // Model bars
+    renderBars('model-bars', today.by_model);
+    // Table
+    const tbody = document.getElementById('stage-tbody');
+    for (const [name, data] of Object.entries(today.by_stage)) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${name}</td><td>—</td><td>${data.calls}</td><td class="tokens">${fmtK(data.tokens)}</td><td class="cost">${fmt(data.cost)}</td>`;
+      tbody.appendChild(tr);
+    }
+    for (const [name, data] of Object.entries(today.by_model)) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>—</td><td>${name.split('/').pop()}</td><td>${data.calls}</td><td class="tokens">${fmtK(data.tokens)}</td><td class="cost">${fmt(data.cost)}</td>`;
+      tbody.appendChild(tr);
+    }
+  } catch (e) {
+    console.error(e);
+    document.querySelectorAll('.loading').forEach(el => el.textContent = 'Error');
+  }
+
+  // OpenRouter balance (separate call, may fail if key isn't exposed)
+  try {
+    const resp = await fetch('/api/costs/balance');
+    if (resp.ok) {
+      const data = await resp.json();
+      const remaining = data.limit ? (data.limit - data.usage) : null;
+      document.getElementById('or-balance').textContent = remaining !== null ? fmt(remaining) : fmt(data.usage);
+      document.getElementById('or-balance').classList.remove('loading');
+      document.getElementById('or-usage').textContent = remaining !== null ? `of $${data.limit} limit` : 'total usage (no limit set)';
+    } else {
+      document.getElementById('or-balance').textContent = '—';
+      document.getElementById('or-balance').classList.remove('loading');
+    }
+  } catch(e) {
+    document.getElementById('or-balance').textContent = '—';
+    document.getElementById('or-balance').classList.remove('loading');
+  }
+}
+
+function renderBars(containerId, data) {
+  const container = document.getElementById(containerId);
+  if (!data || Object.keys(data).length === 0) {
+    container.innerHTML = '<div style="color:var(--dim);font-size:0.85rem;">No data yet</div>';
+    return;
+  }
+  const maxCost = Math.max(...Object.values(data).map(d => d.cost));
+  for (const [name, d] of Object.entries(data)) {
+    const pct = maxCost > 0 ? (d.cost / maxCost * 100) : 0;
+    const row = document.createElement('div');
+    row.className = 'bar-row';
+    row.innerHTML = `
+      <div class="bar-label" title="${name}">${name.split('/').pop()}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
+      <div class="bar-value">${fmt(d.cost)}</div>
+    `;
+    container.appendChild(row);
+  }
+}
+
+load();
+</script>
+</body>
+</html>

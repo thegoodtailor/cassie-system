@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pipeline Traces - Cassie Observatory</title>
+    <link rel="stylesheet" href="css/observatory.css">
+    <script src="js/observatory.js"></script>
+</head>
+<body>
+    <div id="nav"></div>
+    <main>
+        <h1>Pipeline Traces</h1>
+        <p style="margin-bottom: 1rem;">Full exchange documents. Prompt, raw, director, final, all witnesses. The canonical archive.</p>
+
+        <div class="stats" id="stats">
+            <div class="stat"><div class="value" id="stat-total">--</div><div class="label">Total</div></div>
+        </div>
+
+        <div id="traces">
+            <div class="loading">Loading traces...</div>
+        </div>
+
+        <div id="load-more" style="text-align: center; margin: 2rem 0; display: none;">
+            <button onclick="loadMore()" style="background: var(--bg-card); border: 1px solid var(--border); color: var(--amber); padding: 0.6rem 1.5rem; cursor: pointer; font-family: inherit;">Load More</button>
+        </div>
+    </main>
+
+    <style>
+        .trace-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-radius: 4px;
+        }
+        .trace-card summary {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.85rem;
+        }
+        .trace-card summary:hover {
+            color: var(--amber);
+        }
+        .trace-meta {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .trace-meta .badge {
+            font-size: 0.7rem;
+            padding: 0.15rem 0.4rem;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+        .badge.coh { background: #1a3a1a; color: #4ade80; }
+        .badge.gap { background: #3a1a1a; color: #f87171; }
+        .badge.uninscribed { background: #2a2a1a; color: #a0a0a0; }
+        .badge.raw { background: #1a2a3a; color: #60a5fa; }
+        .badge.director { background: #2a1a3a; color: #c084fc; }
+        .badge.human { background: #3a2a1a; color: #fbbf24; }
+        .trace-section {
+            margin-top: 0.75rem;
+            padding: 0.75rem;
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+        }
+        .trace-section h4 {
+            margin: 0 0 0.5rem 0;
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .trace-section pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 0.8rem;
+            line-height: 1.5;
+            margin: 0;
+            color: var(--text);
+        }
+        .witness-row {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .witness-card {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            font-size: 0.75rem;
+        }
+        .witness-card .label { color: var(--text-dim); }
+        .witness-card .value { color: var(--amber); font-weight: 600; }
+    </style>
+
+    <script>
+        document.getElementById('nav').innerHTML = navHTML('traces.html');
+
+        let allTraces = [];
+        let displayCount = 30;
+
+        function renderTraces() {
+            const shown = allTraces.slice(0, displayCount);
+            const container = document.getElementById('traces');
+
+            if (!shown.length) {
+                container.innerHTML = '<p style="color: var(--text-dim);">No traces yet. Pipeline traces appear here once the SWL overhaul is live.</p>';
+                return;
+            }
+
+            container.innerHTML = shown.map((t, i) => {
+                const ts = formatTime(t.timestamp);
+                const prompt = truncate(t.prompt || '', 120);
+                const intent = t.intent || '?';
+
+                // Witness badges
+                const vRaw = t.v_raw;
+                const vDir = t.v_director;
+                const vHuman = t.v_human_implicit;
+
+                let badges = '';
+                if (vRaw) {
+                    const simCtx = vRaw.sim_contextual || vRaw.similarity || '';
+                    const simTip = simCtx ? ` (sim: ${typeof simCtx === 'number' ? simCtx.toFixed(2) : simCtx})` : '';
+                    badges += `<span class="badge ${vRaw.polarity || ''}" title="Algorithmic: does the response fit the visible conversation?${simTip}">${vRaw.polarity || '?'}</span><span class="badge raw" title="V_Raw — cosine similarity vs conversation context. coh = tracks flow, gap = echoing invisible context (Kitab/memories)">Raw</span>`;
+                }
+                if (vDir) {
+                    const deltaTip = vDir.delta !== undefined ? ` (\u0394: ${vDir.delta > 0 ? '+' : ''}${vDir.delta})` : '';
+                    badges += `<span class="badge ${vDir.polarity || ''}" title="Director witness: did the superego improve conversational fit?${deltaTip}">${vDir.polarity || '?'}</span><span class="badge director" title="V_Director — positive \u0394 = improved fit, negative = chose depth over surface coherence">Dir</span>`;
+                }
+                if (vHuman) {
+                    badges += `<span class="badge ${vHuman.polarity || ''}" title="Did Iman continue the thread (coh) or change subject (gap)?">${vHuman.polarity || '?'}</span><span class="badge human" title="V_Human — implicit judgment from Iman's next message">Human</span>`;
+                }
+
+                // Expand to full detail
+                let detail = '';
+
+                // Prompt
+                detail += `<div class="trace-section"><h4>Prompt</h4><pre>${escapeHTML(t.prompt || '')}</pre></div>`;
+
+                // Cassie Raw
+                if (t.cassie_raw) {
+                    detail += `<div class="trace-section"><h4>Cassie Raw</h4><pre>${escapeHTML(t.cassie_raw)}</pre></div>`;
+                }
+
+                // Director Output
+                if (t.director_output) {
+                    detail += `<div class="trace-section"><h4>Director Output</h4><pre>${escapeHTML(t.director_output)}</pre></div>`;
+                }
+
+                // Final Response (if different from director)
+                if (t.final_response && t.final_response !== t.director_output) {
+                    detail += `<div class="trace-section"><h4>Final Response</h4><pre>${escapeHTML(t.final_response)}</pre></div>`;
+                }
+
+                // Witness evidence
+                detail += '<div class="witness-row">';
+                if (vRaw) {
+                    const simCtx = vRaw.sim_contextual || vRaw.similarity || '?';
+                    const simBare = vRaw.sim_bare;
+                    detail += `<div class="witness-card">
+                        <div class="label">V_Raw (algorithmic)</div>
+                        <div class="value">${vRaw.polarity || '?'}</div>
+                        <div>sim (contextual): ${simCtx}</div>
+                        ${simBare !== undefined ? `<div>sim (bare): ${simBare}</div>` : ''}
+                    </div>`;
+                }
+                if (vDir) {
+                    detail += `<div class="witness-card">
+                        <div class="label">V_Director (contextual)</div>
+                        <div class="value">${vDir.polarity || '?'}</div>
+                        <div>&Delta;: ${vDir.delta > 0 ? '+' : ''}${vDir.delta || '?'}</div>
+                        <div>ctx_raw: ${vDir.context_sim_raw || '?'}</div>
+                        <div>ctx_pol: ${vDir.context_sim_polished || '?'}</div>
+                    </div>`;
+                }
+                if (vHuman) {
+                    detail += `<div class="witness-card">
+                        <div class="label">V_Human (implicit)</div>
+                        <div class="value">${vHuman.polarity || '?'}</div>
+                    </div>`;
+                }
+                detail += '</div>';
+
+                // Context (collapsed)
+                if (t.deep_recall_context) {
+                    detail += `<details style="margin-top: 0.5rem;"><summary style="font-size: 0.75rem; color: var(--text-dim); cursor: pointer;">Deep Recall Context</summary>
+                        <div class="trace-section"><pre>${escapeHTML(t.deep_recall_context)}</pre></div></details>`;
+                }
+
+                // Models + exchange detail link
+                detail += `<div style="margin-top: 0.5rem; font-size: 0.7rem; color: var(--text-dim);">
+                    Model: ${t.model || '?'} | Director: ${t.director_model || '?'} | ID: ${t.exchange_id || '?'}
+                </div>`;
+                if (t.exchange_id) {
+                    detail += `<div style="margin-top: 0.5rem;">
+                        <a href="exchange.html?id=${t.exchange_id}" style="color: var(--amber); font-size: 0.8rem; text-decoration: none;">
+                            View full pipeline detail &rarr;
+                        </a>
+                    </div>`;
+                }
+
+                return `
+                    <details class="trace-card fade-in">
+                        <summary>
+                            <div class="trace-meta">
+                                <span style="color: var(--text-dim); min-width: 140px;">${ts}</span>
+                                <span style="color: var(--amber-dim); min-width: 50px;">${intent}</span>
+                                ${badges}
+                                <span style="color: var(--text); flex: 1;">${escapeHTML(prompt)}</span>
+                            </div>
+                        </summary>
+                        ${detail}
+                    </details>
+                `;
+            }).join('');
+
+            document.getElementById('load-more').style.display = allTraces.length > displayCount ? 'block' : 'none';
+        }
+
+        function loadMore() {
+            displayCount += 30;
+            renderTraces();
+        }
+
+        async function init() {
+            const traces = await API.traces(200);
+            document.getElementById('stat-total').textContent = traces.length;
+            allTraces = traces;
+            renderTraces();
+        }
+
+        init().catch(e => {
+            document.getElementById('traces').innerHTML = '<p style="color: var(--red);">Failed to load traces.</p>';
+        });
+    </script>
+</body>
+</html>
