@@ -184,3 +184,34 @@ def test_promote_does_not_fire_without_cassie_accepts(monkeypatch, tmp_path):
     out = graph.regen_promote_node(state)
     # Nothing swapped, nothing cleared — session stays open
     assert out == {} or out.get("regen_active") is True
+
+
+def test_abandon_moves_session_and_clears_state(monkeypatch, tmp_path):
+    from orchestrator import regen_sessions as rs
+    monkeypatch.setattr(rs, "_DEFAULT_SESSIONS", tmp_path / "sessions")
+
+    sid = "regen_2026-04-15T10-00-00Z_abc123"
+    rs.record_candidate(sid, 1, b"X", base=tmp_path / "sessions")
+
+    state = _base_state(
+        {"regen_intent": "abandon", "polished_text": "ok, dropping it"},
+        regen_active=True,
+        regen_session_id=sid,
+        regen_turn=1,
+        regen_candidates=[{"turn": 1, "path": "p", "prompt": "pr",
+                           "cassie_reflection": "", "cassie_verdict": "",
+                           "iman_verdict_text": ""}],
+    )
+
+    out = graph.regen_abandon_node(state)
+
+    assert out["regen_active"] is False
+    assert out["regen_session_id"] == ""
+    assert out["regen_candidates"] == []
+    assert not (tmp_path / "sessions" / sid).exists()
+    assert (tmp_path / "sessions" / "rejected" / sid).exists()
+
+
+def test_abandon_is_noop_when_no_intent(monkeypatch):
+    out = graph.regen_abandon_node(_base_state({"regen_intent": None}))
+    assert out == {}

@@ -4149,6 +4149,29 @@ def regen_promote_node(state: CassieState) -> dict:
     }
 
 
+def regen_abandon_node(state: CassieState) -> dict:
+    """Close a regen session without promotion."""
+    from . import regen_sessions as rs
+
+    d = state.get("director_output", {}) or {}
+    if d.get("regen_intent") != "abandon":
+        return {}
+
+    sid = state.get("regen_session_id", "")
+    if sid:
+        rs.abandon(sid)
+
+    return {
+        "regen_active": False,
+        "regen_session_id": "",
+        "regen_turn": 0,
+        "regen_mode": "",
+        "regen_candidates": [],
+        "regen_started_at": "",
+        "regen_last_candidate_path": "",
+    }
+
+
 def execute_tools_node(state: CassieState) -> dict:
     """Execute downstream tools based on director analysis."""
     d = state.get("director_output", {})
