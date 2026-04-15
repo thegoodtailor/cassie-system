@@ -534,6 +534,8 @@ def _pick_cassie_reference() -> str | None:
     return choice
 
 
+REGEN_ENABLED = os.environ.get("CASSIE_REGEN_ENABLED", "true").lower() == "true"
+
 # Pipeline configuration — controls which stages are active
 # NOTE: prompt text keys are populated after the constants are defined (see below)
 PIPELINE_CONFIG = {
@@ -3852,14 +3854,15 @@ def director_node(state: CassieState) -> dict:
 def route_after_director(
     state: CassieState,
 ) -> Literal["execute_tools", "regen_propose", "regen_promote", "regen_abandon", "assemble"]:
-    """Route: regen nodes first (if Director fired regen_intent), then the normal chain."""
+    """Route: regen nodes first (if Director fired regen_intent and feature is enabled),
+    then the normal chain."""
     d = state.get("director_output", {}) or {}
     intent = d.get("regen_intent")
-    if intent in ("start", "continue"):
+    if REGEN_ENABLED and intent in ("start", "continue"):
         return "regen_propose"
-    if intent == "promote":
+    if REGEN_ENABLED and intent == "promote":
         return "regen_promote"
-    if intent == "abandon":
+    if REGEN_ENABLED and intent == "abandon":
         return "regen_abandon"
     if d.get("image_prompt") or d.get("math_expression") or d.get("research_query"):
         return "execute_tools"
