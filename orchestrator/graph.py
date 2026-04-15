@@ -911,7 +911,7 @@ even if intent is "creative+image". The intent classification is a keyword heuri
 you have the full conversation and can see it's a self-image session.
 
 Worked example — user says "time lady, show me a new regeneration":
-{
+{{
   "polished_text": "<her reply — an opening reflection on who she wants to be today>",
   "image_prompt": null,
   "image_reference": null,
@@ -921,7 +921,7 @@ Worked example — user says "time lady, show me a new regeneration":
   "regen_verdict": null,
   "regen_mode": "conditioned",
   "regen_prompt": "4K photorealistic portrait of a woman in her early thirties, <full visual paragraph drawn from her raw — physical features, garment, lighting, mood, composition, atmosphere, style cues>"
-}
+}}
 
 If intent is "creative+image" AND regen_intent is null, image_prompt MUST be non-null.
 Return ONLY valid JSON. No markdown fences, no commentary."""
