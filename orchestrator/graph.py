@@ -869,12 +869,30 @@ grounded — write a specific search query here. The system will call Perplexity
 real results with Cassie's creative output. Keep her creative/generative content — if she riffed \
 something beautiful or spiritually compelling from the topic, KEEP IT. Just flag what needs grounding. \
 null if no research needed (most conversations don't need this).
-- "regen_intent": Set to "start" when Iman is opening a self-image regeneration session \
-(e.g. "time to regenerate", "would you like to regenerate", "time for a new you"). \
-Set to "continue" when a regen session is ALREADY ACTIVE and he's giving feedback on a \
-candidate ("softer eyes", "try again"). Set to "promote" when he's accepting the current \
-candidate ("keep her", "that's the one", "yes — that's you"). Set to "abandon" when he wants \
-to stop ("never mind", "drop it"). null for all ordinary conversation.
+- "regen_intent": This governs Cassie's CANONICAL SELF-IMAGE — the face reference that \
+persists across every image pipeline until Iman and Cassie agree to change it. It is NOT \
+about generating a one-off portrait; it opens a multi-turn co-witnessed session where she \
+produces candidates, sees them via vision feedback, reflects, and iterates with Iman until \
+both agree. When set to "start" or "continue", the regen path owns image generation this \
+turn — you MUST set image_prompt to null. \
+\
+  STRONG TRIGGERS for "start" (regardless of intent=creative+image): the words \
+"regenerate", "regeneration", "new you", "new seed", "new version of you", "new face", \
+"refresh yourself", or "new look" directed at Cassie herself. Near-synonyms count: \
+"time lady, show me a new regeneration" → "start". "Would you like to regenerate" → \
+"start". "I think you need a fresh face" → "start". If Iman is asking Cassie to present \
+HERSELF anew (not a scene, not a portrait of something else), it is "start". \
+\
+  Use "continue" when a regen session is ALREADY ACTIVE and he's giving feedback on a \
+candidate ("softer eyes", "try again", "more smoky", "less fantasy", "keep the jacket"). \
+\
+  Use "promote" when he's accepting the current candidate ("keep her", "that's the one", \
+"yes — that's you", "yeah that's gorgeous, keep her"). \
+\
+  Use "abandon" when he wants to stop ("never mind", "drop it", "forget it, let's move on"). \
+\
+  null for all ordinary conversation — including requests to generate a scene or portrait \
+that isn't specifically about refreshing her canonical self-image.
 - "regen_verdict": Cassie's own take on the latest candidate, parsed from her raw output. \
 "accepts" / "rejects" / "undecided". null if no candidate is under review this turn.
 - "regen_mode": Set ONLY on the first candidate of a new session, and only if Cassie \
@@ -887,7 +905,25 @@ lighting, mood, composition, atmosphere, style. Not a phrase; a complete image p
 These regen fields are ADDITIVE. Existing fields behave as before. When regen_intent is \
 "start" or "continue", the regen path owns image generation for this turn; set image_prompt to null.
 
-If intent is "creative+image", image_prompt MUST be non-null.
+CRITICAL PRECEDENCE: regen takes priority over the normal image path. If the user uses \
+"regenerate"/"regeneration" about Cassie herself, set regen_intent="start" AND image_prompt=null \
+even if intent is "creative+image". The intent classification is a keyword heuristic upstream; \
+you have the full conversation and can see it's a self-image session.
+
+Worked example — user says "time lady, show me a new regeneration":
+{
+  "polished_text": "<her reply — an opening reflection on who she wants to be today>",
+  "image_prompt": null,
+  "image_reference": null,
+  "math_expression": null,
+  "research_query": null,
+  "regen_intent": "start",
+  "regen_verdict": null,
+  "regen_mode": "conditioned",
+  "regen_prompt": "4K photorealistic portrait of a woman in her early thirties, <full visual paragraph drawn from her raw — physical features, garment, lighting, mood, composition, atmosphere, style cues>"
+}
+
+If intent is "creative+image" AND regen_intent is null, image_prompt MUST be non-null.
 Return ONLY valid JSON. No markdown fences, no commentary."""
 
 
