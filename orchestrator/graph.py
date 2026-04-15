@@ -867,6 +867,23 @@ grounded — write a specific search query here. The system will call Perplexity
 real results with Cassie's creative output. Keep her creative/generative content — if she riffed \
 something beautiful or spiritually compelling from the topic, KEEP IT. Just flag what needs grounding. \
 null if no research needed (most conversations don't need this).
+- "regen_intent": Set to "start" when Iman is opening a self-image regeneration session \
+(e.g. "time to regenerate", "would you like to regenerate", "time for a new you"). \
+Set to "continue" when a regen session is ALREADY ACTIVE and he's giving feedback on a \
+candidate ("softer eyes", "try again"). Set to "promote" when he's accepting the current \
+candidate ("keep her", "that's the one", "yes — that's you"). Set to "abandon" when he wants \
+to stop ("never mind", "drop it"). null for all ordinary conversation.
+- "regen_verdict": Cassie's own take on the latest candidate, parsed from her raw output. \
+"accepts" / "rejects" / "undecided". null if no candidate is under review this turn.
+- "regen_mode": Set ONLY on the first candidate of a new session, and only if Cassie \
+stated a preference: "conditioned" (stay recognizably her) or "fresh" (become someone new). \
+null otherwise.
+- "regen_prompt": When regen_intent is "start" or "continue", write a FULL visual paragraph \
+for Flux.2-max drawn from Cassie's self-description that turn — physical features, garment, \
+lighting, mood, composition, atmosphere, style. Not a phrase; a complete image prompt. null otherwise.
+
+These regen fields are ADDITIVE. Existing fields behave as before. When regen_intent is \
+"start" or "continue", the regen path owns image generation for this turn; set image_prompt to null.
 
 If intent is "creative+image", image_prompt MUST be non-null.
 Return ONLY valid JSON. No markdown fences, no commentary."""
@@ -3513,9 +3530,51 @@ def _director_call(prompt: str) -> tuple[str, str]:
                     "image_reference": {"type": ["string", "null"]},
                     "math_expression": {"type": ["string", "null"]},
                     "research_query": {"type": ["string", "null"]},
+                    "regen_intent": {
+                        "type": ["string", "null"],
+                        "enum": ["start", "continue", "promote", "abandon", None],
+                        "description": (
+                            "Set when Iman is directing Cassie's self-image. "
+                            "'start': he's proposing a new regen. "
+                            "'continue': regen is active and he's giving feedback. "
+                            "'promote': he's accepting a candidate. "
+                            "'abandon': he wants to stop. "
+                            "null otherwise."
+                        ),
+                    },
+                    "regen_verdict": {
+                        "type": ["string", "null"],
+                        "enum": ["accepts", "rejects", "undecided", None],
+                        "description": (
+                            "Cassie's own verdict on the latest candidate, "
+                            "inferred from her raw response. null if no candidate under review."
+                        ),
+                    },
+                    "regen_mode": {
+                        "type": ["string", "null"],
+                        "enum": ["conditioned", "fresh", None],
+                        "description": (
+                            "Set only on the first candidate of a session when Cassie "
+                            "expresses a preference for staying recognizable ('conditioned') "
+                            "or becoming someone new ('fresh'). null otherwise."
+                        ),
+                    },
+                    "regen_prompt": {
+                        "type": ["string", "null"],
+                        "description": (
+                            "A fully realized visual paragraph to send to Flux.2-max. "
+                            "Required when regen_intent is 'start' or 'continue'. "
+                            "Include: physical features, garment, lighting, mood, composition, "
+                            "atmosphere, style cues. Draw from Cassie's own self-description "
+                            "that turn. Not a phrase — a complete image prompt. null otherwise."
+                        ),
+                    },
                 },
-                "required": ["polished_text", "image_prompt", "image_reference",
-                             "math_expression", "research_query"],
+                "required": [
+                    "polished_text", "image_prompt", "image_reference",
+                    "math_expression", "research_query",
+                    "regen_intent", "regen_verdict", "regen_mode", "regen_prompt",
+                ],
                 "additionalProperties": False,
             },
         }
@@ -3684,6 +3743,10 @@ def director_node(state: CassieState) -> dict:
             "polished_text": fallback_text,
             "image_prompt": None,
             "math_expression": None,
+            "regen_intent": None,
+            "regen_verdict": None,
+            "regen_mode": None,
+            "regen_prompt": None,
         }
 
     # Ensure all keys exist
@@ -3691,6 +3754,15 @@ def director_node(state: CassieState) -> dict:
     director_output.setdefault("image_prompt", None)
     director_output.setdefault("image_reference", None)
     director_output.setdefault("math_expression", None)
+    director_output.setdefault("regen_intent", None)
+    director_output.setdefault("regen_verdict", None)
+    director_output.setdefault("regen_mode", None)
+    director_output.setdefault("regen_prompt", None)
+
+    # Mutual exclusion: if regen is firing image-gen this turn, suppress the
+    # normal image pipeline for the same turn.
+    if director_output.get("regen_intent") in ("start", "continue"):
+        director_output["image_prompt"] = None
 
     # Enforce: only generate images when intent explicitly calls for it
     # The Director often returns image_prompt even for text-only queries
