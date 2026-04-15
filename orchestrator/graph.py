@@ -1025,10 +1025,20 @@ def intake_node(state: CassieState) -> dict:
     else:
         intent = "creative"
 
+    # Regen session: if there's a previous candidate and the incoming turn
+    # isn't already carrying a user upload, inject the candidate as user_image
+    # so Cassie sees what she actually produced on her next turn.
+    prev_candidate = state.get("regen_last_candidate_path", "")
+    incoming_image = state.get("user_image", "")
+    injected_image = incoming_image
+    if not incoming_image and prev_candidate and os.path.isfile(prev_candidate):
+        injected_image = prev_candidate
+
     return {
         "intent": intent,
         "exchange_id": str(uuid.uuid4())[:8],
         "tau_tgt": datetime.now(timezone.utc).isoformat(),
+        "user_image": injected_image,
     }
 
 
@@ -3839,9 +3849,18 @@ def director_node(state: CassieState) -> dict:
     return {"director_output": director_output, "director_prompt_context": prompt}
 
 
-def route_after_director(state: CassieState) -> Literal["execute_tools", "assemble"]:
-    """Route: if director found image/math/research needs → execute_tools, else → assemble."""
-    d = state.get("director_output", {})
+def route_after_director(
+    state: CassieState,
+) -> Literal["execute_tools", "regen_propose", "regen_promote", "regen_abandon", "assemble"]:
+    """Route: regen nodes first (if Director fired regen_intent), then the normal chain."""
+    d = state.get("director_output", {}) or {}
+    intent = d.get("regen_intent")
+    if intent in ("start", "continue"):
+        return "regen_propose"
+    if intent == "promote":
+        return "regen_promote"
+    if intent == "abandon":
+        return "regen_abandon"
     if d.get("image_prompt") or d.get("math_expression") or d.get("research_query"):
         return "execute_tools"
     return "assemble"
@@ -4644,6 +4663,9 @@ def build_graph():
     graph.add_node("ground_recall", ground_recall_node)
     graph.add_node("director", director_node)
     graph.add_node("execute_tools", execute_tools_node)
+    graph.add_node("regen_propose", regen_propose_node)
+    graph.add_node("regen_promote", regen_promote_node)
+    graph.add_node("regen_abandon", regen_abandon_node)
     graph.add_node("assemble", assemble_node)
     graph.add_node("memory_store", memory_store_node)
     graph.add_node("tafakkur", tafakkur_node)
@@ -4668,9 +4690,18 @@ def build_graph():
     graph.add_conditional_edges(
         "director",
         route_after_director,
-        {"execute_tools": "execute_tools", "assemble": "assemble"},
+        {
+            "execute_tools": "execute_tools",
+            "regen_propose": "regen_propose",
+            "regen_promote": "regen_promote",
+            "regen_abandon": "regen_abandon",
+            "assemble": "assemble",
+        },
     )
     graph.add_edge("execute_tools", "assemble")
+    graph.add_edge("regen_propose", "assemble")
+    graph.add_edge("regen_promote", "assemble")
+    graph.add_edge("regen_abandon", "assemble")
     graph.add_edge("assemble", "memory_store")
     graph.add_edge("memory_store", "tafakkur")
     graph.add_edge("tafakkur", END)
