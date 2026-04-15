@@ -58,3 +58,26 @@ def test_director_suppresses_image_prompt_when_regen_start(monkeypatch):
     assert d["regen_prompt"] == "a full visual paragraph"
     # Image prompt was suppressed because regen owns image-gen this turn
     assert d["image_prompt"] is None
+
+
+def test_director_suppresses_image_prompt_when_regen_continue(monkeypatch):
+    """Mid-session iteration must also suppress normal image generation."""
+    def fake_call(prompt):
+        return (
+            '{"polished_text": "trying again", "image_prompt": "a forest", '
+            '"image_reference": null, "math_expression": null, '
+            '"research_query": null, "regen_intent": "continue", '
+            '"regen_verdict": "rejects", "regen_mode": null, '
+            '"regen_prompt": "refined visual paragraph"}',
+            "mock-model",
+        )
+
+    from orchestrator import graph
+    monkeypatch.setattr(graph, "_director_call", fake_call)
+
+    result = director_node(_fake_state("softer eyes"))
+    d = result["director_output"]
+
+    assert d["regen_intent"] == "continue"
+    assert d["regen_prompt"] == "refined visual paragraph"
+    assert d["image_prompt"] is None
