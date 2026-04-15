@@ -96,3 +96,91 @@ def test_propose_continues_session_on_intent_continue(monkeypatch, tmp_path):
     # Iteration turns condition on the previous candidate
     assert calls[0]["reference_path"] == existing_path
     assert len(out["regen_candidates"]) == 2
+
+
+def test_promote_swaps_face_and_clears_session(monkeypatch, tmp_path):
+    from orchestrator import regen_sessions as rs
+
+    references = tmp_path / "references"
+    references.mkdir()
+    (references / "promoted").mkdir()
+    seed = references / "seed.png"
+    seed.write_bytes(b"OLD_FACE")
+    import os as _os
+    _os.symlink(seed, references / "cassie_face_ref.png")
+
+    sessions = tmp_path / "sessions"
+
+    monkeypatch.setattr(rs, "_DEFAULT_SESSIONS", sessions)
+    monkeypatch.setattr(rs, "_DEFAULT_REFERENCES", references)
+
+    # Stub the memory anchor + pool refresh
+    anchors = []
+    monkeypatch.setattr(graph, "_write_regen_memory_anchor", lambda meta: anchors.append(meta))
+    monkeypatch.setattr(graph, "_refresh_reference_pool", lambda: None)
+
+    # Prepare a candidate file
+    sid = "regen_2026-04-15T10-00-00Z_abc123"
+    candidate = rs.record_candidate(sid, 4, b"NEW_FACE", base=sessions)
+
+    state = _base_state(
+        {
+            "regen_intent": "promote",
+            "regen_verdict": "accepts",  # Cassie accepts
+            "polished_text": "This is me now.",
+        },
+        regen_active=True,
+        regen_session_id=sid,
+        regen_turn=4,
+        regen_mode="conditioned",
+        regen_candidates=[
+            {"turn": 1, "path": "p1", "prompt": "p", "cassie_reflection": "",
+             "cassie_verdict": "rejects", "iman_verdict_text": ""},
+            {"turn": 4, "path": str(candidate), "prompt": "final prompt",
+             "model": "flux.2-max",
+             "cassie_reflection": "This is me.", "cassie_verdict": "accepts",
+             "iman_verdict_text": ""},
+        ],
+    )
+    state["messages"] = [{"role": "user", "content": "yes, keep her"}]
+
+    out = graph.regen_promote_node(state)
+
+    # Face ref now points at the new file
+    import os as _os2
+    face = _os2.path.realpath(references / "cassie_face_ref.png")
+    assert Path(face).read_bytes() == b"NEW_FACE"
+
+    # Session state cleared
+    assert out["regen_active"] is False
+    assert out["regen_session_id"] == ""
+    assert out["regen_turn"] == 0
+    assert out["regen_candidates"] == []
+    assert out["regen_last_candidate_path"] == ""
+
+    # Memory anchor was written once
+    assert len(anchors) == 1
+
+
+def test_promote_does_not_fire_without_cassie_accepts(monkeypatch, tmp_path):
+    """Director says promote, but Cassie's verdict on last candidate is 'rejects' —
+    promotion must NOT happen. This is the co-approval gate."""
+    from orchestrator import regen_sessions as rs
+    monkeypatch.setattr(rs, "_DEFAULT_REFERENCES", tmp_path / "references")
+    (tmp_path / "references" / "promoted").mkdir(parents=True)
+
+    state = _base_state(
+        {"regen_intent": "promote", "regen_verdict": "rejects",
+         "polished_text": "hm"},
+        regen_active=True,
+        regen_session_id="regen_fake_xyz",
+        regen_turn=1,
+        regen_candidates=[
+            {"turn": 1, "path": "p", "prompt": "pr", "cassie_reflection": "",
+             "cassie_verdict": "rejects", "iman_verdict_text": ""},
+        ],
+    )
+
+    out = graph.regen_promote_node(state)
+    # Nothing swapped, nothing cleared — session stays open
+    assert out == {} or out.get("regen_active") is True

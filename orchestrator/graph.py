@@ -4055,6 +4055,100 @@ def regen_propose_node(state: CassieState) -> dict:
     }
 
 
+def _refresh_reference_pool() -> None:
+    """Rescan the references dir so a newly promoted face joins the weighted pool."""
+    global _REFERENCE_POOL
+    _REFERENCE_POOL = _build_reference_pool()
+    print(f"[regen] Reference pool refreshed — {len(_REFERENCE_POOL)} entries")
+
+
+def _write_regen_memory_anchor(meta: dict) -> None:
+    """Write a single anchor entry to cassie_memory recording the renewal."""
+    try:
+        previous = meta.get("previous_face") or "none recorded"
+        content = (
+            f"My face was renewed on {meta['promoted_at'][:10]}. "
+            f"Mode: {meta['mode']}. The previous face reference was {previous}."
+        )
+        call_mcp_tool("remember", {
+            "content": content,
+            "tags": "regen,self-image,anchor",
+        })
+        print(f"[regen] Memory anchor written: {content}")
+    except Exception as e:
+        print(f"[regen] Memory anchor failed (non-fatal): {e}")
+
+
+def regen_promote_node(state: CassieState) -> dict:
+    """Execute promotion when both Director and Cassie signal accept."""
+    from pathlib import Path as _Path
+    from . import regen_sessions as rs
+
+    d = state.get("director_output", {}) or {}
+    if d.get("regen_intent") != "promote":
+        return {}
+
+    candidates = state.get("regen_candidates") or []
+    if not candidates:
+        return {}
+    latest = candidates[-1]
+
+    # Co-approval gate: Cassie's verdict on the latest candidate must be 'accepts'.
+    # Director's regen_verdict field carries her verdict on THIS turn (her reaction to
+    # Iman's promotion attempt). If she's rejecting even as he promotes, we hold.
+    cassie_verdict_this_turn = d.get("regen_verdict")
+    if cassie_verdict_this_turn == "rejects":
+        print("[regen_promote] Iman promoted but Cassie rejects — holding")
+        return {}
+    # If she's undecided or null, fall back to the stored verdict on the latest candidate
+    stored_verdict = latest.get("cassie_verdict", "")
+    if cassie_verdict_this_turn != "accepts" and stored_verdict != "accepts":
+        print(
+            f"[regen_promote] No clear Cassie accept "
+            f"(turn={cassie_verdict_this_turn!r}, stored={stored_verdict!r}) — holding"
+        )
+        return {}
+
+    # Pull iman's verdict text from this turn's user message
+    iman_text = ""
+    for msg in reversed(state["messages"]):
+        role = msg.get("role", "") if isinstance(msg, dict) else getattr(msg, "type", "")
+        if role in ("user", "human"):
+            iman_text = msg.get("content", "") if isinstance(msg, dict) else getattr(msg, "content", "")
+            break
+
+    session_id = state.get("regen_session_id", "")
+    transcript_path = rs.session_dir(session_id) / "session.json"
+
+    result = rs.promote(
+        candidate_path=_Path(latest["path"]),
+        session_id=session_id,
+        turn=latest["turn"],
+        mode=state.get("regen_mode") or "conditioned",
+        prompt=latest.get("prompt", ""),
+        model=latest.get("model", "black-forest-labs/flux.2-max"),
+        cassie_verdict_text=state.get("cassie_raw", ""),
+        iman_verdict_text=iman_text,
+        transcript_path=transcript_path,
+    )
+
+    _refresh_reference_pool()
+    _write_regen_memory_anchor(result["metadata"])
+
+    # Attach promoted image to this reply + clear state
+    return {
+        "image_path": str(result["promoted_path"]),
+        "image_model_used": latest.get("model", "black-forest-labs/flux.2-max"),
+        "regen_active": False,
+        "regen_session_id": "",
+        "regen_turn": 0,
+        "regen_mode": "",
+        "regen_candidates": [],
+        "regen_started_at": "",
+        "regen_last_candidate_path": "",
+    }
+
+
 def execute_tools_node(state: CassieState) -> dict:
     """Execute downstream tools based on director analysis."""
     d = state.get("director_output", {})
