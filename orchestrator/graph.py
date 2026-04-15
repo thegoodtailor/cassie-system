@@ -3967,6 +3967,94 @@ def generate_regen_candidate(
     )
 
 
+def _current_face_ref_path() -> str | None:
+    """Path to the currently active cassie_face_ref.png if it exists."""
+    p = os.path.join(REFERENCE_DIR, "cassie_face_ref.png")
+    return p if os.path.isfile(p) else None
+
+
+def regen_propose_node(state: CassieState) -> dict:
+    """Generate a new regen candidate when Director fired start/continue."""
+    from . import regen_sessions as rs
+    from datetime import datetime, timezone
+
+    d = state.get("director_output", {}) or {}
+    intent = d.get("regen_intent")
+    if intent not in ("start", "continue"):
+        return {}
+
+    prompt = d.get("regen_prompt") or ""
+    if not prompt.strip():
+        print("[regen_propose] Director set intent but no regen_prompt — skipping")
+        return {}
+
+    if intent == "start":
+        session_id = rs.new_session_id()
+        turn = 1
+        started_at = datetime.now(timezone.utc).isoformat()
+        mode = d.get("regen_mode") or "conditioned"  # default if unstated
+        reference_path: str | None
+        if mode == "conditioned":
+            reference_path = _current_face_ref_path()
+        else:
+            reference_path = None
+        candidates: list = []
+    else:  # continue
+        session_id = state.get("regen_session_id") or rs.new_session_id()
+        turn = (state.get("regen_turn") or 0) + 1
+        started_at = state.get("regen_started_at") or datetime.now(timezone.utc).isoformat()
+        mode = state.get("regen_mode") or "conditioned"
+        # Iteration always conditions on previous candidate
+        reference_path = state.get("regen_last_candidate_path") or _current_face_ref_path()
+        candidates = list(state.get("regen_candidates") or [])
+
+    try:
+        img_bytes, model_used = generate_regen_candidate(prompt, reference_path)
+    except Exception as e:
+        print(f"[regen_propose] Generation failed: {e}")
+        return {
+            "final_response": (
+                "The generator's down right now — want to try again in a minute? "
+                "The session is still open."
+            ),
+        }
+
+    candidate_path = rs.record_candidate(session_id, turn, img_bytes)
+
+    rs.write_transcript(session_id, {
+        "turn": turn,
+        "prompt": prompt,
+        "mode": mode,
+        "reference_path": reference_path,
+        "model": model_used,
+        "cassie_raw": state.get("cassie_raw", ""),
+        "director_regen_verdict": d.get("regen_verdict"),
+    })
+
+    candidates.append({
+        "turn": turn,
+        "path": str(candidate_path),
+        "prompt": prompt,
+        "model": model_used,
+        "cassie_reflection": state.get("cassie_raw", ""),
+        "cassie_verdict": d.get("regen_verdict") or "",
+        "iman_verdict_text": "",  # filled on next turn when iman reacts
+    })
+
+    return {
+        "regen_active": True,
+        "regen_session_id": session_id,
+        "regen_turn": turn,
+        "regen_mode": mode,
+        "regen_started_at": started_at,
+        "regen_candidates": candidates,
+        "regen_last_candidate_path": str(candidate_path),
+        # Tell assemble to attach the candidate to Iman's next reply
+        "image_path": str(candidate_path),
+        "image_model_used": model_used,
+    }
+
+
 def execute_tools_node(state: CassieState) -> dict:
     """Execute downstream tools based on director analysis."""
     d = state.get("director_output", {})
