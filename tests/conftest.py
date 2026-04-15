@@ -1,7 +1,5 @@
 """Shared pytest fixtures for cassie-system tests."""
 import os
-import shutil
-import tempfile
 from pathlib import Path
 
 import pytest
