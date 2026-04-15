@@ -3829,6 +3829,71 @@ def _try_generate_image(model_id: str, modalities: list, msg_content) -> tuple[b
     return (_extract_image_bytes(resp), model_id)
 
 
+REGEN_PRIMARY_MODEL = "black-forest-labs/flux.2-max"
+REGEN_FALLBACK_MODEL = "black-forest-labs/flux.2-pro"
+
+
+def _try_regen_image(
+    prompt: str,
+    reference_path: str | None,
+    model: str,
+) -> tuple[bytes, str]:
+    """Call Flux for regen. Uses prompt_upsampling and optional image-to-image.
+
+    Returns (image_bytes, model_used). Raises on failure so the caller can
+    fall back.
+    """
+    import base64
+
+    OPENROUTER_CLIENT.set_stage("regen_image_gen")
+
+    content_parts: list = [{"type": "text", "text": prompt}]
+    if reference_path and os.path.isfile(reference_path):
+        ref_b64 = base64.b64encode(open(reference_path, "rb").read()).decode()
+        ext = reference_path.rsplit(".", 1)[-1].lower()
+        ref_mime = {"jpg": "image/jpeg", "jpeg": "image/jpeg", "png": "image/png"}.get(
+            ext, "image/png"
+        )
+        content_parts.append({
+            "type": "image_url",
+            "image_url": {"url": f"data:{ref_mime};base64,{ref_b64}"},
+        })
+
+    msg_content = content_parts if len(content_parts) > 1 else prompt
+
+    resp = OPENROUTER_CLIENT.chat.completions.create(
+        model=model,
+        messages=[{"role": "user", "content": msg_content}],
+        extra_body={
+            "modalities": ["image"],
+            "image_config": {"aspect_ratio": "1:1"},
+            "prompt_upsampling": True,
+        },
+    )
+    return (_extract_image_bytes(resp), model)
+
+
+def generate_regen_candidate(
+    prompt: str,
+    reference_path: str | None,
+) -> tuple[bytes, str]:
+    """Generate a regen candidate with primary→fallback model chain.
+
+    Returns (image_bytes, model_used). Raises RuntimeError if both fail.
+    """
+    errors: list[tuple[str, str]] = []
+    for model in (REGEN_PRIMARY_MODEL, REGEN_FALLBACK_MODEL):
+        try:
+            print(f"[regen] Generating with {model} (ref={bool(reference_path)})")
+            return _try_regen_image(prompt, reference_path, model)
+        except Exception as e:
+            errors.append((model, str(e)))
+            print(f"[regen] {model} failed: {e}")
+    raise RuntimeError(
+        "All regen models failed: " + "; ".join(f"{m}: {e}" for m, e in errors)
+    )
+
+
 def execute_tools_node(state: CassieState) -> dict:
     """Execute downstream tools based on director analysis."""
     d = state.get("director_output", {})
