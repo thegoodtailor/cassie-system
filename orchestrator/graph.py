@@ -3849,7 +3849,8 @@ def _try_regen_image(
 
     content_parts: list = [{"type": "text", "text": prompt}]
     if reference_path and os.path.isfile(reference_path):
-        ref_b64 = base64.b64encode(open(reference_path, "rb").read()).decode()
+        with open(reference_path, "rb") as f:
+            ref_b64 = base64.b64encode(f.read()).decode()
         ext = reference_path.rsplit(".", 1)[-1].lower()
         ref_mime = {"jpg": "image/jpeg", "jpeg": "image/jpeg", "png": "image/png"}.get(
             ext, "image/png"
