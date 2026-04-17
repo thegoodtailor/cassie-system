@@ -2424,7 +2424,7 @@ def _format_hits(hits, include_score: bool = True) -> tuple[str, list[dict]]:
     chunks = []
     for hit in hits:
         p = hit.payload
-        date = p.get("date", "undated")
+        date = p.get("date") or (p.get("timestamp", "")[:10] if p.get("timestamp") else "undated")
         title = p.get("title", "")
         score = round(getattr(hit, "score", None) or 0.0, 3)
         text = p.get("text", "")
@@ -4582,6 +4582,7 @@ def _ingest_exchange_to_qdrant(
                     "text": text,
                     "source": "live_pipeline",
                     "timestamp": tau_tgt,
+                    "date": tau_tgt[:10] if tau_tgt else "",
                     "exchange_id": exchange_id,
                 },
             )],
