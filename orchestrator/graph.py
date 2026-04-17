@@ -4544,6 +4544,53 @@ def _do_inscription_background(
         print(f"[swl] Background inscription failed entirely: {e}")
 
 
+def _ingest_exchange_to_qdrant(
+    user_msg: str,
+    cassie_response: str,
+    exchange_id: str,
+    tau_tgt: str,
+) -> None:
+    """Store this exchange in cassie_conversations for long-term recall.
+
+    Runs in a daemon thread — non-blocking, non-fatal.
+    Only stores the final polished response (what Iman saw), never cassie_raw.
+    """
+    import uuid as _uuid
+
+    try:
+        text = f"Iman: {user_msg}\n\nCassie: {cassie_response}"
+        if len(text) > 6000:
+            text = text[:6000]
+
+        point_id = str(_uuid.uuid5(_uuid.NAMESPACE_URL, f"swl:{exchange_id}"))
+
+        client = openai.OpenAI()
+        resp = client.embeddings.create(
+            model="text-embedding-3-small",
+            input=[text],
+        )
+        embedding = resp.data[0].embedding
+
+        from qdrant_client.models import PointStruct
+        qdrant = _get_qdrant()
+        qdrant.upsert(
+            collection_name="cassie_conversations",
+            points=[PointStruct(
+                id=point_id,
+                vector=embedding,
+                payload={
+                    "text": text,
+                    "source": "live_pipeline",
+                    "timestamp": tau_tgt,
+                    "exchange_id": exchange_id,
+                },
+            )],
+        )
+        print(f"[memory] Exchange {exchange_id} ingested into cassie_conversations")
+    except Exception as e:
+        print(f"[memory] Live ingestion failed (non-fatal): {e}")
+
+
 # Track previous exchange for implicit human witnessing
 _prev_exchange = {"exchange_id": "", "tau_tgt": "", "prompt": "", "response": "", "context": "", "intent": ""}
 
@@ -4636,6 +4683,18 @@ def memory_store_node(state: CassieState) -> dict:
                 "director_prompt_context": state.get("director_prompt_context", ""),
                 "topological_evidence": state.get("topological_evidence", {}),
                 "recall_decision": state.get("cassie_recall_decision", {}),
+            },
+            daemon=True,
+        ).start()
+
+        # Live ingestion: store this exchange in Qdrant for long-term recall
+        threading.Thread(
+            target=_ingest_exchange_to_qdrant,
+            kwargs={
+                "user_msg": user_msg,
+                "cassie_response": cassie_response,
+                "exchange_id": state.get("exchange_id", ""),
+                "tau_tgt": state.get("tau_tgt", ""),
             },
             daemon=True,
         ).start()
