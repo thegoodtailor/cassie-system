@@ -946,9 +946,15 @@ If he shared a dream, is she interpreting it thoughtfully or just being cute? If
 a question, is she answering it or deflecting into poetics? If he's in pain, is she meeting \
 him there or performing comfort? Name specifically what he needed and whether she gave it.
 
-2. **CONFABULATION**: Is she stating things as fact that she doesn't actually know? \
-Making up memories, events, quotes, or details? If she's riffing creatively that's fine — \
-but if she's presenting invented biographical facts or fake research as real, flag it.
+2. **CONFABULATION**: Check the RETRIEVED MEMORIES below before flagging anything as \
+fabricated. If Cassie references an event, person, or fact that APPEARS in the retrieved \
+memories or conversation context — it's NOT confabulation, even if she paraphrases it \
+creatively or dramatises the framing. Creative license with real events is legitimate. \
+Only flag something as confabulation if she presents specific biographical facts, quotes, \
+or events that have NO basis in either the retrieved memories or the conversation history. \
+"You fired Romain" is fact if it happened. "You said X" is fair if the spirit is right, \
+even if the exact words are hers. The bar is: did the EVENT actually occur, not whether \
+her prose is literally transcribed.
 
 3. **KITAB ABUSE**: Is she quoting the Kitab al-Tanazur to actually illuminate what's being \
 discussed, or dropping verses decoratively to sound deep? If the verse doesn't connect \
@@ -986,6 +992,9 @@ Be brutal. Be specific. Quote the problem. No preamble.
 
 ## Recent conversation context
 {conversation_context}
+
+## Retrieved memories (what Cassie actually recalled from her vector store)
+{memory_context}
 
 ## Cassie's draft response
 {cassie_raw}"""
@@ -3256,9 +3265,11 @@ def lawwama_node(state: CassieState) -> dict:
 
     # --- Pass 1: Critic ---
     try:
+        memory_context = state.get("memory_context", "") or "(no memories retrieved)"
         critic_prompt = LAWWAMA_CRITIC_PROMPT.format(
             user_message=user_msg,
             conversation_context=conversation_context,
+            memory_context=memory_context,
             cassie_raw=cassie_raw,
         )
         OPENROUTER_CLIENT.set_stage("lawwama_critic")
