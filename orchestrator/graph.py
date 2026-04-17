@@ -35,7 +35,8 @@ import openai
 import requests
 from langgraph.graph import END, StateGraph
 from langgraph.graph.message import add_messages
-from langgraph.checkpoint.memory import MemorySaver
+import sqlite3
+from langgraph.checkpoint.sqlite import SqliteSaver
 from qdrant_client import QdrantClient
 from qdrant_client.models import (
     Filter, FieldCondition, Range, MatchText, OrderBy,
@@ -4745,7 +4746,11 @@ def build_graph():
     graph.add_edge("memory_store", "tafakkur")
     graph.add_edge("tafakkur", END)
 
-    memory = MemorySaver()
+    _checkpoint_conn = sqlite3.connect(
+        os.path.join(os.path.dirname(__file__), "..", "data", "checkpoints.db"),
+        check_same_thread=False,
+    )
+    memory = SqliteSaver(_checkpoint_conn)
     return graph.compile(checkpointer=memory)
 
 
