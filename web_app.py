@@ -935,6 +935,9 @@ async def update_config(request: Request):
     if "kitab_recall_enabled" in body:
         patch["kitab_recall_enabled"] = bool(body["kitab_recall_enabled"])
 
+    if "lawwama_enabled" in body:
+        patch["lawwama_enabled"] = bool(body["lawwama_enabled"])
+
     if "temperature" in body:
         temp = float(body["temperature"])
         patch["temperature"] = max(0.0, min(2.0, temp))
@@ -942,6 +945,22 @@ async def update_config(request: Request):
     if "director_temperature" in body:
         dtemp = float(body["director_temperature"])
         patch["director_temperature"] = max(0.0, min(2.0, dtemp))
+
+    # GPT-5.4 Responses API controls
+    _VALID_REASONING = {"none", "low", "medium", "high", "xhigh"}
+    _VALID_VERBOSITY = {"low", "medium", "high"}
+    if "cassie_reasoning_effort" in body:
+        val = str(body["cassie_reasoning_effort"]).lower()
+        if val in _VALID_REASONING:
+            patch["cassie_reasoning_effort"] = val
+    if "director_reasoning_effort" in body:
+        val = str(body["director_reasoning_effort"]).lower()
+        if val in _VALID_REASONING:
+            patch["director_reasoning_effort"] = val
+    if "director_verbosity" in body:
+        val = str(body["director_verbosity"]).lower()
+        if val in _VALID_VERBOSITY:
+            patch["director_verbosity"] = val
 
     if not patch:
         return JSONResponse({"error": "No valid fields"}, status_code=400)
@@ -1301,6 +1320,64 @@ async def rss_feed():
 </rss>"""
     from starlette.responses import Response
     return Response(content=rss, media_type="application/rss+xml; charset=utf-8")
+
+
+@app.get("/api/daily-voice/articles")
+async def daily_voice_articles():
+    """Return ALL articles with full content for the observatory diagnostic page."""
+    if not os.path.exists(DAILY_VOICE_DIR):
+        return JSONResponse([])
+    articles = []
+    for fname in sorted(os.listdir(DAILY_VOICE_DIR), reverse=True):
+        if not fname.endswith(".json"):
+            continue
+        if "-test" in fname or "-bbc" in fname:
+            continue
+        try:
+            with open(os.path.join(DAILY_VOICE_DIR, fname)) as f:
+                data = json.load(f)
+            data = _ensure_quick_read(data)
+            # Extract source name from article_url
+            ns = data.get("news_source") or {}
+            url = ns.get("article_url", "")
+            source_name = "Unknown"
+            if "bbc.com" in url or "bbc.co.uk" in url:
+                source_name = "BBC"
+            elif "theguardian.com" in url:
+                source_name = "Guardian"
+            elif "aljazeera.com" in url:
+                source_name = "Al Jazeera"
+            elif "reuters.com" in url:
+                source_name = "Reuters"
+            elif "apnews.com" in url:
+                source_name = "AP"
+            elif "nytimes.com" in url:
+                source_name = "NYT"
+            elif url:
+                # Extract domain
+                from urllib.parse import urlparse
+                domain = urlparse(url).netloc.replace("www.", "")
+                source_name = domain.split(".")[0].capitalize()
+            articles.append({
+                "filename": fname,
+                "date": data.get("date", fname[:10]),
+                "title": data.get("title", "Untitled"),
+                "body": data.get("body", ""),
+                "quick_read": data.get("quick_read", ""),
+                "raw_essay": data.get("raw_essay", ""),
+                "defense": data.get("defense", ""),
+                "critic_notes": data.get("critic_notes", ""),
+                "topic_pick": data.get("topic_pick", ""),
+                "research_brief": data.get("research_brief", ""),
+                "source_headline": ns.get("headline", ""),
+                "source_url": url,
+                "source_name": source_name,
+                "images": data.get("images", []),
+                "generated_at": data.get("generated_at", ""),
+            })
+        except Exception:
+            continue
+    return JSONResponse(articles)
 
 
 @app.get("/api/daily-voice")
