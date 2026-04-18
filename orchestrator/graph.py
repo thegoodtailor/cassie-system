@@ -1112,8 +1112,18 @@ def intake_node(state: CassieState) -> dict:
     if not incoming_image and prev_candidate and os.path.isfile(prev_candidate):
         injected_image = prev_candidate
 
+    # Per-turn state reset: when route_after_director skips execute_tools
+    # (no image/math/research this turn), these fields would otherwise persist
+    # from a previous turn, causing stale Perplexity results, old image paths,
+    # etc. to leak into this turn's final_response via assemble_node.
+    # Reset them at intake so every turn starts clean.
     return {
         "intent": intent,
+        "image_path": "",
+        "image_model_used": "",
+        "image_generation_error": "",
+        "math_result": "",
+        "research_result": "",
         "exchange_id": str(uuid.uuid4())[:8],
         "tau_tgt": datetime.now(timezone.utc).isoformat(),
         "user_image": injected_image,
