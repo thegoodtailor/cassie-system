@@ -704,15 +704,31 @@ PIPELINE_TRACES_PATH = "/home/iman/cassie-project/cassie-system/data/pipeline_tr
 
 
 @app.get("/api/traces")
-async def pipeline_traces(limit: int = 50, offset: int = 0):
-    """Paginated pipeline traces — full exchange documents with all witness polarities."""
+async def pipeline_traces(limit: int = 50, offset: int = 0, full: bool = False):
+    """Paginated pipeline traces. Light summaries by default; full=true for heavy fields."""
     entries = []
     try:
         if os.path.exists(PIPELINE_TRACES_PATH):
             with open(PIPELINE_TRACES_PATH) as f:
                 all_entries = [json.loads(line) for line in f if line.strip()]
             all_entries.reverse()
-            entries = all_entries[offset:offset + limit]
+            page = all_entries[offset:offset + limit]
+            if full:
+                entries = page
+            else:
+                for e in page:
+                    entries.append({
+                        "exchange_id": e.get("exchange_id"),
+                        "timestamp": e.get("timestamp"),
+                        "prompt": (e.get("prompt") or "")[:200],
+                        "intent": e.get("intent"),
+                        "model": e.get("model"),
+                        "director_model": e.get("director_model"),
+                        "v_raw": e.get("v_raw"),
+                        "v_director": e.get("v_director"),
+                        "v_human_implicit": e.get("v_human_implicit"),
+                        "lawwama_skipped": e.get("lawwama_skipped"),
+                    })
     except Exception:
         pass
     return JSONResponse(entries)

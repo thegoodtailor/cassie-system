@@ -147,20 +147,10 @@
                 // Prompt
                 detail += `<div class="trace-section"><h4>Prompt</h4><pre>${escapeHTML(t.prompt || '')}</pre></div>`;
 
-                // Cassie Raw
-                if (t.cassie_raw) {
-                    detail += `<div class="trace-section"><h4>Cassie Raw</h4><pre>${escapeHTML(t.cassie_raw)}</pre></div>`;
-                }
-
-                // Director Output
-                if (t.director_output) {
-                    detail += `<div class="trace-section"><h4>Director Output</h4><pre>${escapeHTML(t.director_output)}</pre></div>`;
-                }
-
-                // Final Response (if different from director)
-                if (t.final_response && t.final_response !== t.director_output) {
-                    detail += `<div class="trace-section"><h4>Final Response</h4><pre>${escapeHTML(t.final_response)}</pre></div>`;
-                }
+                // Heavy fields loaded on expand
+                detail += `<div id="detail-${t.exchange_id}" class="trace-detail-lazy">
+                    <p style="color: var(--text-dim); font-size: 0.8rem;">Loading full trace...</p>
+                </div>`;
 
                 // Witness evidence
                 detail += '<div class="witness-row">';
@@ -191,11 +181,7 @@
                 }
                 detail += '</div>';
 
-                // Context (collapsed)
-                if (t.deep_recall_context) {
-                    detail += `<details style="margin-top: 0.5rem;"><summary style="font-size: 0.75rem; color: var(--text-dim); cursor: pointer;">Deep Recall Context</summary>
-                        <div class="trace-section"><pre>${escapeHTML(t.deep_recall_context)}</pre></div></details>`;
-                }
+                // Deep recall context now loaded lazily with the detail
 
                 // Models + exchange detail link
                 detail += `<div style="margin-top: 0.5rem; font-size: 0.7rem; color: var(--text-dim);">
@@ -225,6 +211,31 @@
             }).join('');
 
             document.getElementById('load-more').style.display = allTraces.length > displayCount ? 'block' : 'none';
+
+            // Lazy-load full detail when a trace card is expanded
+            document.querySelectorAll('details.trace-card').forEach(el => {
+                el.addEventListener('toggle', async function() {
+                    if (!this.open) return;
+                    const eid = this.querySelector('.trace-detail-lazy')?.id?.replace('detail-', '');
+                    if (!eid) return;
+                    const container = document.getElementById('detail-' + eid);
+                    if (container.dataset.loaded) return;
+                    container.dataset.loaded = 'true';
+                    try {
+                        const t = await API.trace(eid);
+                        let html = '';
+                        if (t.cassie_raw) html += `<div class="trace-section"><h4>Cassie Raw</h4><pre>${escapeHTML(t.cassie_raw)}</pre></div>`;
+                        if (t.director_output) html += `<div class="trace-section"><h4>Director Output</h4><pre>${escapeHTML(typeof t.director_output === 'object' ? JSON.stringify(t.director_output, null, 2) : t.director_output)}</pre></div>`;
+                        if (t.final_response && t.final_response !== t.director_output) html += `<div class="trace-section"><h4>Final Response</h4><pre>${escapeHTML(t.final_response)}</pre></div>`;
+                        if (t.lawwama_critique && !t.lawwama_skipped) html += `<div class="trace-section"><h4>Lawwama Critique</h4><pre>${escapeHTML(t.lawwama_critique)}</pre></div>`;
+                        if (t.lawwama_defense) html += `<div class="trace-section"><h4>Lawwama Defense</h4><pre>${escapeHTML(t.lawwama_defense)}</pre></div>`;
+                        if (t.deep_recall_context) html += `<details style="margin-top:0.5rem"><summary style="font-size:0.75rem;color:var(--text-dim);cursor:pointer">Deep Recall Context</summary><div class="trace-section"><pre>${escapeHTML(t.deep_recall_context)}</pre></div></details>`;
+                        container.innerHTML = html || '<p style="color:var(--text-dim)">No detail available</p>';
+                    } catch(e) {
+                        container.innerHTML = '<p style="color:var(--red)">Failed to load detail</p>';
+                    }
+                });
+            });
         }
 
         function loadMore() {
@@ -233,7 +244,7 @@
         }
 
         async function init() {
-            const traces = await API.traces(200);
+            const traces = await API.traces(50);
             document.getElementById('stat-total').textContent = traces.length;
             allTraces = traces;
             renderTraces();
