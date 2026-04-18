@@ -2665,7 +2665,7 @@ def _conversation_recall(user_message: str, n_results: int = 5) -> tuple[str, st
 # Opus 4.6 does the compression — dense, specific, preserves unique details.
 # ---------------------------------------------------------------------------
 
-SMALL_MODEL_BUDGET = 80000   # ~23k tokens → Mistral 32k with 4k output headroom
+SMALL_MODEL_BUDGET = 350000  # ~100k tokens → Trinity 131k with output headroom
 LARGE_MODEL_BUDGET = 600000  # ~170k tokens → Opus 200k with 8k output headroom
 
 
@@ -2680,12 +2680,14 @@ def _total_chars(msgs: list[dict]) -> int:
     return sum(_msg_chars(m) for m in msgs)
 
 
+PROTECTED_TAIL_TURNS = 3  # protect last N full turns (user+assistant pairs) from compression
+
 def _split_messages(messages: list[dict]) -> tuple[list[dict], list[dict], list[dict]]:
     """Split messages into (system_preamble, conversation_middle, tail).
 
     preamble: leading system messages (identity, memory injections)
-    middle: conversation turns (user/assistant)
-    tail: last user message + any trailing system messages (recall injections)
+    middle: older conversation turns (eligible for compression)
+    tail: last PROTECTED_TAIL_TURNS turns + trailing system messages (never compressed)
     """
     preamble = []
     i = 0
@@ -2693,16 +2695,23 @@ def _split_messages(messages: list[dict]) -> tuple[list[dict], list[dict], list[
         preamble.append(messages[i])
         i += 1
 
-    tail = []
+    # Collect trailing system messages
+    trailing_system = []
     j = len(messages) - 1
     while j >= i and messages[j].get("role") == "system":
-        tail.insert(0, messages[j])
-        j -= 1
-    if j >= i:
-        tail.insert(0, messages[j])
+        trailing_system.insert(0, messages[j])
         j -= 1
 
-    middle = messages[i:j + 1]
+    # Protect last N conversation turns (user/assistant pairs) from compression
+    conversation = messages[i:j + 1]
+    protected_count = PROTECTED_TAIL_TURNS * 2  # each turn = user + assistant
+    if len(conversation) <= protected_count:
+        tail = conversation + trailing_system
+        middle = []
+    else:
+        tail = conversation[-protected_count:] + trailing_system
+        middle = conversation[:-protected_count]
+
     return preamble, middle, tail
 
 
