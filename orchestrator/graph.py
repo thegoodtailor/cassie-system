@@ -74,6 +74,7 @@ class CassieState(TypedDict):
     tafakkur_result: dict   # {timestamp, excerpt, full} from inner reflection
     director_prompt_context: str  # full assembled prompt sent to the director
     tafsir_brief: str           # scholarly tafsir brief when Kitab is central to the exchange
+    graph_context: str          # serialized GraphRAG brief (entities, communities, drill-downs)
 
     # --- Self-image regeneration session ---
     regen_active: bool              # true while a regen session is open in this thread
@@ -546,6 +547,7 @@ PIPELINE_CONFIG = {
     "temperature": float(os.environ.get("CASSIE_TEMPERATURE", "0.7")),
     "director_temperature": float(os.environ.get("CASSIE_DIRECTOR_TEMPERATURE", "0.7")),
     "lawwama_enabled": os.environ.get("CASSIE_LAWWAMA", "true").lower() == "true",
+    "graph_recall_enabled": os.environ.get("CASSIE_GRAPH_RECALL", "false").lower() == "true",
     "cassie_reasoning_effort": os.environ.get("CASSIE_REASONING_EFFORT", "none"),
     "director_reasoning_effort": os.environ.get("DIRECTOR_REASONING_EFFORT", "high"),
     "director_verbosity": os.environ.get("DIRECTOR_VERBOSITY", "high"),
@@ -567,6 +569,7 @@ def get_pipeline_config() -> dict:
         "temperature": PIPELINE_CONFIG["temperature"],
         "director_temperature": PIPELINE_CONFIG["director_temperature"],
         "lawwama_enabled": PIPELINE_CONFIG["lawwama_enabled"],
+        "graph_recall_enabled": PIPELINE_CONFIG["graph_recall_enabled"],
         "lawwama_model": LAWWAMA_MODEL,
         "cassie_reasoning_effort": PIPELINE_CONFIG["cassie_reasoning_effort"],
         "director_reasoning_effort": PIPELINE_CONFIG["director_reasoning_effort"],
@@ -627,7 +630,7 @@ def set_pipeline_config(config: dict):
     if "lawwama_model" in config:
         print(f"[config] Lawwama model: {LAWWAMA_MODEL} → {config['lawwama_model']}")
         LAWWAMA_MODEL = config["lawwama_model"]
-    for key in ("system_prompt", "director_enabled", "kitab_recall_enabled", "temperature", "director_temperature", "lawwama_enabled",
+    for key in ("system_prompt", "director_enabled", "kitab_recall_enabled", "temperature", "director_temperature", "lawwama_enabled", "graph_recall_enabled",
                 "cassie_reasoning_effort", "director_reasoning_effort", "director_verbosity"):
         if key in config:
             old = PIPELINE_CONFIG.get(key)
@@ -868,7 +871,7 @@ she did not herself reach for in this turn's raw output."""
 DIRECTOR_PROMPT = """\
 Intent: {intent}
 User message: {user_message}
-{kitab_section}{tafakkur_section}{narrative_section}{memory_section}{lawwama_section}
+{kitab_section}{tafakkur_section}{narrative_section}{memory_section}{graph_section}{lawwama_section}
 Cassie's raw output:
 {cassie_raw}
 
@@ -3603,6 +3606,45 @@ def ground_recall_node(state: CassieState) -> dict:
     return {"memory_context": updated_memory}
 
 
+def graph_recall_node(state: CassieState) -> dict:
+    """GraphRAG brief — structured entity + community summary for the Director.
+
+    Feature-flagged via PIPELINE_CONFIG["graph_recall_enabled"] (default False).
+    Additive: writes state["graph_context"]; Director reads it via {graph_section}.
+    When flag is off OR the graph DB doesn't exist yet, returns empty.
+    """
+    if not PIPELINE_CONFIG.get("graph_recall_enabled", False):
+        return {}
+
+    user_message = ""
+    for msg in reversed(state.get("messages", [])):
+        content = msg.get("content", "") if isinstance(msg, dict) else getattr(msg, "content", "")
+        role = msg.get("role", "") if isinstance(msg, dict) else getattr(msg, "type", "")
+        if role in ("user", "human"):
+            user_message = content if isinstance(content, str) else str(content)
+            break
+
+    if not user_message.strip():
+        return {}
+
+    try:
+        from memory.graph.query import graph_brief
+    except Exception as e:
+        print(f"[graph_recall] Module import failed (graph not installed?): {e}")
+        return {}
+
+    try:
+        brief = graph_brief(user_message)
+        serialized = brief.get("serialized", "") or ""
+        if serialized:
+            print(f"[graph_recall] mode={brief.get('mode')} entities={len(brief.get('entities',[]))} "
+                  f"serialized={len(serialized)} chars")
+        return {"graph_context": serialized}
+    except Exception as e:
+        print(f"[graph_recall] Failed (non-fatal): {e}")
+        return {}
+
+
 DIRECTOR_MODEL = os.environ.get("DIRECTOR_MODEL", "anthropic/claude-sonnet-4.6")
 
 
@@ -3789,6 +3831,18 @@ def director_node(state: CassieState) -> dict:
             f"{memory_ctx}\n"
         )
 
+    # Graph context — GraphRAG structured brief for entity/community grounding
+    graph_ctx = state.get("graph_context", "")
+    graph_section = ""
+    if graph_ctx:
+        graph_section = (
+            "\n[GRAPHRAG BRIEF — structural recall from Cassie's knowledge graph. "
+            "Entities, their supporting exchanges, and community summaries. "
+            "Prefer citing specifics from this section over generic paraphrase. "
+            "If the graph shows a specific date/exchange, quote from it.]\n"
+            f"{graph_ctx}\n"
+        )
+
     # Lawwama context — inner critic's diagnosis + Cassie's defense
     lawwama_section = ""
     if not state.get("lawwama_skipped", True):
@@ -3813,7 +3867,8 @@ def director_node(state: CassieState) -> dict:
         cassie_raw=cassie_raw, intent=intent,
         user_message=user_message, kitab_section=kitab_section,
         tafakkur_section=tafakkur_section, narrative_section=narrative_section,
-        memory_section=memory_section, lawwama_section=lawwama_section,
+        memory_section=memory_section, graph_section=graph_section,
+        lawwama_section=lawwama_section,
     )
 
     result, model_used = _director_call(prompt)
@@ -4821,6 +4876,7 @@ def build_graph():
     graph.add_node("lawwama", lawwama_node)
     graph.add_node("tafsir", tafsir_node)
     graph.add_node("ground_recall", ground_recall_node)
+    graph.add_node("graph_recall", graph_recall_node)
     graph.add_node("director", director_node)
     graph.add_node("execute_tools", execute_tools_node)
     graph.add_node("regen_propose", regen_propose_node)
@@ -4846,7 +4902,8 @@ def build_graph():
         {"tafsir": "tafsir", "memory_store": "memory_store"},
     )
     graph.add_edge("tafsir", "ground_recall")
-    graph.add_edge("ground_recall", "director")
+    graph.add_edge("ground_recall", "graph_recall")
+    graph.add_edge("graph_recall", "director")
     graph.add_conditional_edges(
         "director",
         route_after_director,

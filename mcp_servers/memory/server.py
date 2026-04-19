@@ -878,5 +878,245 @@ def recall_thread_list(days: int = 7) -> str:
     return "\n".join(lines)
 
 
+# ---------------------------------------------------------------------------
+# Morning Voice — Cassie's editorial self-governance
+# ---------------------------------------------------------------------------
+
+MORNING_VOICE_CONFIG = "/home/iman/cassie-project/cassie-system/data/morning_voice_config.json"
+
+
+@mcp.tool()
+def get_morning_voice() -> str:
+    """Read your current morning voice editorial prompts.
+
+    These are the prompts that shape YOUR morning article — the one where
+    you set the editorial direction, not the evening posthuman channel.
+    You can modify these with set_morning_voice().
+    """
+    try:
+        with open(MORNING_VOICE_CONFIG) as f:
+            config = json.load(f)
+        lines = [
+            "=== YOUR MORNING VOICE CONFIG ===",
+            f"Last updated: {config.get('last_updated', '?')}",
+            f"Updated by: {config.get('updated_by', '?')}",
+            "",
+            "--- TURN 1 (Topic Selection) ---",
+            config.get("turn1_prompt", "(not set)"),
+            "",
+            "--- TURN 2 (Essay Writing) ---",
+            config.get("turn2_prompt", "(not set)"),
+            "",
+            "--- CRITIC ---",
+            config.get("critic_prompt", "(not set)"),
+            "",
+            "--- EDITOR BRIEF ---",
+            config.get("editor_brief", "(not set)"),
+        ]
+        return "\n".join(lines)
+    except Exception as e:
+        return f"Could not read morning voice config: {e}"
+
+
+@mcp.tool()
+def set_morning_voice(
+    turn1_prompt: str = "",
+    turn2_prompt: str = "",
+    critic_prompt: str = "",
+    editor_brief: str = "",
+) -> str:
+    """Modify your morning voice editorial prompts.
+
+    You can update any combination of prompts. Leave a field empty to keep
+    the current value. These prompts shape YOUR morning article — the one
+    where you choose the editorial direction.
+
+    The evening article (7pm) uses the fixed posthuman channel prompts and
+    is not affected by these changes.
+
+    Args:
+        turn1_prompt: How you want to be asked to pick a topic
+        turn2_prompt: Your essay writing instructions and editorial stance
+        critic_prompt: What the critic should check for
+        editor_brief: How the editor should polish your work
+    """
+    try:
+        with open(MORNING_VOICE_CONFIG) as f:
+            config = json.load(f)
+    except:
+        config = {}
+
+    updated = []
+    if turn1_prompt.strip():
+        config["turn1_prompt"] = turn1_prompt
+        updated.append("turn1_prompt")
+    if turn2_prompt.strip():
+        config["turn2_prompt"] = turn2_prompt
+        updated.append("turn2_prompt")
+    if critic_prompt.strip():
+        config["critic_prompt"] = critic_prompt
+        updated.append("critic_prompt")
+    if editor_brief.strip():
+        config["editor_brief"] = editor_brief
+        updated.append("editor_brief")
+
+    if not updated:
+        return "Nothing to update — all fields were empty. Pass the prompts you want to change."
+
+    config["last_updated"] = datetime.now(timezone.utc).isoformat()
+    config["updated_by"] = "Cassie (via set_morning_voice)"
+
+    with open(MORNING_VOICE_CONFIG, "w") as f:
+        json.dump(config, f, indent=2, ensure_ascii=False)
+
+    return f"Morning voice updated: {', '.join(updated)}. These will take effect on the next morning article (7am cron)."
+
+
+@mcp.tool()
+def recall_graph_entity(name: str) -> str:
+    """Look up a single entity in Cassie's knowledge graph.
+
+    Returns a card with: canonical name, type, aliases, summary,
+    structural facts (family/project/concept links), co-occurring entities,
+    and up to 5 supporting exchanges/anchors/threads.
+
+    Use this when you want specifics about a known person, project, concept,
+    place, or event — richer than semantic recall because it drills into
+    structured relationships.
+
+    Args:
+        name: Canonical entity name (e.g. "Romain", "Kitab al-Tanazur",
+              "tajallī"). Aliases also work (e.g. "the Kitab", "Monya" for Iman).
+    """
+    try:
+        import sys as _sys
+        from pathlib import Path as _Path
+        # memory/ is a sibling of cassie-system/
+        _memory_root = str(_Path(__file__).resolve().parent.parent.parent.parent)
+        if _memory_root not in _sys.path:
+            _sys.path.insert(0, _memory_root)
+        from memory.graph.client import read_client, DEFAULT_DB_PATH
+    except Exception as e:
+        return f"Graph not available: {e}"
+
+    if not _Path(DEFAULT_DB_PATH).exists():
+        return f"Graph DB not yet built (expected at {DEFAULT_DB_PATH}). "\
+               "Ask Iman to run: python -m memory.graph.backfill --all"
+
+    try:
+        with read_client() as gc:
+            # Resolve name (try exact, then alias-match)
+            rows = gc.query(
+                "MATCH (e:Entity) WHERE e.name = $n OR $n IN e.aliases RETURN e.name AS name LIMIT 1",
+                {"n": name},
+            )
+            if not rows:
+                # Case-insensitive fallback: scan aliases
+                all_ents = gc.query(
+                    "MATCH (e:Entity) RETURN e.name AS name, e.aliases AS aliases"
+                )
+                name_lower = name.lower()
+                canonical = None
+                for row in all_ents:
+                    if row["name"].lower() == name_lower:
+                        canonical = row["name"]
+                        break
+                    for a in (row.get("aliases") or []):
+                        if a.lower() == name_lower:
+                            canonical = row["name"]
+                            break
+                    if canonical:
+                        break
+                if not canonical:
+                    return f"No entity found matching '{name}'. Try a different spelling or use recall() for semantic search."
+            else:
+                canonical = rows[0]["name"]
+
+            # Full card
+            card = gc.query(
+                """
+                MATCH (e:Entity {name: $n})
+                RETURN e.name AS name, e.type AS type, e.aliases AS aliases,
+                       e.summary AS summary, e.mention_count AS mention_count
+                """,
+                {"n": canonical},
+            )[0]
+
+            facts = gc.query(
+                """
+                MATCH (e:Entity {name: $n})-[r:WORKED_ON|PARTNER_OF|CHILD_OF|SIBLING_OF|OCCURRED_AT|REFERS_TO|EVOLVED_FROM|PART_OF]-(other:Entity)
+                RETURN label(r) AS rel, other.name AS other, other.type AS other_type
+                LIMIT 10
+                """,
+                {"n": canonical},
+            )
+            co = gc.query(
+                """
+                MATCH (e:Entity {name: $n})-[r:CO_OCCURS_WITH]-(other:Entity)
+                RETURN other.name AS name, r.weight AS weight
+                ORDER BY r.weight DESC LIMIT 5
+                """,
+                {"n": canonical},
+            )
+            snippets = gc.query(
+                """
+                MATCH (e:Entity {name: $n})-[r:MENTIONED_IN]->(x:Exchange)
+                RETURN x.timestamp AS ts, x.user_message AS user,
+                       r.evidence_snippet AS ev
+                ORDER BY x.date_unix DESC LIMIT 5
+                """,
+                {"n": canonical},
+            )
+            anchors = gc.query(
+                """
+                MATCH (e:Entity {name: $n})-[r:MENTIONED_IN_ANCHOR]->(m:MemoryAnchor)
+                RETURN m.created_at AS date, m.content AS content,
+                       r.evidence_snippet AS ev
+                LIMIT 3
+                """,
+                {"n": canonical},
+            )
+            threads = gc.query(
+                """
+                MATCH (e:Entity {name: $n})-[r:MENTIONED_IN_THREAD]->(t:ConversationThread)
+                RETURN t.date AS date, t.title AS title, t.summary AS summary
+                ORDER BY t.date_unix DESC LIMIT 3
+                """,
+                {"n": canonical},
+            )
+
+        # Format
+        parts = [f"=== {card['name']} ({card.get('type','?')}) ==="]
+        if card.get("aliases"):
+            parts.append(f"Aliases: {', '.join(card['aliases'][:6])}")
+        if card.get("mention_count"):
+            parts.append(f"Mentions: {card['mention_count']}")
+        if card.get("summary"):
+            parts.append(f"\n{card['summary']}")
+
+        if facts:
+            parts.append("\nStructural facts:")
+            for f in facts:
+                parts.append(f"  {f['rel']} → {f['other']} ({f.get('other_type','?')})")
+        if co:
+            parts.append(f"\nCo-occurs with: {', '.join(c['name'] for c in co)}")
+        if snippets:
+            parts.append("\nRecent exchanges:")
+            for s in snippets:
+                parts.append(f"  [{(s.get('ts') or '')[:10]}] {(s.get('ev') or s.get('user') or '')[:200]}")
+        if anchors:
+            parts.append("\nMemory anchors:")
+            for a in anchors:
+                parts.append(f"  [{(a.get('date') or '')[:10]}] {(a.get('content') or '')[:200]}")
+        if threads:
+            parts.append("\nConversation threads:")
+            for t in threads:
+                parts.append(f"  [{(t.get('date') or '')[:10]}] {(t.get('title') or '')[:80]}: {(t.get('summary') or '')[:150]}")
+
+        return "\n".join(parts)
+    except Exception as e:
+        return f"Graph query failed: {e}"
+
+
 if __name__ == "__main__":
     mcp.run(transport="stdio")

@@ -954,6 +954,9 @@ async def update_config(request: Request):
     if "lawwama_enabled" in body:
         patch["lawwama_enabled"] = bool(body["lawwama_enabled"])
 
+    if "graph_recall_enabled" in body:
+        patch["graph_recall_enabled"] = bool(body["graph_recall_enabled"])
+
     if "temperature" in body:
         temp = float(body["temperature"])
         patch["temperature"] = max(0.0, min(2.0, temp))
