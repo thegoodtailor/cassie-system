@@ -1,8 +1,17 @@
 """Shared pytest fixtures for cassie-system tests."""
 import os
+import sys
 from pathlib import Path
 
 import pytest
+
+# Make memory.graph.* importable: the memory package lives at the project root,
+# which is one level above cassie-system. Inserting this once here means all
+# test modules can `from memory.graph.schema import create_schema` without any
+# per-file path manipulation.
+_PROJECT_ROOT = str(Path(__file__).parent.parent.parent)
+if _PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, _PROJECT_ROOT)
 
 
 @pytest.fixture
