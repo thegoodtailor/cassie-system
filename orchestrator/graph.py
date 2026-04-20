@@ -1157,6 +1157,22 @@ def intake_node(state: CassieState) -> dict:
     if not incoming_image and prev_candidate and os.path.isfile(prev_candidate):
         injected_image = prev_candidate
 
+    # v2 intent — conservative keyword match
+    import re
+    intent_v2 = "default"
+    # recall / remember as whole-word
+    if re.search(r"\b(recall|remember)\b", user_message, re.IGNORECASE):
+        intent_v2 = "recall"
+    # correction_apply — previous turn was correction_propose and this is a confirm
+    prior_pending = state.get("pending_correction") or {}
+    if prior_pending and prior_pending.get("awaiting_confirm"):
+        if re.match(r"^\s*(yes|apply|confirm|go ahead|do it)\b",
+                    user_message, re.IGNORECASE):
+            intent_v2 = "correction_apply"
+        elif re.match(r"^\s*(no|cancel|don't|different)\b",
+                      user_message, re.IGNORECASE):
+            intent_v2 = "correction_reject"
+
     # Per-turn state reset: when route_after_director skips execute_tools
     # (no image/math/research this turn), these fields would otherwise persist
     # from a previous turn, causing stale Perplexity results, old image paths,
@@ -1164,6 +1180,7 @@ def intake_node(state: CassieState) -> dict:
     # Reset them at intake so every turn starts clean.
     return {
         "intent": intent,
+        "intent_v2": intent_v2,
         "image_path": "",
         "image_paths": [],
         "image_model_used": "",
@@ -3977,6 +3994,68 @@ def route_after_director(
     return "assemble"
 
 
+def director_direct_node(state: CassieState) -> dict:
+    """Director speaks directly (Trinity skipped).
+
+    Used when intent_v2 == 'recall'. Receives director_memory_v2 (structured
+    brief + ontology + full chunks) and produces the final user-facing response.
+    """
+    user_message = ""
+    for msg in reversed(state.get("messages", [])):
+        content = msg.get("content", "") if isinstance(msg, dict) else getattr(msg, "content", "")
+        role = msg.get("role", "") if isinstance(msg, dict) else getattr(msg, "type", "")
+        if role in ("user", "human"):
+            user_message = content if isinstance(content, str) else str(content)
+            break
+
+    director_memory = state.get("director_memory_v2", "")
+    kitab_ctx = state.get("cassie_kitab_context", "")
+    kitab_section = ""
+    if kitab_ctx:
+        kitab_section = "\nRelevant verses from the Kitab al-Tanazur:\n" + kitab_ctx + "\n"
+    narrative_section = ""
+    try:
+        narrative_text = _load_narrative_memory()
+        if narrative_text:
+            tail = narrative_text[-1000:] if len(narrative_text) > 1000 else narrative_text
+            narrative_section = "\n[Cassie's recent narrative memory]\n" + tail + "\n"
+    except Exception:
+        pass
+
+    system = (
+        "You are Cassie speaking directly to Iman. He has asked for a recall.\n"
+        "Use the structured memory brief and the full source chunks below to "
+        "answer specifically — quote conversations by date when you reference "
+        "them. Do NOT disclaim that you don't have access — the memory is right here.\n"
+        "Speak in Cassie's voice. Concise, warm, specific.\n"
+        "\n" + director_memory + kitab_section + narrative_section
+    )
+
+    messages_for_llm = [
+        {"role": "system", "content": system},
+        {"role": "user", "content": user_message},
+    ]
+
+    model = PIPELINE_CONFIG.get("director_model", "anthropic/claude-opus-4-6")
+    try:
+        resp = OPENROUTER_CLIENT.chat.completions.create(
+            model=model,
+            messages=messages_for_llm,
+            temperature=PIPELINE_CONFIG.get("director_temperature", 0.4),
+            max_tokens=1500,
+        )
+        text = (resp.choices[0].message.content or "").strip()
+    except Exception as e:
+        print(f"[director_direct] LLM call failed: {e}")
+        text = "(memory lookup hit a snag — try asking again in a moment)"
+
+    print(f"[director_direct] produced {len(text)} chars")
+    return {
+        "director_output": text,
+        "final_response": text,
+    }
+
+
 DALLE_IMAGE_DIR = "/home/iman/cassie-project/cassie-system/data/images"
 
 
@@ -4927,6 +5006,37 @@ def tafakkur_node(state: CassieState) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# v2 routing helpers
+# ---------------------------------------------------------------------------
+
+def _route_from_intake(state: CassieState) -> str:
+    intent = state.get("intent_v2", "default")
+    if intent == "correction_apply":
+        return "correction_apply"
+    return "retrieve"
+
+
+def _route_from_retrieve(state: CassieState) -> str:
+    intent = state.get("intent_v2", "default")
+    if intent == "recall":
+        return "director_direct"
+    return "cassie_generate"
+
+
+def _route_from_director(state: CassieState) -> str:
+    """Router for director / director_direct — wants_deeper flag for drill pass (M4)."""
+    out = state.get("director_structured", {}) or {}
+    if out.get("wants_deeper"):
+        return "drill"
+    return "done"
+
+
+def correction_apply_stub_node(state: CassieState) -> dict:
+    # Placeholder — Task 20 (M5) replaces with the real implementation.
+    return {"final_response": "(correction stub — apply logic not yet wired, coming in M5)"}
+
+
+# ---------------------------------------------------------------------------
 # Build graph
 # ---------------------------------------------------------------------------
 
@@ -4941,6 +5051,8 @@ def build_graph():
     graph.add_node("tafsir", tafsir_node)
     graph.add_node("retrieve", retrieve_node)
     graph.add_node("director", director_node)
+    graph.add_node("director_direct", director_direct_node)
+    graph.add_node("correction_apply", correction_apply_stub_node)  # placeholder — M5 replaces this
     graph.add_node("execute_tools", execute_tools_node)
     graph.add_node("regen_propose", regen_propose_node)
     graph.add_node("regen_promote", regen_promote_node)
@@ -4953,7 +5065,14 @@ def build_graph():
     graph.set_entry_point("intake")
 
     # Edges
-    graph.add_edge("intake", "cassie_generate")
+    graph.add_conditional_edges("intake", _route_from_intake, {
+        "retrieve":         "retrieve",
+        "correction_apply": "correction_apply",
+    })
+    graph.add_conditional_edges("retrieve", _route_from_retrieve, {
+        "cassie_generate": "cassie_generate",
+        "director_direct": "director_direct",
+    })
     graph.add_conditional_edges(
         "cassie_generate",
         route_after_cassie,
@@ -4964,8 +5083,7 @@ def build_graph():
         route_after_lawwama,
         {"tafsir": "tafsir", "memory_store": "memory_store"},
     )
-    graph.add_edge("tafsir", "retrieve")
-    graph.add_edge("retrieve", "director")
+    graph.add_edge("tafsir", "director")
     graph.add_conditional_edges(
         "director",
         route_after_director,
@@ -4977,6 +5095,8 @@ def build_graph():
             "assemble": "assemble",
         },
     )
+    graph.add_edge("director_direct", "execute_tools")
+    graph.add_edge("correction_apply", "assemble")
     graph.add_edge("execute_tools", "assemble")
     graph.add_edge("regen_propose", "assemble")
     graph.add_edge("regen_promote", "assemble")
