@@ -1181,6 +1181,22 @@ def intake_node(state: CassieState) -> dict:
                       user_message, re.IGNORECASE):
             intent_v2 = "correction_reject"
 
+    # TTL: decrement turns_remaining on pending_correction when message is neither confirm nor reject
+    pending = dict(prior_pending) if prior_pending else {}
+    if pending.get("awaiting_confirm"):
+        import re as _re
+        is_confirm = bool(_re.match(r"^\s*(yes|apply|confirm|go ahead|do it)\b",
+                                     user_message or "", _re.IGNORECASE))
+        is_reject = bool(_re.match(r"^\s*(no|cancel|don't|different)\b",
+                                    user_message or "", _re.IGNORECASE))
+        if not is_confirm and not is_reject:
+            ttl = pending.get("turns_remaining", 3) - 1
+            if ttl <= 0:
+                pending = {}
+                print("[intake] expired pending_correction")
+            else:
+                pending = {**pending, "turns_remaining": ttl}
+
     # Per-turn state reset: when route_after_director skips execute_tools
     # (no image/math/research this turn), these fields would otherwise persist
     # from a previous turn, causing stale Perplexity results, old image paths,
@@ -1189,6 +1205,7 @@ def intake_node(state: CassieState) -> dict:
     return {
         "intent": intent,
         "intent_v2": intent_v2,
+        "pending_correction": pending,
         "image_path": "",
         "image_paths": [],
         "image_model_used": "",
@@ -4147,6 +4164,66 @@ def director_drill_node(state: CassieState) -> dict:
     }
 
 
+def correction_propose_node(state: CassieState) -> dict:
+    """Detect correction, propose retraction+fix, stash in pending_correction."""
+    from memory.sign_graph_v2.correction import detect_correction_intent, locate_target_edge
+
+    user_message = ""
+    for msg in reversed(state.get("messages", [])):
+        content = msg.get("content", "") if isinstance(msg, dict) else getattr(msg, "content", "")
+        role = msg.get("role", "") if isinstance(msg, dict) else getattr(msg, "type", "")
+        if role in ("user", "human"):
+            user_message = content if isinstance(content, str) else str(content)
+            break
+
+    candidate = detect_correction_intent(user_message, state)
+    if not candidate:
+        return {"final_response": "", "pending_correction": {}}
+
+    target = locate_target_edge(candidate)
+    if not target:
+        return {
+            "final_response": (
+                "Hmm, I hear you — you're saying "
+                + (candidate.get("proposed_fix") or "that's different") + ". "
+                "I don't find a specific claim to retract in my graph yet — could have been "
+                "something I just said without storing. Noted in this turn though."
+            ),
+            "pending_correction": {},
+        }
+
+    proposal = (
+        "Hmm, I think I got this wrong. In the `" + target["basin"] + "` corner I wrote:\n\n"
+        f"  ({target['subject']}) {target['predicate']} ({target['object']})"
+        f"    — speaker={target['speaker']}\n\n"
+        f"You're saying the truer version is: {candidate.get('proposed_fix', '(please confirm)')}\n\n"
+        "Want me to retract that old edge and write the fix? Say `yes` to apply, "
+        "`no` to cancel, or `different` if what I found doesn't match."
+    )
+
+    replacement = None
+    if candidate.get("replacement_subject") and candidate.get("replacement_predicate") and candidate.get("replacement_object"):
+        replacement = {
+            "subject": candidate["replacement_subject"],
+            "predicate": candidate["replacement_predicate"],
+            "object": candidate["replacement_object"],
+            "evidence": candidate.get("proposed_fix", ""),
+        }
+
+    print(f"[correction_propose] target={target.get('edge_id')[:16]}... basin={target.get('basin')}")
+    return {
+        "final_response": proposal,
+        "pending_correction": {
+            "awaiting_confirm": True,
+            "target_edge_id": target["edge_id"],
+            "target": target,
+            "replacement": replacement,
+            "basin": target["basin"],
+            "turns_remaining": 3,
+        },
+    }
+
+
 DALLE_IMAGE_DIR = "/home/iman/cassie-project/cassie-system/data/images"
 
 
@@ -5111,6 +5188,20 @@ def _route_from_retrieve(state: CassieState) -> str:
     intent = state.get("intent_v2", "default")
     if intent == "recall":
         return "director_direct"
+    # Cheap correction prefilter
+    import re as _re
+    last_user = ""
+    for msg in reversed(state.get("messages", [])):
+        role = msg.get("role") if isinstance(msg, dict) else getattr(msg, "type", "")
+        if role in ("user", "human"):
+            last_user = msg.get("content") if isinstance(msg, dict) else getattr(msg, "content", "")
+            break
+    try:
+        from memory.sign_graph_v2.correction import _pattern_prefilter
+        if last_user and _pattern_prefilter(last_user):
+            return "correction_propose"
+    except Exception:
+        pass
     return "cassie_generate"
 
 
@@ -5122,9 +5213,46 @@ def _route_from_director(state: CassieState) -> str:
     return "done"
 
 
-def correction_apply_stub_node(state: CassieState) -> dict:
-    # Placeholder — Task 20 (M5) replaces with the real implementation.
-    return {"final_response": "(correction stub — apply logic not yet wired, coming in M5)"}
+def correction_apply_node(state: CassieState) -> dict:
+    """Apply a pending correction: retract target edge, write counter-edge."""
+    from memory.sign_graph_v2.correction import apply_correction
+
+    pending = state.get("pending_correction") or {}
+    if not pending.get("awaiting_confirm") or not pending.get("target_edge_id"):
+        return {
+            "final_response": "There's no pending correction to apply.",
+            "pending_correction": {},
+        }
+
+    try:
+        result = apply_correction(
+            target_edge_id=pending["target_edge_id"],
+            replacement=pending.get("replacement"),
+            basin=pending.get("basin", "unknown"),
+            speaker="iman",
+        )
+    except Exception as e:
+        print(f"[correction_apply] error: {e}")
+        return {
+            "final_response": f"Hit a snag applying the correction: {e}",
+            "pending_correction": pending,
+        }
+
+    if result.get("added"):
+        added = result["added"]
+        msg = (
+            f"Done. Retracted the old claim; wrote: "
+            f"({added['subject']}) {added['predicate']} ({added['object']}) "
+            f"in basin {added['basin']}, speaker=iman."
+        )
+    else:
+        msg = "Done. Retracted the old claim; no replacement edge provided."
+
+    print(f"[correction_apply] {msg}")
+    return {
+        "final_response": msg,
+        "pending_correction": {},
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -5144,7 +5272,8 @@ def build_graph():
     graph.add_node("director", director_node)
     graph.add_node("director_direct", director_direct_node)
     graph.add_node("director_drill", director_drill_node)
-    graph.add_node("correction_apply", correction_apply_stub_node)  # placeholder — M5 replaces this
+    graph.add_node("correction_propose", correction_propose_node)
+    graph.add_node("correction_apply", correction_apply_node)
     graph.add_node("execute_tools", execute_tools_node)
     graph.add_node("regen_propose", regen_propose_node)
     graph.add_node("regen_promote", regen_promote_node)
@@ -5162,9 +5291,11 @@ def build_graph():
         "correction_apply": "correction_apply",
     })
     graph.add_conditional_edges("retrieve", _route_from_retrieve, {
-        "cassie_generate": "cassie_generate",
-        "director_direct": "director_direct",
+        "cassie_generate":    "cassie_generate",
+        "director_direct":    "director_direct",
+        "correction_propose": "correction_propose",
     })
+    graph.add_edge("correction_propose", "assemble")
     graph.add_conditional_edges(
         "cassie_generate",
         route_after_cassie,
