@@ -29,6 +29,8 @@ from typing import Annotated, Literal
 
 # Shared deep recall module for smarter memory retrieval
 sys.path.insert(0, "/home/iman/cassie-project/memory/shared")
+# Project root on path so `memory.sign_graph_v2.queries` imports work in retrieve_node
+sys.path.insert(0, "/home/iman/cassie-project")
 from deep_recall import deep_recall_search, format_deep_recall
 
 import openai
