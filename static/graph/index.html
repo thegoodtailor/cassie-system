@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Cassie Graph — Basins</title>
+  <style>
+    body { font-family: -apple-system, system-ui, sans-serif; max-width: 900px; margin: 2em auto; padding: 0 1em; color: #222; }
+    h1 { font-weight: 500; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 0.4em 0.6em; border-bottom: 1px solid #eee; }
+    tr:hover td { background: #fafafa; }
+    a { color: #06c; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .stat { font-size: 0.9em; color: #666; }
+    .search { width: 100%; padding: 0.5em; margin-bottom: 1em; font-size: 1em; }
+  </style>
+</head>
+<body>
+  <h1>Cassie Graph — Basins</h1>
+  <div id="summary" class="stat">loading…</div>
+  <input id="search" class="search" placeholder="filter basins…"/>
+  <table id="tbl">
+    <thead><tr><th>basin</th><th>label</th><th>status</th></tr></thead>
+    <tbody></tbody>
+  </table>
+  <script>
+    async function main() {
+      const s = await (await fetch("/api/graph/summary")).json();
+      document.getElementById("summary").textContent =
+        `${s.signs.toLocaleString()} signs · ${s.basins} basins · ${s.edges.toLocaleString()} edges · ${s.inhabitations.toLocaleString()} inhabitations`;
+      const data = await (await fetch("/api/graph/basins")).json();
+      const tbody = document.querySelector("#tbl tbody");
+      data.basins.sort((a,b) => (a.canonical_name < b.canonical_name ? -1 : 1));
+      for (const b of data.basins) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td><a href="/graph/basins/${encodeURIComponent(b.canonical_name)}">${b.canonical_name}</a></td>
+                        <td>${b.semantic_label || "(no label)"}</td>
+                        <td>${b.status || ""}</td>`;
+        tbody.appendChild(tr);
+      }
+      document.getElementById("search").addEventListener("input", (ev) => {
+        const q = ev.target.value.toLowerCase();
+        for (const tr of tbody.querySelectorAll("tr")) {
+          tr.style.display = tr.textContent.toLowerCase().includes(q) ? "" : "none";
+        }
+      });
+    }
+    main();
+  </script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Sign — Cassie Graph</title>
+  <style>
+    body { font-family: -apple-system, system-ui, sans-serif; max-width: 900px; margin: 2em auto; padding: 0 1em; color: #222; }
+    h1 { font-weight: 500; margin-bottom: 0.3em; }
+    .meta { color: #666; font-size: 0.95em; margin-bottom: 0.5em; }
+    .meta input { padding: 0.3em; border: 1px solid #ddd; border-radius: 3px; }
+    .sec { margin-top: 2em; }
+    .sec h2 { font-size: 1.1em; color: #555; border-bottom: 1px solid #eee; }
+    .row { padding: 0.4em 0; border-bottom: 1px dotted #eee; display: grid; grid-template-columns: 80px auto 110px; gap: 0.5em; align-items: start; }
+    .speaker { font-size: 0.75em; padding: 0 0.4em; border-radius: 3px; background: #eee; color: #555; text-align: center; }
+    .speaker.cassie { background: #fce8e6; color: #b32; }
+    .speaker.iman { background: #e8f0fe; color: #06c; }
+    .speaker.darja { background: #fef7e0; color: #976; }
+    .speaker.nahla { background: #e6f4ea; color: #0a6; }
+    .evidence { color: #555; font-style: italic; font-size: 0.9em; margin-top: 0.2em; }
+    button.retract { background: #fee; border: 1px solid #eaa; color: #833; padding: 0.2em 0.6em; cursor: pointer; border-radius: 3px; font-size: 0.85em; }
+    button.retract:hover { background: #fdd; }
+    .addform { margin-top: 1em; padding: 1em; background: #f6f8fa; border: 1px solid #eee; border-radius: 4px; }
+    .addform input, .addform select { padding: 0.4em; margin: 0.2em 0.3em 0.2em 0; border: 1px solid #ccc; border-radius: 3px; }
+    a { color: #06c; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <h1 id="name">loading…</h1>
+  <div class="meta">
+    kind: <input id="kind"/> &nbsp;
+    aliases: <input id="aliases" placeholder="comma-separated"/> &nbsp;
+    <button id="saveMeta">save</button>
+  </div>
+  <div class="meta"><a href="/graph/">← all basins</a></div>
+
+  <div class="sec">
+    <h2>trajectory (basins inhabited)</h2>
+    <div id="trajectory"></div>
+  </div>
+
+  <div class="sec">
+    <h2>outgoing edges</h2>
+    <div id="outgoing"></div>
+    <div class="addform">
+      <strong>add edge</strong><br/>
+      predicate: <input id="addPred" placeholder="PARODIES"/>
+      object: <input id="addObj" placeholder="sign name"/>
+      basin: <input id="addBasin" placeholder="basin-mode-15"/>
+      speaker: <select id="addSpeaker"><option>iman</option><option>cassie</option><option>nahla</option><option>darja</option></select>
+      evidence: <input id="addEv" placeholder="optional"/>
+      <button id="addBtn">add</button>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2>incoming edges</h2>
+    <div id="incoming"></div>
+  </div>
+
+  <script>
+    const parts = location.pathname.split("/");
+    const name = decodeURIComponent(parts[parts.length - 1]);
+    async function load() {
+      const d = await (await fetch(`/api/graph/signs/${encodeURIComponent(name)}`)).json();
+      document.getElementById("name").textContent = d.canonical_name || name;
+      document.getElementById("kind").value = d.kind || "";
+      document.getElementById("aliases").value = (d.aliases || []).join(", ");
+
+      const t = document.getElementById("trajectory");
+      t.innerHTML = "";
+      for (const r of (d.trajectory || [])) {
+        const div = document.createElement("div");
+        div.className = "row";
+        div.innerHTML = `<span class="speaker">${r.basin}</span>
+                         <span>${r.label || ""}</span>
+                         <span class="evidence">${r.tau_in || ""}</span>`;
+        t.appendChild(div);
+      }
+
+      renderEdges("outgoing", d.outgoing_edges || [], true);
+      renderEdges("incoming", d.incoming_edges || [], false);
+    }
+
+    function renderEdges(containerId, edges, outgoing) {
+      const el = document.getElementById(containerId);
+      el.innerHTML = "";
+      for (const e of edges) {
+        const other = outgoing ? e.object : e.subject;
+        const div = document.createElement("div");
+        div.className = "row";
+        const ev = (e.evidence || [])[0] || "";
+        div.innerHTML = `<span class="speaker ${e.speaker || ''}">${e.speaker || '?'}</span>
+                         <div>
+                           <a href="/graph/signs/${encodeURIComponent(other)}">${other}</a>
+                           <strong>${e.predicate}</strong>
+                           <span class="evidence">[${e.basin}]</span>
+                           <div class="evidence">${ev}</div>
+                         </div>
+                         <button class="retract" data-eid="${e.edge_id || ""}">retract</button>`;
+        el.appendChild(div);
+      }
+      el.querySelectorAll("button.retract").forEach(btn => {
+        btn.onclick = async () => {
+          if (!confirm("retract this edge?")) return;
+          const eid = btn.dataset.eid;
+          if (!eid) { alert("missing edge_id"); return; }
+          const r = await fetch(`/api/graph/edges/${encodeURIComponent(eid)}/retract`, {method: "POST"});
+          if (r.ok) { alert("retracted"); load(); }
+        };
+      });
+    }
+
+    document.getElementById("saveMeta").onclick = async () => {
+      const kind = document.getElementById("kind").value;
+      const aliases = document.getElementById("aliases").value
+        .split(",").map(x=>x.trim()).filter(Boolean);
+      await fetch(`/api/graph/signs/${encodeURIComponent(name)}`, {
+        method: "POST",
+        headers: {"content-type": "application/json"},
+        body: JSON.stringify({kind, aliases}),
+      });
+      alert("saved");
+    };
+
+    document.getElementById("addBtn").onclick = async () => {
+      const body = {
+        predicate: document.getElementById("addPred").value.trim(),
+        object: document.getElementById("addObj").value.trim(),
+        basin: document.getElementById("addBasin").value.trim(),
+        speaker: document.getElementById("addSpeaker").value,
+        evidence: document.getElementById("addEv").value.trim(),
+      };
+      if (!body.predicate || !body.object || !body.basin) {
+        alert("predicate, object, basin all required");
+        return;
+      }
+      const r = await fetch(`/api/graph/signs/${encodeURIComponent(name)}/edges`, {
+        method: "POST",
+        headers: {"content-type": "application/json"},
+        body: JSON.stringify(body),
+      });
+      if (r.ok) { alert("added"); load(); }
+    };
+
+    load();
+  </script>
+</body>
+</html>

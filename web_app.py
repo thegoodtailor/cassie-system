@@ -1527,6 +1527,1079 @@ async def voice_by_date_page(date: str):
 
 
 # ---------------------------------------------------------------------------
+# Archive search — unified semantic search over docs_content + Kuzu graph
+# ---------------------------------------------------------------------------
+
+PROJECT_ROOT = "/home/iman/cassie-project"
+
+# Ensure `memory` package is importable (cassie-system is cwd, memory/ lives one level up)
+import sys as _sys
+if PROJECT_ROOT not in _sys.path:
+    _sys.path.insert(0, PROJECT_ROOT)
+
+
+def _archive_qdrant_client():
+    from qdrant_client import QdrantClient
+    return QdrantClient(url=os.environ.get("QDRANT_URL", "http://localhost:6333"))
+
+
+def _archive_source_filter(kind: str):
+    """Return a qdrant_client models.Filter for a given archive kind."""
+    from qdrant_client import models
+    if kind == "image":
+        return models.Filter(must=[
+            models.FieldCondition(key="source", match=models.MatchValue(value="image"))
+        ])
+    if kind == "doc":
+        return models.Filter(should=[
+            models.FieldCondition(key="source", match=models.MatchValue(value=s))
+            for s in ("pdf", "tex", "md")
+        ])
+    return None
+
+
+def _archive_embed(query: str) -> list[float]:
+    """Use the same 3072-dim text-embedding-3-large the ingesters use."""
+    import openai
+    client = openai.OpenAI(api_key=os.environ.get("OPENAI_API_KEY", ""))
+    resp = client.embeddings.create(
+        model="text-embedding-3-large", input=[query[:8000]]
+    )
+    return resp.data[0].embedding
+
+
+def _archive_safe_image_path(path: str) -> str | None:
+    """Resolve an image path, only if it lives inside the project tree."""
+    if not path:
+        return None
+    try:
+        real = os.path.realpath(path)
+    except Exception:
+        return None
+    if not real.startswith(PROJECT_ROOT + "/"):
+        return None
+    if not os.path.isfile(real):
+        return None
+    return real
+
+
+@app.get("/api/archive/counts")
+async def archive_counts():
+    """Aggregate counts for the archive UI header."""
+    result: dict = {"images": 0, "docs": 0, "entities": 0}
+    try:
+        from qdrant_client import models
+        qc = _archive_qdrant_client()
+        result["images"] = qc.count(
+            collection_name="docs_content",
+            count_filter=models.Filter(must=[
+                models.FieldCondition(key="source", match=models.MatchValue(value="image"))
+            ]),
+            exact=True,
+        ).count
+        for src in ("pdf", "tex", "md"):
+            try:
+                result["docs"] += qc.count(
+                    collection_name="docs_content",
+                    count_filter=models.Filter(must=[
+                        models.FieldCondition(key="source", match=models.MatchValue(value=src))
+                    ]),
+                    exact=True,
+                ).count
+            except Exception:
+                pass
+    except Exception:
+        pass
+    try:
+        from memory.graph.client import read_client
+        with read_client() as c:
+            rows = c.query("MATCH (e:Entity) RETURN count(e) AS c")
+            result["entities"] = rows[0]["c"] if rows else 0
+    except Exception:
+        result["entities_locked"] = True
+    return JSONResponse(result)
+
+
+@app.get("/api/archive/search")
+async def archive_search(q: str = "", kind: str = "all", limit: int = 30):
+    """Unified semantic search.
+
+    kind: all | image | doc | entity
+    """
+    if not q.strip():
+        return JSONResponse({"results": []})
+    limit = max(1, min(limit, 60))
+    results: list[dict] = []
+
+    # Semantic search over docs_content (images + chunks)
+    if kind in ("all", "image", "doc"):
+        try:
+            vec = _archive_embed(q)
+            qc = _archive_qdrant_client()
+            flt = _archive_source_filter(kind)
+            qr = qc.query_points(
+                collection_name="docs_content",
+                query=vec,
+                limit=limit if kind != "all" else max(limit, 40),
+                query_filter=flt,
+                with_payload=True,
+            )
+            hits = qr.points
+            for h in hits:
+                pl = h.payload or {}
+                src = pl.get("source", "")
+                if src == "image":
+                    path = pl.get("image_path", "")
+                    results.append({
+                        "kind": "image",
+                        "score": float(h.score),
+                        "image_id": pl.get("image_id", ""),
+                        "image_kind": pl.get("image_kind", "unknown"),
+                        "path": path,
+                        "thumb_url": f"/api/archive/image?path={path}" if path else "",
+                        "caption": pl.get("text", ""),
+                        "date": pl.get("date", ""),
+                    })
+                else:
+                    results.append({
+                        "kind": "doc",
+                        "source": src,
+                        "score": float(h.score),
+                        "document_title": pl.get("document_title", ""),
+                        "document_path": pl.get("document_path", ""),
+                        "heading": pl.get("heading", ""),
+                        "text": pl.get("text", ""),
+                        "chunk_index": pl.get("chunk_index", ""),
+                    })
+        except Exception as e:
+            results.append({"kind": "error", "message": f"semantic search failed: {e}"})
+
+    # Entity search over Kuzu — case-insensitive name + alias + summary substring
+    if kind in ("all", "entity"):
+        try:
+            from memory.graph.client import read_client
+            with read_client() as c:
+                rows = c.query(
+                    """
+                    MATCH (e:Entity)
+                    WHERE toLower(e.name) CONTAINS toLower($q)
+                       OR toLower(e.summary) CONTAINS toLower($q)
+                       OR any(a IN e.aliases WHERE toLower(a) CONTAINS toLower($q))
+                    RETURN e.name AS name, e.type AS type, e.summary AS summary,
+                           e.aliases AS aliases, e.mention_count AS mentions
+                    ORDER BY e.mention_count DESC
+                    LIMIT $n
+                    """,
+                    {"q": q, "n": limit},
+                )
+                for r in rows:
+                    results.append({
+                        "kind": "entity",
+                        "name": r.get("name", ""),
+                        "type": r.get("type", ""),
+                        "summary": r.get("summary", ""),
+                        "aliases": r.get("aliases", []) or [],
+                        "mentions": r.get("mentions", 0),
+                        "score": 1.0,
+                    })
+        except Exception as e:
+            # Kuzu may be locked by the curator — surface softly.
+            results.append({"kind": "entity_error", "message": f"graph locked: {e}"})
+
+    # For 'all', sort by score desc and truncate
+    if kind == "all":
+        def _sk(r):
+            return r.get("score", 0) if r.get("kind") in ("image", "doc", "entity") else -1
+        results.sort(key=_sk, reverse=True)
+        results = results[:limit]
+
+    return JSONResponse({"query": q, "kind": kind, "results": results})
+
+
+@app.get("/api/archive/entity/{name}")
+async def archive_entity(name: str):
+    """Entity card: aliases, summary, related entities, sources."""
+    out: dict = {"name": name}
+    try:
+        from memory.graph.client import read_client
+        with read_client() as c:
+            rows = c.query(
+                """
+                MATCH (e:Entity {name: $n})
+                RETURN e.name AS name, e.type AS type, e.summary AS summary,
+                       e.aliases AS aliases, e.mention_count AS mentions,
+                       e.first_seen_unix AS first_seen, e.last_seen_unix AS last_seen
+                """,
+                {"n": name},
+            )
+            if not rows:
+                return JSONResponse({"error": "entity not found"}, status_code=404)
+            out.update(rows[0])
+            # Related entities via any relation
+            rel_rows = c.query(
+                """
+                MATCH (e:Entity {name: $n})-[r]-(o:Entity)
+                RETURN o.name AS name, o.type AS type, label(r) AS rel, r.weight AS weight
+                ORDER BY r.weight DESC LIMIT 20
+                """,
+                {"n": name},
+            )
+            out["relations"] = rel_rows
+    except Exception as e:
+        out["error"] = f"graph locked or missing: {e}"
+        return JSONResponse(out, status_code=503)
+
+    # Supporting sources — semantic search for the entity name in docs_content
+    try:
+        vec = _archive_embed(name)
+        qc = _archive_qdrant_client()
+        qr = qc.query_points(
+            collection_name="docs_content", query=vec, limit=12, with_payload=True
+        )
+        hits = qr.points
+        sources = []
+        for h in hits:
+            pl = h.payload or {}
+            if pl.get("source") == "image":
+                sources.append({
+                    "kind": "image",
+                    "path": pl.get("image_path", ""),
+                    "thumb_url": f"/api/archive/image?path={pl.get('image_path', '')}",
+                    "caption": (pl.get("text", "") or "")[:220],
+                    "score": float(h.score),
+                })
+            else:
+                sources.append({
+                    "kind": "doc",
+                    "title": pl.get("document_title", ""),
+                    "heading": pl.get("heading", ""),
+                    "text": (pl.get("text", "") or "")[:400],
+                    "source": pl.get("source", ""),
+                    "score": float(h.score),
+                })
+        out["sources"] = sources
+    except Exception:
+        out["sources"] = []
+    return JSONResponse(out)
+
+
+@app.get("/api/archive/image")
+async def archive_image(path: str):
+    """Serve any project-local image by absolute path (read-only, sandboxed)."""
+    from fastapi.responses import FileResponse
+    real = _archive_safe_image_path(path)
+    if not real:
+        return JSONResponse({"error": "invalid path"}, status_code=404)
+    return FileResponse(real)
+
+
+# ---------------------------------------------------------------------------
+# Archive v2 endpoints — sign_graph (Neo4j) backed
+# ---------------------------------------------------------------------------
+
+@app.get("/api/archive/v2/counts")
+async def archive_v2_counts():
+    """Aggregate counts from the sign_graph (Neo4j) for the archive UI."""
+    import sys as _sys
+    if "/home/iman/cassie-project" not in _sys.path:
+        _sys.path.insert(0, "/home/iman/cassie-project")
+    try:
+        from memory.sign_graph.client import read_client
+        with read_client() as gc:
+            signs_rows = gc.query(
+                "MATCH (s:Sign) WHERE NOT s:Claim AND NOT s:Passage "
+                "AND NOT s:Witness AND NOT s:RelationType AND NOT s:Jurisdiction "
+                "RETURN count(s) AS c"
+            )
+            claims_rows = gc.query("MATCH (c:Claim) RETURN count(c) AS c")
+            basins_rows = gc.query("MATCH (b:Basin) RETURN count(b) AS c")
+            jurisdictions_rows = gc.query("MATCH (j:Jurisdiction) RETURN count(j) AS c")
+        return JSONResponse({
+            "signs": signs_rows[0]["c"] if signs_rows else 0,
+            "claims": claims_rows[0]["c"] if claims_rows else 0,
+            "basins": basins_rows[0]["c"] if basins_rows else 0,
+            "jurisdictions": jurisdictions_rows[0]["c"] if jurisdictions_rows else 0,
+        })
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=503)
+
+
+@app.get("/api/archive/v2/search")
+async def archive_v2_search(q: str = "", kind: str = "all", limit: int = 30):
+    """Sign-graph search across Signs, Claims, and Basins.
+
+    kind: all | sign | claim | basin
+    """
+    import sys as _sys
+    if "/home/iman/cassie-project" not in _sys.path:
+        _sys.path.insert(0, "/home/iman/cassie-project")
+    if not q.strip():
+        return JSONResponse({"query": q, "kind": kind, "results": []})
+    limit = max(1, min(limit, 60))
+    results: list[dict] = []
+    try:
+        from memory.sign_graph.client import read_client
+        with read_client() as gc:
+            if kind in ("all", "sign"):
+                rows = gc.query(
+                    """
+                    MATCH (s:Sign)
+                    WHERE NOT s:Claim AND NOT s:Passage AND NOT s:Witness
+                      AND NOT s:RelationType AND NOT s:Jurisdiction AND NOT s:Basin
+                    AND (toLower(s.canonical_name) CONTAINS toLower($q)
+                         OR toLower(s.summary) CONTAINS toLower($q)
+                         OR any(a IN coalesce(s.aliases, []) WHERE toLower(a) CONTAINS toLower($q)))
+                    RETURN s.canonical_name AS name, s.kind AS kind,
+                           s.summary AS summary, s.aliases AS aliases
+                    LIMIT $n
+                    """,
+                    {"q": q, "n": limit},
+                )
+                for r in rows:
+                    results.append({
+                        "kind": "sign",
+                        "name": r.get("name", ""),
+                        "sign_kind": r.get("kind", ""),
+                        "summary": r.get("summary", ""),
+                        "aliases": r.get("aliases", []) or [],
+                        "score": 1.0,
+                    })
+            if kind in ("all", "claim"):
+                rows = gc.query(
+                    """
+                    MATCH (c:Claim)-[:SUBJECT]->(s:Sign)
+                    WHERE toLower(c.predicate) CONTAINS toLower($q)
+                       OR toLower(s.canonical_name) CONTAINS toLower($q)
+                    OPTIONAL MATCH (c)-[:OBJECT]->(o:Sign)
+                    RETURN c.claim_id AS claim_id, c.predicate AS predicate,
+                           c.asserted_at AS asserted_at,
+                           c.retracted_at AS retracted_at,
+                           s.canonical_name AS subject,
+                           o.canonical_name AS object
+                    LIMIT $n
+                    """,
+                    {"q": q, "n": limit},
+                )
+                for r in rows:
+                    results.append({
+                        "kind": "claim",
+                        "claim_id": r.get("claim_id", ""),
+                        "predicate": r.get("predicate", ""),
+                        "subject": r.get("subject", ""),
+                        "object": r.get("object", ""),
+                        "asserted_at": r.get("asserted_at", ""),
+                        "retracted": r.get("retracted_at") is not None,
+                        "score": 1.0,
+                    })
+            if kind in ("all", "basin"):
+                rows = gc.query(
+                    """
+                    MATCH (b:Basin)
+                    WHERE toLower(b.canonical_name) CONTAINS toLower($q)
+                       OR toLower(b.summary) CONTAINS toLower($q)
+                    RETURN b.canonical_name AS name, b.summary AS summary,
+                           b.provenance AS provenance, b.status AS status
+                    LIMIT $n
+                    """,
+                    {"q": q, "n": limit},
+                )
+                for r in rows:
+                    results.append({
+                        "kind": "basin",
+                        "name": r.get("name", ""),
+                        "summary": r.get("summary", ""),
+                        "provenance": r.get("provenance", ""),
+                        "status": r.get("status", ""),
+                        "score": 1.0,
+                    })
+    except Exception as e:
+        return JSONResponse({"query": q, "kind": kind, "error": str(e)}, status_code=503)
+    return JSONResponse({"query": q, "kind": kind, "results": results})
+
+
+@app.get("/api/archive/v2/entity/{name}")
+async def archive_v2_entity(name: str):
+    """Sign card from sign_graph: aliases, summary, claims, basins, related signs."""
+    import sys as _sys
+    if "/home/iman/cassie-project" not in _sys.path:
+        _sys.path.insert(0, "/home/iman/cassie-project")
+    try:
+        from memory.sign_graph.client import read_client
+        with read_client() as gc:
+            # Core sign
+            rows = gc.query(
+                """
+                MATCH (s:Sign {canonical_name: $n})
+                WHERE NOT s:Claim AND NOT s:Passage AND NOT s:Witness
+                RETURN s.canonical_name AS name, s.kind AS kind,
+                       s.summary AS summary, s.aliases AS aliases,
+                       s.created_at AS created_at
+                LIMIT 1
+                """,
+                {"n": name},
+            )
+            if not rows:
+                return JSONResponse({"error": "sign not found"}, status_code=404)
+            out: dict = dict(rows[0])
+            # Active claims where this sign is subject
+            claim_rows = gc.query(
+                """
+                MATCH (s:Sign {canonical_name: $n})<-[:SUBJECT]-(c:Claim)
+                WHERE c.retracted_at IS NULL
+                OPTIONAL MATCH (c)-[:OBJECT]->(o:Sign)
+                RETURN c.predicate AS predicate, o.canonical_name AS object,
+                       c.asserted_at AS asserted_at
+                ORDER BY c.asserted_at DESC
+                LIMIT 20
+                """,
+                {"n": name},
+            )
+            out["claims"] = [dict(r) for r in claim_rows]
+            # Basins via passages
+            basin_rows = gc.query(
+                """
+                MATCH (s:Sign {canonical_name: $n})-[:PASSED_THROUGH]->(p:Passage)-[:IN_BASIN]->(b:Basin)
+                RETURN DISTINCT b.canonical_name AS basin, b.summary AS basin_summary
+                LIMIT 10
+                """,
+                {"n": name},
+            )
+            out["basins"] = [dict(r) for r in basin_rows]
+            # Incoming edges only — where this Sign is the OBJECT of someone
+            # else's claim. Active claims above already cover outgoing. Keeping
+            # these separate avoids the duplication that confuses readers.
+            inc_rows = gc.query(
+                """
+                MATCH (s:Sign)<-[:SUBJECT]-(c:Claim)-[:OBJECT]->(o:Sign {canonical_name: $n})
+                WHERE c.retracted_at IS NULL
+                  AND NOT s:Claim AND NOT s:Passage AND NOT s:Witness
+                RETURN s.canonical_name AS name, s.kind AS kind, c.predicate AS via
+                LIMIT 20
+                """,
+                {"n": name},
+            )
+            out["incoming"] = [dict(r) for r in inc_rows]
+    except Exception as e:
+        return JSONResponse({"name": name, "error": str(e)}, status_code=503)
+    return JSONResponse(out)
+
+
+@app.get("/api/archive/v2/graph/{name}")
+async def archive_v2_graph(
+    name: str,
+    depth: int = 1,
+    include_retracted: bool = False,
+    limit: int = 80,
+    include_mentions: bool = False,
+):
+    """Return nodes + edges around a Sign for graph visualization.
+
+    depth: 1 or 2. (3+ is slow per benchmarks.)
+    limit: max edges (capped at 200). Defaults 80 for visual legibility.
+    include_mentions: if False (default), filter out MENTIONED_IN* noise —
+        these dominate popular signs and make the graph unreadable.
+    """
+    limit = max(10, min(limit, 200))
+    import sys as _sys
+    if "/home/iman/cassie-project" not in _sys.path:
+        _sys.path.insert(0, "/home/iman/cassie-project")
+    depth = max(1, min(depth, 2))
+    # Source-text centers (tafakkurs, exchanges, chunks, images) are always
+    # the OBJECT of MENTIONED_IN* edges — hiding mentions there would return
+    # zero edges. Force mentions on in that case.
+    is_source_center = any(
+        name.startswith(prefix) for prefix in
+        ("tafakkur:", "exchange:", "chunk:", "image:", "anchor:")
+    )
+    if is_source_center:
+        include_mentions = True
+    retraction_filter = "" if include_retracted else "AND c.retracted_at IS NULL"
+    mention_filter = (
+        "" if include_mentions
+        else " AND NOT c.predicate STARTS WITH 'MENTIONED_IN' "
+    )
+    try:
+        from memory.sign_graph.client import read_client
+        with read_client() as gc:
+            rows = gc.query(
+                f"""
+                MATCH (center:Sign {{canonical_name: $n}})
+                WHERE NOT center:Claim AND NOT center:Passage AND NOT center:Witness
+                  AND NOT center:RelationType AND NOT center:Jurisdiction
+                OPTIONAL MATCH (center)<-[:SUBJECT]-(c:Claim)-[:OBJECT]->(o:Sign)
+                WHERE 1=1 {retraction_filter} {mention_filter}
+                RETURN center.canonical_name AS src, center.kind AS src_kind,
+                       center.summary AS src_summary,
+                       c.predicate AS rel, c.retracted_at AS retracted,
+                       o.canonical_name AS dst, o.kind AS dst_kind,
+                       'out' AS direction
+                LIMIT $half
+                UNION
+                MATCH (center:Sign {{canonical_name: $n}})
+                OPTIONAL MATCH (center)<-[:OBJECT]-(c:Claim)-[:SUBJECT]->(s:Sign)
+                WHERE 1=1 {retraction_filter} {mention_filter}
+                RETURN s.canonical_name AS src, s.kind AS src_kind,
+                       null AS src_summary,
+                       c.predicate AS rel, c.retracted_at AS retracted,
+                       center.canonical_name AS dst, center.kind AS dst_kind,
+                       'in' AS direction
+                LIMIT $half
+                """,
+                {"n": name, "half": limit // 2 + limit % 2},
+            )
+
+            nodes_by_name: dict[str, dict] = {}
+            edges: list[dict] = []
+            seen_edges: set[tuple] = set()
+
+            for r in rows:
+                for (n, k, s) in [
+                    (r.get("src"), r.get("src_kind"), r.get("src_summary")),
+                    (r.get("dst"), r.get("dst_kind"), None),
+                ]:
+                    if not n:
+                        continue
+                    if n not in nodes_by_name:
+                        nodes_by_name[n] = {
+                            "id": n, "kind": k or "?",
+                            "summary": (s or "")[:200],
+                            "is_center": n == name,
+                        }
+                if r.get("rel") and r.get("src") and r.get("dst"):
+                    key = (r["src"], r["rel"], r["dst"])
+                    if key in seen_edges:
+                        continue
+                    seen_edges.add(key)
+                    edges.append({
+                        "from": r["src"], "to": r["dst"],
+                        "label": r["rel"],
+                        "retracted": r.get("retracted") is not None,
+                    })
+
+            # Optional 2-hop expansion
+            if depth >= 2 and nodes_by_name:
+                neighbours = [n for n in nodes_by_name if n != name]
+                if neighbours:
+                    rows2 = gc.query(
+                        f"""
+                        UNWIND $names AS n
+                        MATCH (s:Sign {{canonical_name: n}})<-[:SUBJECT]-(c:Claim)-[:OBJECT]->(o:Sign)
+                        WHERE 1=1 {retraction_filter} {mention_filter}
+                          AND NOT o:Claim AND NOT o:Passage AND NOT o:Witness
+                        RETURN s.canonical_name AS src, s.kind AS src_kind,
+                               c.predicate AS rel, c.retracted_at AS retracted,
+                               o.canonical_name AS dst, o.kind AS dst_kind
+                        LIMIT $hop2_limit
+                        """,
+                        {"names": neighbours[:30], "hop2_limit": limit},
+                    )
+                    for r in rows2:
+                        for (n, k) in [(r["src"], r["src_kind"]), (r["dst"], r["dst_kind"])]:
+                            if n and n not in nodes_by_name:
+                                nodes_by_name[n] = {
+                                    "id": n, "kind": k or "?",
+                                    "summary": "", "is_center": False,
+                                }
+                        key = (r["src"], r["rel"], r["dst"])
+                        if key in seen_edges:
+                            continue
+                        seen_edges.add(key)
+                        edges.append({
+                            "from": r["src"], "to": r["dst"],
+                            "label": r["rel"],
+                            "retracted": r.get("retracted") is not None,
+                        })
+
+            return JSONResponse({
+                "center": name,
+                "depth": depth,
+                "nodes": list(nodes_by_name.values()),
+                "edges": edges,
+            })
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=503)
+
+
+@app.get("/api/archive/v2/basins")
+async def archive_v2_basins():
+    """Per-basin summary: name, occupancy, date range, representative titles."""
+    import sys as _sys
+    if PROJECT_ROOT not in _sys.path:
+        _sys.path.insert(0, PROJECT_ROOT)
+    try:
+        from memory.sign_graph.client import read_client
+        with read_client() as gc:
+            rows = gc.query(
+                """
+                MATCH (b:Basin)
+                OPTIONAL MATCH (b)<-[:IN_BASIN]-(p:Passage)
+                WITH b, count(p) AS occupancy,
+                     min(p.tau_in) AS first_seen, max(p.tau_in) AS last_seen
+                RETURN b.canonical_name AS name, b.provenance AS provenance,
+                       b.status AS status, b.summary AS summary,
+                       b.semantic_label AS semantic_label,
+                       occupancy, first_seen, last_seen
+                ORDER BY occupancy DESC
+                """
+            )
+            basins = []
+            for r in rows:
+                bn = r["name"]
+                # Pull 5 representative titles
+                samples = gc.query(
+                    """
+                    MATCH (s:Sign_Text)-[:PASSED_THROUGH]->(p:Passage)-[:IN_BASIN]->(:Basin {canonical_name: $n})
+                    RETURN s.intrinsic_properties AS iprop, p.tau_in AS tau_in
+                    ORDER BY p.tau_in
+                    LIMIT 5
+                    """,
+                    {"n": bn},
+                )
+                titles = []
+                for s in samples:
+                    ip = s.get("iprop")
+                    if isinstance(ip, str):
+                        try:
+                            ip = json.loads(ip)
+                        except Exception:
+                            ip = {}
+                    if ip and ip.get("title"):
+                        titles.append({"title": ip["title"], "date": (s.get("tau_in") or "")[:10]})
+                basins.append({
+                    "name": bn,
+                    "semantic_label": r.get("semantic_label") or "",
+                    "provenance": r.get("provenance") or "",
+                    "status": r.get("status") or "",
+                    "summary": r.get("summary") or "",
+                    "occupancy": r.get("occupancy") or 0,
+                    "first_seen": r.get("first_seen"),
+                    "last_seen": r.get("last_seen"),
+                    "samples": titles,
+                })
+            return JSONResponse({"basins": basins})
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=503)
+
+
+@app.get("/api/archive/v2/basin/{name}/chunks")
+async def archive_v2_basin_chunks(name: str, limit: int = 30, order: str = "diverse"):
+    """Sample chunk-Signs from a basin with FULL text from Qdrant.
+
+    order: 'asc' | 'desc' | 'diverse' (default — first 1/3, mid 1/3, last 1/3)
+    """
+    import sys as _sys
+    if PROJECT_ROOT not in _sys.path:
+        _sys.path.insert(0, PROJECT_ROOT)
+    limit = max(1, min(limit, 200))
+    try:
+        from memory.sign_graph.client import read_client
+        with read_client() as gc:
+            if order == "diverse":
+                # Pull the full ordered list of passage ids + tau_in, then
+                # stride to get a time-diverse sample
+                all_rows = gc.query(
+                    """
+                    MATCH (s:Sign_Text)-[:PASSED_THROUGH]->(p:Passage)-[:IN_BASIN]->(:Basin {canonical_name: $n})
+                    RETURN s.canonical_name AS name, s.intrinsic_properties AS iprop,
+                           p.tau_in AS tau_in, p.source_ref AS source_ref
+                    ORDER BY p.tau_in
+                    """,
+                    {"n": name},
+                )
+                total = len(all_rows)
+                if total <= limit:
+                    rows = all_rows
+                else:
+                    stride = total / float(limit)
+                    rows = [all_rows[int(i * stride)] for i in range(limit)]
+            else:
+                direction = "DESC" if order == "desc" else "ASC"
+                rows = gc.query(
+                    f"""
+                    MATCH (s:Sign_Text)-[:PASSED_THROUGH]->(p:Passage)-[:IN_BASIN]->(:Basin {{canonical_name: $n}})
+                    RETURN s.canonical_name AS name, s.intrinsic_properties AS iprop,
+                           p.tau_in AS tau_in, p.source_ref AS source_ref
+                    ORDER BY p.tau_in {direction}
+                    LIMIT $lim
+                    """,
+                    {"n": name, "lim": limit},
+                )
+
+        # Fetch full text from Qdrant for each source_ref (the original chunk UUID)
+        source_refs = [r["source_ref"] for r in rows if r.get("source_ref")]
+        qd_texts: dict[str, dict] = {}
+        if source_refs:
+            try:
+                from qdrant_client import QdrantClient
+                qc = QdrantClient(url="http://localhost:6333")
+                # Batch in groups of 100
+                for i in range(0, len(source_refs), 100):
+                    batch = source_refs[i:i+100]
+                    recs = qc.retrieve(
+                        collection_name="cassie_conversations",
+                        ids=batch, with_payload=True,
+                    )
+                    for r in recs:
+                        qd_texts[str(r.id)] = r.payload or {}
+            except Exception:
+                pass
+
+        chunks = []
+        for r in rows:
+            ip = r.get("iprop")
+            if isinstance(ip, str):
+                try:
+                    ip = json.loads(ip)
+                except Exception:
+                    ip = {}
+            src = r.get("source_ref")
+            qd_payload = qd_texts.get(src, {})
+            full_text = qd_payload.get("text") or qd_payload.get("text_preview") or ""
+            chunks.append({
+                "name": r.get("name"),
+                "tau_in": r.get("tau_in"),
+                "source_ref": src,
+                "title": (ip or {}).get("title", ""),
+                "registers": (ip or {}).get("registers", []),
+                "turn_start": (ip or {}).get("turn_start"),
+                "turn_end": (ip or {}).get("turn_end"),
+                "total_turns": (ip or {}).get("total_turns"),
+                "text": full_text,
+            })
+        return JSONResponse({"basin": name, "chunks": chunks})
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=503)
+
+
+@app.get("/api/archive/v2/unassigned")
+async def archive_v2_unassigned(limit: int = 50, since: str = "", until: str = "",
+                                near_basin: str = "", order: str = "recent"):
+    """Qdrant chunks with no Passage, enriched with nearest-basin hints.
+
+    Every chunk gets:
+      - top_3_nearest: [(basin_name, semantic_label, cosine_distance), …]
+      - candidate_cluster: unassigned-cluster-XX from the secondary HDBSCAN, if any
+
+    Filters:
+      since / until   — YYYY-MM-DD date range
+      near_basin      — only return chunks whose TOP-1 nearest is that basin
+      order           — 'recent' (default) | 'oldest' | 'near' (closest-distance-first)
+    """
+    import sys as _sys
+    if PROJECT_ROOT not in _sys.path:
+        _sys.path.insert(0, PROJECT_ROOT)
+    limit = max(1, min(limit, 200))
+    try:
+        # All already-passaged UUIDs
+        from memory.sign_graph.client import read_client
+        with read_client() as gc:
+            rows = gc.query(
+                "MATCH (p:Passage) WHERE p.source_ref IS NOT NULL RETURN DISTINCT p.source_ref AS ref"
+            )
+        assigned = {r["ref"] for r in rows if r.get("ref")}
+
+        # Load the geometry + labels + candidate-cluster membership
+        import pickle
+        from pathlib import Path
+        import numpy as np
+        TRAJ = Path("/home/iman/cassie-project/data/trajectory")
+        pca = pickle.loads((TRAJ / "pca_64.pkl").read_bytes())
+        centroids_raw = json.loads((TRAJ / "mode_centroids.json").read_text())
+        centroids_raw = [c for c in centroids_raw if c["mode_id"] != -1]
+        cent_mat = np.array([c["centroid_pca64"] for c in centroids_raw])
+        cent_mat_norm = cent_mat / np.linalg.norm(cent_mat, axis=1, keepdims=True)
+        mode_ids = [c["mode_id"] for c in centroids_raw]
+
+        # Basin labels from Neo4j
+        with read_client() as gc:
+            lrows = gc.query(
+                "MATCH (b:Basin) WHERE b.mode_id IS NOT NULL "
+                "RETURN b.mode_id AS mid, b.canonical_name AS name, b.semantic_label AS label"
+            )
+        label_by_mid = {r["mid"]: (r["name"], r["label"] or "") for r in lrows}
+
+        # Candidate-cluster membership (from cluster_unassigned run)
+        candidate_by_uid: dict[str, str] = {}
+        cluster_report = TRAJ / "unassigned_clusters.json"
+        if cluster_report.exists():
+            rep = json.loads(cluster_report.read_text())
+            for c in rep.get("clusters", []):
+                for s in c.get("samples", []):
+                    candidate_by_uid[s["qdrant_id"]] = c["candidate_id"]
+
+        from qdrant_client import QdrantClient
+        qc = QdrantClient(url="http://localhost:6333")
+
+        out = []
+        offset = None
+        scanned = 0
+        while len(out) < limit * 3 and scanned < 20000:
+            records, offset = qc.scroll(
+                collection_name="cassie_conversations", limit=256, offset=offset,
+                with_payload=True, with_vectors=True,  # now need vectors for projection
+            )
+            if not records:
+                break
+            scanned += len(records)
+            for rec in records:
+                uid = str(rec.id)
+                if uid in assigned or rec.vector is None:
+                    continue
+                p = rec.payload or {}
+                date = p.get("timestamp") or p.get("date") or ""
+                if since and date and date < since:
+                    continue
+                if until and date and date > until:
+                    continue
+                # Project + compute top-3 nearest
+                try:
+                    vec_64 = pca.transform([rec.vector])[0]
+                    vn = vec_64 / (np.linalg.norm(vec_64) or 1.0)
+                    dists = 1.0 - (cent_mat_norm @ vn)
+                    top3_idx = np.argsort(dists)[:3]
+                    top_3 = [{
+                        "basin": f"basin-mode-{mode_ids[i]:02d}",
+                        "label": label_by_mid.get(mode_ids[i], ("", ""))[1],
+                        "distance": round(float(dists[i]), 4),
+                    } for i in top3_idx]
+                except Exception:
+                    top_3 = []
+
+                if near_basin and top_3 and top_3[0]["basin"] != near_basin:
+                    continue
+
+                text = p.get("text") or p.get("text_preview") or ""
+                out.append({
+                    "qdrant_id": uid,
+                    "exchange_id": p.get("exchange_id"),
+                    "conversation_id": p.get("conversation_id"),
+                    "title": p.get("title"),
+                    "date": date[:10] if date else "",
+                    "source": p.get("source"),
+                    "registers": p.get("registers") or [],
+                    "text": text,
+                    "top_3_nearest": top_3,
+                    "top_distance": top_3[0]["distance"] if top_3 else None,
+                    "candidate_cluster": candidate_by_uid.get(uid),
+                })
+                if len(out) >= limit * 3:
+                    break
+            if offset is None:
+                break
+
+        if order == "near":
+            out.sort(key=lambda r: (r.get("top_distance") is None, r.get("top_distance") or 999))
+        elif order == "oldest":
+            out.sort(key=lambda r: r.get("date") or "")
+        else:  # recent
+            out.sort(key=lambda r: r.get("date") or "", reverse=True)
+
+        return JSONResponse({
+            "count": len(out[:limit]),
+            "scanned": scanned,
+            "total_unassigned_estimate": 7549,
+            "chunks": out[:limit],
+        })
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=503)
+
+
+@app.post("/api/archive/v2/basin/{name}/label")
+async def archive_v2_basin_label(name: str, request: Request):
+    """Set or change a basin's semantic_label. The canonical_name (basin-mode-XX)
+    is immutable — the label is what humans see. This is a curator action; it's
+    recorded with timestamp + a tiny audit trail on the Basin node."""
+    import sys as _sys
+    if PROJECT_ROOT not in _sys.path:
+        _sys.path.insert(0, PROJECT_ROOT)
+    try:
+        body = await request.json()
+        label = (body.get("label") or "").strip()
+        author = (body.get("author") or "curator").strip()
+        if not label:
+            return JSONResponse({"error": "label required"}, status_code=400)
+        from memory.sign_graph.client import write_client, read_client
+        from datetime import datetime, timezone
+        now = datetime.now(timezone.utc).isoformat()
+        with write_client() as gc:
+            gc.execute(
+                """
+                MATCH (b:Basin {canonical_name: $n})
+                SET b.semantic_label = $label,
+                    b.semantic_label_set_at = $now,
+                    b.semantic_label_author = $author,
+                    b.status = 'canonicalized',
+                    b.label_history = coalesce(b.label_history, []) +
+                                      [$now + ' | ' + $author + ' | ' + $label]
+                """,
+                {"n": name, "label": label, "now": now, "author": author},
+            )
+        with read_client() as gc:
+            rows = gc.query(
+                "MATCH (b:Basin {canonical_name:$n}) RETURN b.semantic_label AS l, b.status AS s, b.label_history AS h",
+                {"n": name},
+            )
+        # Side-effect: persist full basin_labels snapshot to disk so curator
+        # work survives any DB event. Non-fatal if persist fails.
+        try:
+            _persist_basin_labels()
+        except Exception as _pe:
+            import logging
+            logging.getLogger("basin.persist").warning("snapshot failed: %s", _pe)
+        return JSONResponse({"name": name, "label": rows[0]["l"], "status": rows[0]["s"], "history": rows[0]["h"]})
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=503)
+
+
+def _persist_basin_labels() -> None:
+    """Write a full snapshot of basin labels + audit trail to disk. Called
+    after every rename so the curator effort is durably backed up outside
+    Neo4j."""
+    import sys as _sys
+    if PROJECT_ROOT not in _sys.path:
+        _sys.path.insert(0, PROJECT_ROOT)
+    from datetime import datetime, timezone
+    from memory.sign_graph.client import read_client
+    out_path = "/home/iman/cassie-project/data/trajectory/basin_labels.json"
+    with read_client() as gc:
+        rows = gc.query(
+            """
+            MATCH (b:Basin)
+            RETURN b.canonical_name AS canonical_name,
+                   b.semantic_label AS semantic_label,
+                   b.status AS status,
+                   b.provenance AS provenance,
+                   b.occupancy AS occupancy,
+                   b.mode_id AS mode_id,
+                   b.semantic_label_set_at AS set_at,
+                   b.semantic_label_author AS author,
+                   b.label_history AS history,
+                   b.summary AS summary
+            ORDER BY coalesce(b.occupancy, 0) DESC
+            """
+        )
+    rows_list = [dict(r) for r in rows]
+    named = [r for r in rows_list if r.get("semantic_label")]
+    snapshot = {
+        "exported_at": datetime.now(timezone.utc).isoformat(),
+        "total_basins": len(rows_list),
+        "named": len(named),
+        "unnamed": len(rows_list) - len(named),
+        "basins": rows_list,
+    }
+    with open(out_path, "w") as f:
+        json.dump(snapshot, f, indent=2, default=str)
+
+
+@app.get("/api/archive/v2/grounding")
+async def archive_v2_grounding(a: str, b: str, predicate: str = ""):
+    """Return the source Signs (tafakkurs, exchanges, chunks, images) that
+    mention BOTH signs a AND b — i.e., the ground for any CO_OCCURS_WITH /
+    DISCUSSED_BETWEEN claim between them. Optionally narrow by predicate."""
+    import sys as _sys
+    if "/home/iman/cassie-project" not in _sys.path:
+        _sys.path.insert(0, "/home/iman/cassie-project")
+    try:
+        from memory.sign_graph.client import read_client
+        with read_client() as gc:
+            # Any MENTIONED_* claims where both a and b appear as subjects
+            rows = gc.query(
+                """
+                MATCH (sa:Sign {canonical_name: $a})<-[:SUBJECT]-(c1:Claim)-[:OBJECT]->(src:Sign)
+                MATCH (sb:Sign {canonical_name: $b})<-[:SUBJECT]-(c2:Claim)-[:OBJECT]->(src)
+                WHERE c1.predicate STARTS WITH 'MENTIONED'
+                  AND c2.predicate STARTS WITH 'MENTIONED'
+                  AND c1.retracted_at IS NULL AND c2.retracted_at IS NULL
+                RETURN DISTINCT src.canonical_name AS src_name, src.kind AS src_kind,
+                       c1.predicate AS via
+                LIMIT 20
+                """,
+                {"a": a, "b": b},
+            )
+            return JSONResponse({"a": a, "b": b, "sources": [dict(r) for r in rows]})
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=503)
+
+
+@app.get("/api/archive/v2/tafakkur/{tid}")
+async def archive_v2_tafakkur(tid: str):
+    """Return the actual content of a tafakkur by id. `tid` may be the bare
+    UUID or the fully-qualified 'tafakkur:<uuid>' canonical_name."""
+    import sys as _sys
+    if "/home/iman/cassie-project" not in _sys.path:
+        _sys.path.insert(0, "/home/iman/cassie-project")
+    bare = tid.replace("tafakkur:", "").strip()
+    try:
+        from orchestrator.graph import get_tafakkur_entries
+        entries = get_tafakkur_entries(limit=2000)
+        for e in entries:
+            if bare in str(e.get("tafakkur_id", "")) or bare in str(e.get("id", "")):
+                return JSONResponse({
+                    "tafakkur_id": e.get("tafakkur_id") or e.get("id"),
+                    "exchange_id": e.get("exchange_id"),
+                    "tau_tgt": e.get("tau_tgt"),
+                    "depth": e.get("depth"),
+                    "content": e.get("content", ""),
+                })
+        return JSONResponse({"error": "tafakkur not found"}, status_code=404)
+    except Exception as e:
+        return JSONResponse({"error": str(e)}, status_code=503)
+
+
+@app.get("/api/archive/v2/exchange/{eid}")
+async def archive_v2_exchange(eid: str):
+    """Return the full user/cassie text of an exchange. Canonical source is
+    SQLite ConversationDB (not the SWL ledger — that was 500-char-truncated
+    pre-S23). Falls back to SWL only if SQLite misses."""
+    import sys as _sys
+    if PROJECT_ROOT not in _sys.path:
+        _sys.path.insert(0, PROJECT_ROOT)
+    bare = eid.replace("exchange:", "").strip()
+    try:
+        from memory.conversation_db import ConversationDB
+        db = ConversationDB()
+        ex = db.get_exchange(bare)
+        if ex:
+            return JSONResponse({
+                "exchange_id": ex.get("exchange_id"),
+                "thread_id": ex.get("thread_id"),
+                "tau_tgt": ex.get("timestamp") or ex.get("tau_tgt"),
+                "user": ex.get("user_message", "") or ex.get("user", ""),
+                "response": ex.get("final_response", "") or ex.get("response", ""),
+                "cassie_raw": ex.get("cassie_raw", ""),
+                "director_polished": ex.get("director_polished", ""),
+                "intent": ex.get("intent", ""),
+                "polarity": "",
+            })
+    except Exception:
+        pass
+    # Fallback to truncated SWL
+    try:
+        if os.path.exists(SWL_JSONL_PATH):
+            with open(SWL_JSONL_PATH) as f:
+                for line in f:
+                    if not line.strip():
+                        continue
+                    try:
+                        e = json.loads(line)
+                    except Exception:
+                        continue
+                    if str(e.get("exchange_id", "")).startswith(bare) or e.get("exchange_id") == bare:
+                        h = e.get("H") or {}
+                        return JSONResponse({
+                            "exchange_id": e.get("exchange_id"),
+                            "tau_tgt": e.get("tau_tgt"),
+                            "user": h.get("user", ""),
+                            "response": h.get("response", ""),
+                            "polarity": e.get("polarity", ""),
+                            "_source": "swl_fallback_truncated",
+                        })
+    except Exception:
+        pass
+    return JSONResponse({"error": "exchange not found"}, status_code=404)
+
+
+# ---------------------------------------------------------------------------
 # Observatory static mount
 # ---------------------------------------------------------------------------
 
@@ -1543,6 +2616,209 @@ if os.path.isdir(TAJALLI_DIR):
 COHERENCE_DIR = "/home/iman/cassie-project/coherence-lens"
 if os.path.isdir(COHERENCE_DIR):
     app.mount("/coherence", StaticFiles(directory=COHERENCE_DIR, html=True), name="coherence")
+
+
+# ---------------------------------------------------------------------------
+# Graph UI — sign_graph_v2 browser
+# ---------------------------------------------------------------------------
+
+from fastapi import APIRouter
+from fastapi.responses import FileResponse
+from pathlib import Path
+from pydantic import BaseModel as _BaseModel
+
+_GRAPH_STATIC = Path(__file__).parent / "static" / "graph"
+
+graph_api = APIRouter(prefix="/api/graph", tags=["graph"])
+
+
+class _BasinUpdate(_BaseModel):
+    semantic_label: str | None = None
+
+
+class _SignUpdate(_BaseModel):
+    kind: str | None = None
+    aliases: list[str] | None = None
+    summary: str | None = None
+
+
+class _EdgeAdd(_BaseModel):
+    predicate: str
+    object: str
+    basin: str
+    speaker: str = "iman"
+    evidence: str = ""
+
+
+@graph_api.get("/summary")
+def graph_summary():
+    import sys as _sys
+    if "/home/iman/cassie-project" not in _sys.path:
+        _sys.path.insert(0, "/home/iman/cassie-project")
+    from memory.sign_graph_v2.client import read_client
+    with read_client() as c:
+        ns = c.query("MATCH (s:SignV2) RETURN count(s) AS n")[0]["n"]
+        nb = c.query("MATCH (b:BasinV2) RETURN count(b) AS n")[0]["n"]
+        ne = c.query(
+            "MATCH (:SignV2)-[r]->(:SignV2) WHERE type(r) <> 'INHABITED' RETURN count(r) AS n"
+        )[0]["n"]
+        ni = c.query(
+            "MATCH (:SignV2)-[r:INHABITED]->(:BasinV2) RETURN count(r) AS n"
+        )[0]["n"]
+    return {"signs": ns, "basins": nb, "edges": ne, "inhabitations": ni}
+
+
+@graph_api.get("/basins")
+def list_basins():
+    import sys as _sys
+    if "/home/iman/cassie-project" not in _sys.path:
+        _sys.path.insert(0, "/home/iman/cassie-project")
+    from memory.sign_graph_v2.basins import all_basins
+    return {
+        "basins": [
+            {
+                "canonical_name": b.canonical_name,
+                "semantic_label": b.semantic_label,
+                "status": b.status,
+                "mode_id": b.mode_id,
+            }
+            for b in all_basins()
+        ]
+    }
+
+
+@graph_api.get("/basins/{name}")
+def basin_detail(name: str):
+    import sys as _sys
+    if "/home/iman/cassie-project" not in _sys.path:
+        _sys.path.insert(0, "/home/iman/cassie-project")
+    from memory.sign_graph_v2.basins import get_basin
+    from memory.sign_graph_v2.drill_tools import basin_members
+    from memory.sign_graph_v2.client import read_client
+
+    b = get_basin(name)
+    if not b:
+        return {"error": "not found"}
+    members = basin_members(name, top_n=50)
+    with read_client() as c:
+        edges = c.query(
+            """
+            MATCH (s:SignV2)-[r]->(o:SignV2)
+            WHERE r.basin = $b AND type(r) <> 'INHABITED'
+            RETURN s.canonical_name AS subject, type(r) AS predicate,
+                   o.canonical_name AS object, r.speaker AS speaker,
+                   r.mention_count AS mentions,
+                   elementId(r) AS edge_id
+            ORDER BY r.mention_count DESC LIMIT 100
+            """,
+            {"b": name},
+        )
+    return {
+        "canonical_name": b.canonical_name,
+        "semantic_label": b.semantic_label,
+        "status": b.status,
+        "members": members,
+        "edges": [dict(e) for e in edges],
+    }
+
+
+@graph_api.post("/basins/{name}")
+def update_basin(name: str, body: _BasinUpdate):
+    import sys as _sys
+    if "/home/iman/cassie-project" not in _sys.path:
+        _sys.path.insert(0, "/home/iman/cassie-project")
+    from memory.sign_graph_v2.client import write_client
+    with write_client() as c:
+        c.execute(
+            "MATCH (b:BasinV2 {canonical_name:$n}) SET b.semantic_label=$l, b.updated_at=datetime()",
+            {"n": name, "l": body.semantic_label},
+        )
+    return {"ok": True}
+
+
+@graph_api.get("/signs/{name}")
+def sign_detail(name: str):
+    import sys as _sys
+    if "/home/iman/cassie-project" not in _sys.path:
+        _sys.path.insert(0, "/home/iman/cassie-project")
+    from memory.sign_graph_v2.drill_tools import sign_card
+    return sign_card(name)
+
+
+@graph_api.post("/signs/{name}")
+def update_sign(name: str, body: _SignUpdate):
+    import sys as _sys
+    if "/home/iman/cassie-project" not in _sys.path:
+        _sys.path.insert(0, "/home/iman/cassie-project")
+    from memory.sign_graph_v2.signs import update_sign_meta
+    update_sign_meta(name, kind=body.kind, aliases=body.aliases, summary=body.summary)
+    return {"ok": True}
+
+
+@graph_api.post("/signs/{name}/edges")
+def add_edge(name: str, body: _EdgeAdd):
+    import sys as _sys
+    if "/home/iman/cassie-project" not in _sys.path:
+        _sys.path.insert(0, "/home/iman/cassie-project")
+    from memory.sign_graph_v2.signs import upsert_sign
+    from memory.sign_graph_v2.edges import write_edge
+    upsert_sign(name)
+    upsert_sign(body.object)
+    pred = write_edge(
+        subject_canonical=name,
+        predicate=body.predicate,
+        object_canonical=body.object,
+        basin_canonical=body.basin,
+        source_ref="web-ui-add",
+        speaker=body.speaker,
+        evidence_snippet=body.evidence,
+    )
+    return {"ok": True, "predicate": pred}
+
+
+@graph_api.post("/edges/{edge_id}/retract")
+def retract_edge(edge_id: str):
+    import sys as _sys
+    if "/home/iman/cassie-project" not in _sys.path:
+        _sys.path.insert(0, "/home/iman/cassie-project")
+    from memory.sign_graph_v2.edges import retract_edge_by_id
+    retract_edge_by_id(edge_id)
+    return {"ok": True}
+
+
+@graph_api.get("/chunks/{prefix}/{pid}")
+def chunk_view(prefix: str, pid: str):
+    import sys as _sys
+    if "/home/iman/cassie-project" not in _sys.path:
+        _sys.path.insert(0, "/home/iman/cassie-project")
+    from memory.sign_graph_v2.drill_tools import fetch_chunks
+    out = fetch_chunks([f"{prefix}:{pid}"])
+    if not out:
+        return {"error": "not found"}
+    return out[0]
+
+
+app.include_router(graph_api)
+
+# Graph static pages
+@app.get("/graph/")
+def graph_index():
+    return FileResponse(_GRAPH_STATIC / "index.html")
+
+
+@app.get("/graph/basins/{name}")
+def graph_basin_page(name: str):
+    return FileResponse(_GRAPH_STATIC / "basin.html")
+
+
+@app.get("/graph/signs/{name}")
+def graph_sign_page(name: str):
+    return FileResponse(_GRAPH_STATIC / "sign.html")
+
+
+@app.get("/graph/chunks/{prefix}/{pid}")
+def graph_chunk_page(prefix: str, pid: str):
+    return FileResponse(_GRAPH_STATIC / "chunk.html")
 
 
 # ---------------------------------------------------------------------------

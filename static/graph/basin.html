@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Basin — Cassie Graph</title>
+  <style>
+    body { font-family: -apple-system, system-ui, sans-serif; max-width: 900px; margin: 2em auto; padding: 0 1em; color: #222; }
+    h1 { font-weight: 500; margin-bottom: 0.2em; }
+    .label-row { display: flex; gap: 0.5em; margin-bottom: 1.5em; align-items: center; }
+    .label-row input { flex: 1; padding: 0.5em; }
+    .sec { margin-top: 2em; }
+    .sec h2 { font-size: 1.1em; color: #555; border-bottom: 1px solid #eee; }
+    .row { padding: 0.3em 0; border-bottom: 1px dotted #eee; }
+    .speaker { font-size: 0.75em; padding: 0 0.4em; border-radius: 3px; background: #eee; color: #555; margin-right: 0.4em; }
+    .speaker.cassie { background: #fce8e6; color: #b32; }
+    .speaker.iman { background: #e8f0fe; color: #06c; }
+    .speaker.darja { background: #fef7e0; color: #976; }
+    .speaker.nahla { background: #e6f4ea; color: #0a6; }
+    a { color: #06c; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .stat { font-size: 0.85em; color: #888; }
+  </style>
+</head>
+<body>
+  <h1 id="name">loading…</h1>
+  <div class="label-row">
+    <input id="label" placeholder="semantic label"/>
+    <button id="save">save label</button>
+    <a href="/graph/">← all basins</a>
+  </div>
+  <div class="sec">
+    <h2>top signs</h2>
+    <div id="members"></div>
+  </div>
+  <div class="sec">
+    <h2>top edges</h2>
+    <div id="edges"></div>
+  </div>
+
+  <script>
+    const parts = location.pathname.split("/");
+    const basin = decodeURIComponent(parts[parts.length - 1]);
+    async function load() {
+      const d = await (await fetch(`/api/graph/basins/${encodeURIComponent(basin)}`)).json();
+      document.getElementById("name").textContent = d.canonical_name || basin;
+      document.getElementById("label").value = d.semantic_label || "";
+      const m = document.getElementById("members");
+      m.innerHTML = "";
+      for (const mem of (d.members || [])) {
+        const div = document.createElement("div");
+        div.className = "row";
+        div.innerHTML = `<a href="/graph/signs/${encodeURIComponent(mem.canonical_name)}">${mem.canonical_name}</a>
+                         <span class="stat">${mem.kind || '?'} · n=${mem.n}</span>`;
+        m.appendChild(div);
+      }
+      const e = document.getElementById("edges");
+      e.innerHTML = "";
+      for (const ed of (d.edges || [])) {
+        const div = document.createElement("div");
+        div.className = "row";
+        div.innerHTML = `<span class="speaker ${ed.speaker || ''}">${ed.speaker || '?'}</span>
+                         <a href="/graph/signs/${encodeURIComponent(ed.subject)}">${ed.subject}</a>
+                         <strong>${ed.predicate}</strong>
+                         <a href="/graph/signs/${encodeURIComponent(ed.object)}">${ed.object}</a>
+                         ${ed.mentions > 1 ? `<span class="stat">×${ed.mentions}</span>` : ""}`;
+        e.appendChild(div);
+      }
+    }
+    document.getElementById("save").onclick = async () => {
+      const label = document.getElementById("label").value;
+      await fetch(`/api/graph/basins/${encodeURIComponent(basin)}`, {
+        method: "POST",
+        headers: {"content-type": "application/json"},
+        body: JSON.stringify({semantic_label: label}),
+      });
+      alert("saved");
+    };
+    load();
+  </script>
+</body>
+</html>

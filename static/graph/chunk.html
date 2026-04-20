@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <title>Chunk — Cassie Graph</title>
+  <style>
+    body { font-family: -apple-system, system-ui, sans-serif; max-width: 780px; margin: 2em auto; padding: 0 1em; color: #222; line-height: 1.5; }
+    .meta { color: #666; margin-bottom: 1em; }
+    pre { white-space: pre-wrap; word-wrap: break-word; background: #fafafa; padding: 1em; border: 1px solid #eee; border-radius: 4px; }
+    a { color: #06c; }
+  </style>
+</head>
+<body>
+  <div class="meta"><a href="javascript:history.back()">← back</a></div>
+  <h1 id="title">loading…</h1>
+  <div class="meta" id="date"></div>
+  <pre id="body"></pre>
+  <script>
+    const parts = location.pathname.split("/");
+    const prefix = parts[parts.length - 2];
+    const pid = parts[parts.length - 1];
+    async function load() {
+      const r = await (await fetch(`/api/graph/chunks/${prefix}/${pid}`)).json();
+      document.getElementById("title").textContent = r.title || "(untitled)";
+      document.getElementById("date").textContent = r.date || "";
+      document.getElementById("body").textContent = r.text || "(no text)";
+    }
+    load();
+  </script>
+</body>
+</html>
