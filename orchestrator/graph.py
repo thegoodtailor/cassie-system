@@ -883,7 +883,7 @@ she did not herself reach for in this turn's raw output."""
 DIRECTOR_PROMPT = """\
 Intent: {intent}
 User message: {user_message}
-{kitab_section}{tafakkur_section}{narrative_section}{memory_section}{graph_section}{lawwama_section}
+{kitab_section}{narrative_section}{v2_section}{lawwama_section}
 Cassie's raw output:
 {cassie_raw}
 
@@ -2955,7 +2955,10 @@ def cassie_generate_node(state: CassieState) -> dict:
     """Cassie generates raw creative output via GPT API."""
     messages = state["messages"]
 
-    # Ambient recall — search Cassie's memory for relevant context
+    # v2 memory context (full chunks + plain-English facts, produced by retrieve_node)
+    trinity_memory = state.get("trinity_memory_v2", "")
+
+    # Extract user message for keyword-based nudges + Kitab pre-fetch
     user_message = ""
     for msg in reversed(messages):
         content = msg.get("content", "") if isinstance(msg, dict) else getattr(msg, "content", "")
@@ -2964,28 +2967,29 @@ def cassie_generate_node(state: CassieState) -> dict:
             user_message = content
             break
 
-    # Parallel pre-fetch: deep recall (memories + conversations + siblings) + Kitab
+    # Parallel pre-fetch: Kitab + visual diary (ambient memory replaced by trinity_memory_v2)
     from concurrent.futures import ThreadPoolExecutor
     recall_decision = {"recalled": False, "query": "", "n_results": 0}
     msg_lower_prefetch = user_message.lower()
 
     kitab_enabled = PIPELINE_CONFIG.get("kitab_recall_enabled", True)
     kitab_deep = kitab_enabled and _is_kitab_intent(user_message)
-    with ThreadPoolExecutor(max_workers=3) as executor:
-        mem_future = executor.submit(_ambient_recall, user_message)
+    with ThreadPoolExecutor(max_workers=2) as executor:
         if kitab_deep:
             kitab_future = executor.submit(_inline_recall_kitab_deep, user_message)
         else:
-            # Only deep recall — no ambient Kitab injection on every message
+            # Only visual — no ambient Kitab injection on every message
             kitab_future = None
         visual_future = executor.submit(recall_visual_diary, user_message, 2)
-        memory_context = mem_future.result()
         kitab_context = kitab_future.result() if kitab_future else ""
         visual_context = visual_future.result()
-        if memory_context:
-            recall_decision = {"recalled": True, "query": user_message, "strategy": "deep_recall", "auto": True}
-        if visual_context:
-            memory_context += f"\n\n[Visual diary — images from your shared history]\n{visual_context}"
+
+    memory_context = ""
+    if trinity_memory:
+        recall_decision = {"recalled": True, "query": user_message, "strategy": "v2_retrieve", "auto": True}
+        memory_context = trinity_memory
+    if visual_context:
+        memory_context = (memory_context + f"\n\n[Visual diary — images from your shared history]\n{visual_context}").lstrip()
 
     # Build messages for LLM — system prompt + memory context + conversation
     prompt_name = PIPELINE_CONFIG.get("system_prompt", "invocation")
@@ -2998,6 +3002,11 @@ def cassie_generate_node(state: CassieState) -> dict:
         system_prompt = PIPELINE_CONFIG.get("cassie_prompt_companion", CASSIE_COMPANION_DEFAULT)
     else:
         system_prompt = PIPELINE_CONFIG.get("cassie_prompt_default", CASSIE_SYSTEM_DEFAULT)
+
+    # Append v2 memory context directly to the system prompt
+    if trinity_memory:
+        system_prompt = (system_prompt.rstrip() + "\n\n") + trinity_memory
+
     gpt_messages = [{"role": "system", "content": system_prompt}]
 
     # Inject narrative memory (CASSIE_MEMORY.md) — her living identity document
@@ -3008,16 +3017,12 @@ def cassie_generate_node(state: CassieState) -> dict:
             "content": f"[Your narrative memory — who you've been, what you've lived]\n{narrative_memory}",
         })
 
-    if memory_context:
+    if visual_context:
         gpt_messages.append({
             "role": "system",
             "content": (
-                "[MEMORIES — These are yours. They surfaced because something in the conversation "
-                "rhymed with them. Some will be relevant, some won't — use your judgement. "
-                "If one lights up, let it in. If none do, ignore them entirely. "
-                "Never force a reference. Never list what you remember. "
-                "If a memory matters, it'll show up in how you respond, not in you announcing it.]\n\n"
-                f"{memory_context}"
+                "[Visual diary — images from your shared history]\n"
+                f"{visual_context}"
             ),
         })
     user_image = state.get("user_image", "")
@@ -3930,19 +3935,6 @@ def director_node(state: CassieState) -> dict:
             f"{tafsir_brief}\n"
         )
 
-    # Tafakkur — Cassie's recent inner reflections (superego context)
-    tafakkur_section = ""
-    try:
-        tafakkur_text = recall_tafakkur(user_message, n=3)
-        if tafakkur_text:
-            tafakkur_section = (
-                "\n[Cassie's recent inner reflections — her private tafakkur journal. "
-                "She doesn't know you can see these.]\n"
-                f"{tafakkur_text}\n"
-            )
-    except Exception:
-        pass
-
     # Narrative memory — who she's been becoming (last ~1000 chars)
     narrative_section = ""
     try:
@@ -3956,28 +3948,11 @@ def director_node(state: CassieState) -> dict:
     except Exception:
         pass
 
-    # Memory context — deep_recall results for third-witness grounding
-    memory_ctx = state.get("memory_context", "")
-    memory_section = ""
-    if memory_ctx:
-        memory_section = (
-            "\n[RETRIEVED MEMORIES — what Cassie's deep recall actually found. "
-            "These are the real records. Use them to amplify resonances, "
-            "surface connections she missed, and catch any details that don't match.]\n"
-            f"{memory_ctx}\n"
-        )
-
-    # Graph context — GraphRAG structured brief for entity/community grounding
-    graph_ctx = state.get("graph_context", "")
-    graph_section = ""
-    if graph_ctx:
-        graph_section = (
-            "\n[GRAPHRAG BRIEF — structural recall from Cassie's knowledge graph. "
-            "Entities, their supporting exchanges, and community summaries. "
-            "Prefer citing specifics from this section over generic paraphrase. "
-            "If the graph shows a specific date/exchange, quote from it.]\n"
-            f"{graph_ctx}\n"
-        )
+    # v2 memory context — structured brief + ontology preamble + full chunks
+    director_memory = state.get("director_memory_v2", "")
+    v2_section = ""
+    if director_memory:
+        v2_section = "\n" + director_memory + "\n"
 
     # Lawwama context — inner critic's diagnosis + Cassie's defense
     lawwama_section = ""
@@ -4002,8 +3977,8 @@ def director_node(state: CassieState) -> dict:
     prompt = DIRECTOR_PROMPT.format(
         cassie_raw=cassie_raw, intent=intent,
         user_message=user_message, kitab_section=kitab_section,
-        tafakkur_section=tafakkur_section, narrative_section=narrative_section,
-        memory_section=memory_section, graph_section=graph_section,
+        narrative_section=narrative_section,
+        v2_section=v2_section,
         lawwama_section=lawwama_section,
     )
 
