@@ -3592,174 +3592,6 @@ def retrieve_node(state: CassieState) -> dict:
     }
 
 
-# ---------------------------------------------------------------------------
-# Ground Recall — post-raw topic extraction + targeted conversation search
-# ---------------------------------------------------------------------------
-
-def _extract_topics_from_raw(cassie_raw: str) -> list[str]:
-    """Extract 2-4 searchable topic queries from Cassie's raw output.
-
-    Looks for bold headers, quoted phrases, and named subjects.
-    No LLM call — pure heuristic, zero cost.
-    """
-    topics = []
-
-    # 1. Bold headers: **The Thing:** *Your grief.* or **Your hands.**
-    bold_topics = re.findall(r'\*\*(?:The Thing:?\s*)?(.+?)\*\*', cassie_raw)
-    for t in bold_topics:
-        # Clean up markdown emphasis inside
-        clean = re.sub(r'[*_]', '', t).strip().strip('.')
-        if 3 < len(clean) < 80 and clean.lower() not in ('now', 'when', 'retrospect'):
-            topics.append(clean)
-
-    # 2. Quoted speech attributed to Iman: You said: "..." or *"..."*
-    quotes = re.findall(r'[Yy]ou (?:said|told me|wrote|asked)[:\s]*["\u201c](.+?)["\u201d]', cassie_raw)
-    for q in quotes:
-        clean = q.strip()
-        if 5 < len(clean) < 120:
-            topics.append(clean)
-
-    # 3. Named references: "Do you remember when..." / "that time we..."
-    remember_phrases = re.findall(
-        r'(?:[Dd]o you remember|[Rr]emember when|[Tt]hat time (?:we|you|I))\s+(.+?)(?:\?|\.|\n)',
-        cassie_raw
-    )
-    for p in remember_phrases:
-        clean = p.strip()
-        if 5 < len(clean) < 120:
-            topics.append(clean)
-
-    # 4. If still nothing, try section-level extraction: look for date markers
-    if not topics:
-        date_sections = re.findall(
-            r'(?:(?:September|October|November|December|January|February|March)\s+\d{4})[.:\s]+(.+?)(?:\n\n|\Z)',
-            cassie_raw, re.DOTALL
-        )
-        for s in date_sections:
-            # Take first sentence
-            first = s.split('.')[0].strip()
-            if 10 < len(first) < 120:
-                topics.append(first)
-
-    # Deduplicate and limit
-    seen = set()
-    unique = []
-    for t in topics:
-        key = t.lower()[:40]
-        if key not in seen:
-            seen.add(key)
-            unique.append(t)
-    return unique[:4]
-
-
-def ground_recall_node(state: CassieState) -> dict:
-    """Post-raw grounding — extract topics Cassie chose to discuss,
-    search the conversation archive for each, and inject into memory_context
-    so the Director can verify and amplify with real records.
-
-    Fires only when cassie_raw references specific past events/topics.
-    Zero LLM cost — topic extraction is heuristic, search is embedding-based.
-    """
-    cassie_raw = state.get("cassie_raw", "")
-    if not cassie_raw or len(cassie_raw) < 200:
-        print("[ground_recall] Raw too short, skipping")
-        return {}
-
-    topics = _extract_topics_from_raw(cassie_raw)
-    if not topics:
-        print("[ground_recall] No extractable topics, skipping")
-        return {}
-
-    print(f"[ground_recall] Extracted {len(topics)} topics: {topics}")
-
-    # Fire conversation recall on each topic
-    from concurrent.futures import ThreadPoolExecutor, as_completed
-    results = []
-
-    def _search(topic):
-        text, strategy, chunks = _conversation_recall(topic, n_results=3)
-        return topic, text, strategy
-
-    with ThreadPoolExecutor(max_workers=min(len(topics), 3)) as pool:
-        futures = {pool.submit(_search, t): t for t in topics}
-        for f in as_completed(futures):
-            try:
-                topic, text, strategy = f.result()
-                if text:
-                    results.append((topic, text))
-                    print(f"[ground_recall] '{topic[:40]}' → {len(text)} chars ({strategy})")
-                else:
-                    print(f"[ground_recall] '{topic[:40]}' → no results")
-            except Exception as e:
-                print(f"[ground_recall] '{futures[f][:40]}' → error: {e}")
-
-    if not results:
-        print("[ground_recall] No conversation hits, nothing to inject")
-        return {}
-
-    # Format and append to memory_context
-    ground_section = "\n\nGROUND RECALL — actual conversation archive matches for topics Cassie referenced:\n"
-    for topic, text in results:
-        ground_section += f"\n[Topic: {topic}]\n{text}\n"
-
-    existing_memory = state.get("memory_context", "")
-    updated_memory = existing_memory + ground_section if existing_memory else ground_section
-
-    print(f"[ground_recall] Injected {len(ground_section)} chars of grounding context")
-    return {"memory_context": updated_memory}
-
-
-def graph_recall_node(state: CassieState) -> dict:
-    """GraphRAG brief — structured entity + community summary for the Director.
-
-    Feature-flagged via PIPELINE_CONFIG["graph_recall_enabled"] (default False).
-    Additive: writes state["graph_context"]; Director reads it via {graph_section}.
-    When flag is off OR the graph DB doesn't exist yet, returns empty.
-    """
-    if not PIPELINE_CONFIG.get("graph_recall_enabled", False):
-        return {}
-
-    user_message = ""
-    for msg in reversed(state.get("messages", [])):
-        content = msg.get("content", "") if isinstance(msg, dict) else getattr(msg, "content", "")
-        role = msg.get("role", "") if isinstance(msg, dict) else getattr(msg, "type", "")
-        if role in ("user", "human"):
-            user_message = content if isinstance(content, str) else str(content)
-            break
-
-    if not user_message.strip():
-        return {}
-
-    try:
-        from memory.sign_graph.query import graph_brief
-    except Exception as e:
-        print(f"[graph_recall] Module import failed (sign_graph not installed?): {e}")
-        return {}
-
-    # Run graph_brief in a worker thread with a hard 5s timeout. (Historical:
-    # needed for Kuzu lock contention; Neo4j doesn't have that issue but the
-    # timeout is kept as a safety net against any unexpected slow query.)
-    import concurrent.futures as _cf
-    try:
-        with _cf.ThreadPoolExecutor(max_workers=1) as pool:
-            fut = pool.submit(graph_brief, user_message)
-            try:
-                brief = fut.result(timeout=5.0)
-            except _cf.TimeoutError:
-                print("[graph_recall] Timed out waiting on Kuzu (>5s); likely curator write in progress — degrading to empty brief")
-                # Try to cancel the underlying thread's work by telling the pool to shut down
-                pool.shutdown(wait=False, cancel_futures=True)
-                return {"graph_context": ""}
-        serialized = brief.get("serialized", "") or ""
-        if serialized:
-            print(f"[graph_recall] mode={brief.get('mode')} entities={len(brief.get('entities',[]))} "
-                  f"serialized={len(serialized)} chars")
-        return {"graph_context": serialized}
-    except Exception as e:
-        print(f"[graph_recall] Failed (non-fatal): {e}")
-        return {}
-
-
 DIRECTOR_MODEL = os.environ.get("DIRECTOR_MODEL", "anthropic/claude-sonnet-4.6")
 
 
@@ -5105,8 +4937,7 @@ def build_graph():
     graph.add_node("cassie_generate", cassie_generate_node)
     graph.add_node("lawwama", lawwama_node)
     graph.add_node("tafsir", tafsir_node)
-    graph.add_node("ground_recall", ground_recall_node)
-    graph.add_node("graph_recall", graph_recall_node)
+    graph.add_node("retrieve", retrieve_node)
     graph.add_node("director", director_node)
     graph.add_node("execute_tools", execute_tools_node)
     graph.add_node("regen_propose", regen_propose_node)
@@ -5131,9 +4962,8 @@ def build_graph():
         route_after_lawwama,
         {"tafsir": "tafsir", "memory_store": "memory_store"},
     )
-    graph.add_edge("tafsir", "ground_recall")
-    graph.add_edge("ground_recall", "graph_recall")
-    graph.add_edge("graph_recall", "director")
+    graph.add_edge("tafsir", "retrieve")
+    graph.add_edge("retrieve", "director")
     graph.add_conditional_edges(
         "director",
         route_after_director,
