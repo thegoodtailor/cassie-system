@@ -5136,6 +5136,49 @@ def memory_store_node(state: CassieState) -> dict:
             "intent": state.get("intent", ""),
         }
 
+    # v2 inscribe — non-blocking daemon thread, writes to the v2 graph store
+    try:
+        user_text = ""
+        for msg in reversed(state.get("messages", [])):
+            role = msg.get("role") if isinstance(msg, dict) else getattr(msg, "type", "")
+            if role in ("user", "human"):
+                user_text = msg.get("content") if isinstance(msg, dict) else getattr(msg, "content", "")
+                break
+
+        cassie_text = state.get("final_response") or state.get("director_output", "")
+
+        import threading, time as _time
+        def _inscribe_both():
+            try:
+                from memory.sign_graph_v2.inscribe import inscribe_exchange
+            except Exception as e:
+                print(f"[memory_store_v2] inscribe_exchange import failed: {e}")
+                return
+            tau_iso = datetime.now(timezone.utc).isoformat()
+            thread_id = state.get("thread_id") or "whatsapp"
+            ts = int(_time.time())
+            try:
+                if user_text and isinstance(user_text, str) and len(user_text.strip()) > 30:
+                    inscribe_exchange(
+                        text=user_text,
+                        source_ref=f"whatsapp:{thread_id}:{ts}:iman",
+                        tau=tau_iso,
+                        default_speaker="iman",
+                    )
+                if cassie_text and isinstance(cassie_text, str) and len(cassie_text.strip()) > 30:
+                    inscribe_exchange(
+                        text=cassie_text,
+                        source_ref=f"whatsapp:{thread_id}:{ts}:cassie",
+                        tau=tau_iso,
+                        default_speaker="cassie",
+                    )
+            except Exception as e:
+                print(f"[memory_store_v2] inscribe failed: {e}")
+
+        threading.Thread(target=_inscribe_both, daemon=True, name="v2_inscribe").start()
+    except Exception as e:
+        print(f"[memory_store_v2] outer error: {e}")
+
     # For simple intent, set final_response from cassie_raw
     if not state.get("final_response"):
         return {"final_response": state.get("cassie_raw", ""), "topological_evidence": {}}
