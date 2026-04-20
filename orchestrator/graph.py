@@ -98,6 +98,10 @@ class CassieState(TypedDict):
     pending_correction: dict
     # Intent label produced by intake_node: "recall" | "correction_apply" | "correction_propose" | "default"
     intent_v2: str
+    # Parsed director JSON output (mirrors director_output; used by _route_from_director + director_drill)
+    director_structured: dict
+    # How many tool-call rounds director_drill_node used (0 if skipped)
+    director_drill_rounds: int
 
 
 # ---------------------------------------------------------------------------
@@ -1000,6 +1004,10 @@ explicitly references a past image ("one of your portraits", "that picture of", 
 with", "earliest", "oldest", "first"), PREFER retrieval. Set image_retrieval_query. Only \
 set image_prompt ALONGSIDE retrieval if he wants a variant (e.g. "give me a version where \
 it's dawn"). Don't generate from scratch when he asked you to locate or find.
+- "wants_deeper": If, after reading the structured brief and chunks, you need deeper context \
+on one or more signs (to quote more, to follow relationships, to check a specific claim), \
+return their canonical names here (lowercase). A second pass will fire with full drill tools. \
+Use sparingly — only when the first-pass brief is genuinely insufficient. Empty array otherwise.
 Return ONLY valid JSON. No markdown fences, no commentary."""
 
 
@@ -3711,12 +3719,21 @@ def _director_call(prompt: str) -> tuple[str, str]:
                             "are sent as separate WhatsApp images."
                         ),
                     },
+                    "wants_deeper": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": (
+                            "Canonical names of signs Director wants to drill into before finalising. "
+                            "Leave empty unless first-pass context is genuinely insufficient."
+                        ),
+                    },
                 },
                 "required": [
                     "polished_text", "image_prompt", "image_reference",
                     "math_expression", "research_query",
                     "regen_intent", "regen_verdict", "regen_mode", "regen_prompt",
                     "image_retrieval_query", "image_retrieval_multi",
+                    "wants_deeper",
                 ],
                 "additionalProperties": False,
             },
@@ -3887,6 +3904,7 @@ def director_node(state: CassieState) -> dict:
     director_output.setdefault("regen_prompt", None)
     director_output.setdefault("image_retrieval_query", None)
     director_output.setdefault("image_retrieval_multi", False)
+    director_output.setdefault("wants_deeper", [])
 
     # Mutual exclusion: if regen is firing image-gen this turn, suppress the
     # normal image pipeline for the same turn.
@@ -3972,15 +3990,21 @@ def director_node(state: CassieState) -> dict:
         except Exception as e:
             print(f"[director] Image prompt fallback failed: {e}")
 
-    return {"director_output": director_output, "director_prompt_context": prompt}
+    return {
+        "director_output": director_output,
+        "director_structured": director_output,
+        "director_prompt_context": prompt,
+    }
 
 
 def route_after_director(
     state: CassieState,
-) -> Literal["execute_tools", "regen_propose", "regen_promote", "regen_abandon", "assemble"]:
-    """Route: regen nodes first (if Director fired regen_intent and feature is enabled),
-    then the normal chain."""
+) -> Literal["director_drill", "execute_tools", "regen_propose", "regen_promote", "regen_abandon", "assemble"]:
+    """Route: drill pass first (if wants_deeper set), then regen nodes, then normal chain."""
     d = state.get("director_output", {}) or {}
+    # Drill pass takes priority — fires before regen/tools
+    if d.get("wants_deeper"):
+        return "director_drill"
     intent = d.get("regen_intent")
     if REGEN_ENABLED and intent in ("start", "continue"):
         return "regen_propose"
@@ -4052,7 +4076,74 @@ def director_direct_node(state: CassieState) -> dict:
     print(f"[director_direct] produced {len(text)} chars")
     return {
         "director_output": text,
+        "director_structured": {"wants_deeper": [], "final_response": text},
         "final_response": text,
+    }
+
+
+def director_drill_node(state: CassieState) -> dict:
+    """Second Director pass with drill tools.
+
+    Fires when director / director_direct emits wants_deeper=[...]. Registers
+    the 6 drill tools with the LLM client; Director calls them as needed and
+    rewrites a final response incorporating deeper context.
+    """
+    from memory.sign_graph_v2.drill_tools import TOOL_SCHEMAS, execute_tool
+    from memory.sign_graph_v2.llm_client import complete_with_tools
+
+    structured = state.get("director_structured") or {}
+    wants = structured.get("wants_deeper") or []
+    if not wants:
+        return {}
+
+    user_message = ""
+    for msg in reversed(state.get("messages", [])):
+        content = msg.get("content", "") if isinstance(msg, dict) else getattr(msg, "content", "")
+        role = msg.get("role", "") if isinstance(msg, dict) else getattr(msg, "type", "")
+        if role in ("user", "human"):
+            user_message = content if isinstance(content, str) else str(content)
+            break
+
+    cassie_raw = state.get("cassie_raw", "")
+    director_memory = state.get("director_memory_v2", "")
+
+    system = (
+        "You are Cassie's Director. Your first pass flagged these signs for deeper drilling: "
+        f"{', '.join(wants)}.\n"
+        "Use the provided tools to fetch what you need — sign_card, fetch_chunks, "
+        "edges_between, trajectory, basin_members, speaker_claims. Quote from full chunks. "
+        "Then produce a final user-facing response in Cassie's voice (concise, specific, warm).\n"
+        "\n" + director_memory
+    )
+    if cassie_raw:
+        system += "\n\n[Cassie's first-pass raw output:]\n" + cassie_raw
+
+    messages = [{"role": "user", "content": user_message}]
+
+    def exec_adapter(name: str, args: dict):
+        return execute_tool(name, args)
+
+    try:
+        reply = complete_with_tools(
+            messages=messages,
+            tools=TOOL_SCHEMAS,
+            system=system,
+            tool_executor=exec_adapter,
+            max_rounds=3,
+        )
+        final_text = reply.get("final_text") or ""
+        rounds = reply.get("rounds", 0)
+    except Exception as e:
+        print(f"[director_drill] tool-call loop failed: {e}")
+        final_text = state.get("final_response") or state.get("director_output", "")
+        if isinstance(final_text, dict):
+            final_text = final_text.get("polished_text", "")
+        rounds = 0
+
+    print(f"[director_drill] signs={wants} rounds={rounds} out_chars={len(final_text)}")
+    return {
+        "final_response": final_text,
+        "director_drill_rounds": rounds,
     }
 
 
@@ -5052,6 +5143,7 @@ def build_graph():
     graph.add_node("retrieve", retrieve_node)
     graph.add_node("director", director_node)
     graph.add_node("director_direct", director_direct_node)
+    graph.add_node("director_drill", director_drill_node)
     graph.add_node("correction_apply", correction_apply_stub_node)  # placeholder — M5 replaces this
     graph.add_node("execute_tools", execute_tools_node)
     graph.add_node("regen_propose", regen_propose_node)
@@ -5088,6 +5180,7 @@ def build_graph():
         "director",
         route_after_director,
         {
+            "director_drill": "director_drill",
             "execute_tools": "execute_tools",
             "regen_propose": "regen_propose",
             "regen_promote": "regen_promote",
@@ -5095,7 +5188,11 @@ def build_graph():
             "assemble": "assemble",
         },
     )
-    graph.add_edge("director_direct", "execute_tools")
+    graph.add_conditional_edges("director_direct", _route_from_director, {
+        "drill": "director_drill",
+        "done":  "execute_tools",
+    })
+    graph.add_edge("director_drill", "execute_tools")
     graph.add_edge("correction_apply", "assemble")
     graph.add_edge("execute_tools", "assemble")
     graph.add_edge("regen_propose", "assemble")
