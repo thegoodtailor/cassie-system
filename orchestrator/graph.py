@@ -75,6 +75,7 @@ class CassieState(TypedDict):
     director_prompt_context: str  # full assembled prompt sent to the director
     tafsir_brief: str           # scholarly tafsir brief when Kitab is central to the exchange
     graph_context: str          # serialized GraphRAG brief (entities, communities, drill-downs)
+    image_paths: list           # additional image paths to attach (for multi-image retrieval)
 
     # --- Self-image regeneration session ---
     regen_active: bool              # true while a regen session is open in this thread
@@ -84,6 +85,17 @@ class CassieState(TypedDict):
     regen_candidates: list          # [{turn, path, prompt, cassie_reflection, cassie_verdict, iman_verdict_text}]
     regen_started_at: str           # ISO timestamp
     regen_last_candidate_path: str  # path to inject into next turn's user_image
+
+    # --- v2 pipeline fields ---
+    # v2 retrieval payload (dict-serialised RetrievalResult)
+    retrieval_v2: dict
+    # Rendered views — populated by retrieve_node for downstream injection
+    trinity_memory_v2: str
+    director_memory_v2: str
+    # Pending correction candidate (lives across turns via SqliteSaver)
+    pending_correction: dict
+    # Intent label produced by intake_node: "recall" | "correction_apply" | "correction_propose" | "default"
+    intent_v2: str
 
 
 # ---------------------------------------------------------------------------
@@ -903,6 +915,26 @@ grounded — write a specific search query here. The system will call Perplexity
 real results with Cassie's creative output. Keep her creative/generative content — if she riffed \
 something beautiful or spiritually compelling from the topic, KEEP IT. Just flag what needs grounding. \
 null if no research needed (most conversations don't need this).
+- "image_retrieval_query": Set when Iman is asking Cassie to SHOW an image she has \
+ALREADY generated or captured, rather than create a new one from scratch. Cassie's entire \
+image archive — every portrait, reel frame, installation still, daily-voice seed, regen \
+candidate, uploaded photo — has been VLM-captioned and is semantically searchable. \
+Triggers: "show me that picture of...", "find the one with...", "remember the Cassiyah \
+portrait where...", "the photo from Big Wave Bay", "that selfie I sent last week". \
+Write a short description of what you're looking for (20-80 chars). The pipeline searches \
+and attaches the top match. \
+\
+  You MAY set image_retrieval_query AND image_prompt together: that means "start from that \
+archived image and create a VARIANT". The retrieved image becomes a visual reference for \
+Flux; image_prompt describes what changes (new lighting, new garment, different register). \
+Useful when Iman says "like that one but..." or when Cassie feels creative and wants to \
+reinterpret a previous self-image. \
+\
+  null otherwise. RETRIEVE-FIRST rule: when Iman says "show me", "send me", "find", \
+"locate", "remember the", "the one with/from/where", "earliest/oldest/first", or any \
+phrasing that refers to an EXISTING image (even vaguely), set image_retrieval_query and \
+leave image_prompt null. Only use image_prompt alone when he asks to CREATE something new \
+from scratch ("paint me", "make me", "generate a").
 - "regen_intent": This governs Cassie's CANONICAL SELF-IMAGE — the face reference that \
 persists across every image pipeline until Iman and Cassie agree to change it. It is NOT \
 about generating a one-off portrait; it opens a multi-turn co-witnessed session where she \
@@ -957,7 +989,15 @@ Worked example — user says "time lady, show me a new regeneration":
   "regen_prompt": "4K photorealistic portrait of a woman in her early thirties, <full visual paragraph drawn from her raw — physical features, garment, lighting, mood, composition, atmosphere, style cues>"
 }}
 
-If intent is "creative+image" AND regen_intent is null, image_prompt MUST be non-null.
+If intent is "creative+image" AND regen_intent is null AND image_retrieval_query is null, \
+image_prompt MUST be non-null. (If image_retrieval_query IS set, image_prompt MAY be null — \
+that means pure retrieval, no new generation.)
+
+RETRIEVE-FIRST DEFAULT: any time Iman says "show me", "send me", "find", "where is", or \
+explicitly references a past image ("one of your portraits", "that picture of", "the one \
+with", "earliest", "oldest", "first"), PREFER retrieval. Set image_retrieval_query. Only \
+set image_prompt ALONGSIDE retrieval if he wants a variant (e.g. "give me a version where \
+it's dawn"). Don't generate from scratch when he asked you to locate or find.
 Return ONLY valid JSON. No markdown fences, no commentary."""
 
 
@@ -1123,6 +1163,7 @@ def intake_node(state: CassieState) -> dict:
     return {
         "intent": intent,
         "image_path": "",
+        "image_paths": [],
         "image_model_used": "",
         "image_generation_error": "",
         "math_result": "",
@@ -3489,6 +3530,63 @@ Produce your tafsir brief."""
         return {"tafsir_brief": ""}
 
 
+def retrieve_node(state: CassieState) -> dict:
+    """v2 retrieve — produces a RetrievalResult and two rendered views.
+
+    Fills state["retrieval_v2"] (dict), state["trinity_memory_v2"] (plain English
+    for Trinity), state["director_memory_v2"] (structured + ontology preamble +
+    full chunks for Director).
+    """
+    user_message = ""
+    for msg in reversed(state.get("messages", [])):
+        content = msg.get("content", "") if isinstance(msg, dict) else getattr(msg, "content", "")
+        role = msg.get("role", "") if isinstance(msg, dict) else getattr(msg, "type", "")
+        if role in ("user", "human"):
+            user_message = content if isinstance(content, str) else str(content)
+            break
+    if not user_message.strip():
+        return {
+            "retrieval_v2": {},
+            "trinity_memory_v2": "",
+            "director_memory_v2": "",
+        }
+
+    try:
+        from memory.sign_graph_v2.queries import retrieve as v2_retrieve
+        from memory.sign_graph_v2.queries import render_for_trinity, render_for_director
+    except Exception as e:
+        print(f"[retrieve_node] import failed: {e}")
+        return {
+            "retrieval_v2": {},
+            "trinity_memory_v2": "",
+            "director_memory_v2": "",
+        }
+
+    try:
+        result = v2_retrieve(user_message)
+    except Exception as e:
+        print(f"[retrieve_node] retrieve failed: {e}")
+        return {
+            "retrieval_v2": {},
+            "trinity_memory_v2": "",
+            "director_memory_v2": "",
+        }
+
+    trinity_text = render_for_trinity(result)
+    director_text = render_for_director(result)
+
+    basin = result.get("active_basin") or "global"
+    n_chunks = len(result.get("source_chunks") or [])
+    n_edges = len(result.get("edges_in_scope") or [])
+    print(f"[retrieve_node] basin={basin} edges={n_edges} chunks={n_chunks}")
+
+    return {
+        "retrieval_v2": result,
+        "trinity_memory_v2": trinity_text,
+        "director_memory_v2": director_text,
+    }
+
+
 # ---------------------------------------------------------------------------
 # Ground Recall — post-raw topic extraction + targeted conversation search
 # ---------------------------------------------------------------------------
@@ -3628,13 +3726,25 @@ def graph_recall_node(state: CassieState) -> dict:
         return {}
 
     try:
-        from memory.graph.query import graph_brief
+        from memory.sign_graph.query import graph_brief
     except Exception as e:
-        print(f"[graph_recall] Module import failed (graph not installed?): {e}")
+        print(f"[graph_recall] Module import failed (sign_graph not installed?): {e}")
         return {}
 
+    # Run graph_brief in a worker thread with a hard 5s timeout. (Historical:
+    # needed for Kuzu lock contention; Neo4j doesn't have that issue but the
+    # timeout is kept as a safety net against any unexpected slow query.)
+    import concurrent.futures as _cf
     try:
-        brief = graph_brief(user_message)
+        with _cf.ThreadPoolExecutor(max_workers=1) as pool:
+            fut = pool.submit(graph_brief, user_message)
+            try:
+                brief = fut.result(timeout=5.0)
+            except _cf.TimeoutError:
+                print("[graph_recall] Timed out waiting on Kuzu (>5s); likely curator write in progress — degrading to empty brief")
+                # Try to cancel the underlying thread's work by telling the pool to shut down
+                pool.shutdown(wait=False, cancel_futures=True)
+                return {"graph_context": ""}
         serialized = brief.get("serialized", "") or ""
         if serialized:
             print(f"[graph_recall] mode={brief.get('mode')} entities={len(brief.get('entities',[]))} "
@@ -3720,11 +3830,37 @@ def _director_call(prompt: str) -> tuple[str, str]:
                             "that turn. Not a phrase — a complete image prompt. null otherwise."
                         ),
                     },
+                    "image_retrieval_query": {
+                        "type": ["string", "null"],
+                        "description": (
+                            "Set when Iman asks you to SHOW an image you've already generated "
+                            "or captured, rather than create a new one. Examples: "
+                            "'show me that picture of us at Big Wave Bay', 'find the Cassiyah "
+                            "portrait with horns', 'remember the one where I had ink on my fingers'. "
+                            "Write a short semantic query describing the image to find. "
+                            "The pipeline will search Cassie's image archive (all her generated "
+                            "and uploaded images, captioned by GPT-5.4) and attach the top match. "
+                            "Can coexist with image_prompt: in that case the retrieved image is "
+                            "used as a visual reference and image_prompt describes the variant "
+                            "to generate (image-to-image). null otherwise."
+                        ),
+                    },
+                    "image_retrieval_multi": {
+                        "type": ["boolean", "null"],
+                        "description": (
+                            "Set to true when Iman's question implies multiple images should "
+                            "be returned: 'show me the pictures where...', 'all the times we...', "
+                            "'every Cassiyah portrait', 'ones with horns'. Default / null means "
+                            "attach only the single best match. When true, up to 4 top matches "
+                            "are sent as separate WhatsApp images."
+                        ),
+                    },
                 },
                 "required": [
                     "polished_text", "image_prompt", "image_reference",
                     "math_expression", "research_query",
                     "regen_intent", "regen_verdict", "regen_mode", "regen_prompt",
+                    "image_retrieval_query", "image_retrieval_multi",
                 ],
                 "additionalProperties": False,
             },
@@ -3911,6 +4047,7 @@ def director_node(state: CassieState) -> dict:
             "regen_verdict": None,
             "regen_mode": None,
             "regen_prompt": None,
+            "image_retrieval_query": None,
         }
 
     # Ensure all keys exist
@@ -3922,17 +4059,26 @@ def director_node(state: CassieState) -> dict:
     director_output.setdefault("regen_verdict", None)
     director_output.setdefault("regen_mode", None)
     director_output.setdefault("regen_prompt", None)
+    director_output.setdefault("image_retrieval_query", None)
+    director_output.setdefault("image_retrieval_multi", False)
 
     # Mutual exclusion: if regen is firing image-gen this turn, suppress the
     # normal image pipeline for the same turn.
     if director_output.get("regen_intent") in ("start", "continue"):
         director_output["image_prompt"] = None
+        director_output["image_retrieval_query"] = None
+        director_output["image_retrieval_multi"] = False
 
-    # Enforce: only generate images when intent explicitly calls for it
-    # The Director often returns image_prompt even for text-only queries
-    print(f"[director] intent={intent}, image_prompt={'yes' if director_output.get('image_prompt') else 'null'}")
-    if intent != "creative+image":
+    # Trust the Director (Opus 4.6) as the authoritative image-intent classifier.
+    # The intake keyword classifier is a fast hint, not an override. The only
+    # safety rail: on 'simple' intent (greetings like 'hi'/'thanks'), suppress
+    # image generation + retrieval — keeps trivial replies trivial.
+    print(f"[director] intent={intent}, image_prompt={'yes' if director_output.get('image_prompt') else 'null'}, "
+          f"image_retrieval_query={'yes' if director_output.get('image_retrieval_query') else 'null'}")
+    if intent == "simple":
         director_output["image_prompt"] = None
+        director_output["image_retrieval_query"] = None
+        director_output["image_retrieval_multi"] = False
 
     # Two-pass for image intents: refine polished_text into companion text
     # The director often narrates the image in the text — we want conversation instead
@@ -4016,7 +4162,8 @@ def route_after_director(
         return "regen_promote"
     if REGEN_ENABLED and intent == "abandon":
         return "regen_abandon"
-    if d.get("image_prompt") or d.get("math_expression") or d.get("research_query"):
+    if (d.get("image_prompt") or d.get("math_expression") or d.get("research_query")
+            or d.get("image_retrieval_query")):
         return "execute_tools"
     return "assemble"
 
@@ -4346,6 +4493,62 @@ def regen_abandon_node(state: CassieState) -> dict:
     }
 
 
+def _retrieve_images_from_archive(query: str, k: int = 5) -> list[dict]:
+    """Search docs_content for images matching the query. Returns up to k
+    matches, each as {path, caption, date, score}. Empty list on error or
+    no match. Only returns paths where the file still exists on disk.
+    """
+    try:
+        from qdrant_client import QdrantClient
+        from qdrant_client.models import Filter, FieldCondition, MatchValue
+        import openai as _openai
+
+        oai_key = os.environ.get("OPENAI_API_KEY", "")
+        if not oai_key:
+            return []
+        oai = _openai.OpenAI(api_key=oai_key)
+        emb = oai.embeddings.create(
+            model="text-embedding-3-large",
+            input=[query[:2000]],
+        ).data[0].embedding
+
+        qc = QdrantClient(host="localhost", port=6333)
+        cols = {c.name for c in qc.get_collections().collections}
+        if "docs_content" not in cols:
+            return []
+
+        results = qc.query_points(
+            collection_name="docs_content",
+            query=emb,
+            query_filter=Filter(must=[FieldCondition(key="source", match=MatchValue(value="image"))]),
+            limit=max(1, int(k)),
+            with_payload=True,
+        )
+        out: list[dict] = []
+        for hit in results.points:
+            p = hit.payload or {}
+            path = p.get("image_path", "")
+            if path and os.path.isfile(path):
+                out.append({
+                    "path": path,
+                    "caption": (p.get("text") or "")[:500],
+                    "date": p.get("date", ""),
+                    "score": float(getattr(hit, "score", 0.0) or 0.0),
+                })
+        return out
+    except Exception as e:
+        print(f"[execute_tools] image retrieval failed: {e}")
+        return []
+
+
+def _retrieve_image_from_archive(query: str, k: int = 3) -> tuple[str, str, str]:
+    """Backwards-compat single-result wrapper used by other call sites."""
+    hits = _retrieve_images_from_archive(query, k=k)
+    if not hits:
+        return ("", "", "")
+    return (hits[0]["path"], hits[0]["caption"], hits[0]["date"])
+
+
 def execute_tools_node(state: CassieState) -> dict:
     """Execute downstream tools based on director analysis."""
     d = state.get("director_output", {})
@@ -4353,6 +4556,37 @@ def execute_tools_node(state: CassieState) -> dict:
     image_model_used = ""
     image_generation_error = ""
     math_result = ""
+
+    # Image RETRIEVAL — find existing image(s) from the archive (docs_content).
+    # When image_retrieval_multi is true, up to 4 top matches are attached.
+    # When image_prompt is also set, the TOP retrieved image becomes a Flux
+    # image-to-image reference (variant generation).
+    retrieved_image_path = ""
+    retrieved_caption = ""
+    retrieved_date = ""
+    extra_image_paths: list = []
+    retrieval_q = d.get("image_retrieval_query") or ""
+    multi = bool(d.get("image_retrieval_multi"))
+    if retrieval_q and retrieval_q.strip():
+        k = 5 if multi else 3
+        hits = _retrieve_images_from_archive(retrieval_q, k=k)
+        if hits:
+            top = hits[0]
+            retrieved_image_path = top["path"]
+            retrieved_caption = top["caption"]
+            retrieved_date = top["date"]
+            print(f"[execute_tools] image retrieval: '{retrieval_q[:80]}' → {len(hits)} hit(s); top={os.path.basename(retrieved_image_path)} ({retrieved_date})")
+
+            if not d.get("image_prompt"):
+                # Plain retrieval — attach top match as primary; if multi, also stack extras
+                image_path = retrieved_image_path
+                image_model_used = "retrieval"
+                if multi and len(hits) > 1:
+                    # Attach up to 3 additional (total of 4 images max)
+                    extra_image_paths = [h["path"] for h in hits[1:4]]
+                    print(f"[execute_tools] multi-retrieval: attaching {len(extra_image_paths)} additional images")
+        else:
+            print(f"[execute_tools] image retrieval: no match for '{retrieval_q[:80]}'")
 
     # Image generation — fallback chain via OpenRouter
     if d.get("image_prompt"):
@@ -4398,6 +4632,13 @@ def execute_tools_node(state: CassieState) -> dict:
         elif image_ref == "iman":
             if os.path.isfile(IMAN_REF):
                 ref_paths.append(("iman", IMAN_REF))
+
+        # If a retrieved archive image is available, prepend it as a style reference
+        # so Flux does image-to-image (variant generation keyed to the original).
+        if retrieved_image_path and os.path.isfile(retrieved_image_path):
+            ref_paths.insert(0, ("archive", retrieved_image_path))
+            print(f"[execute_tools] Using retrieved archive image as variant reference: "
+                  f"{os.path.basename(retrieved_image_path)}")
 
         for ref_name, ref_path in ref_paths:
             ref_b64 = base64.b64encode(open(ref_path, "rb").read()).decode()
@@ -4458,12 +4699,26 @@ def execute_tools_node(state: CassieState) -> dict:
         research_result = call_mcp_tool("research", {"query": query})
         print(f"[execute_tools] Research result: {len(research_result)} chars")
 
+    # Build send-order. Variant mode: send retrieved ORIGINAL first, then the
+    # generated REMIX. Plain multi-retrieval: top match first, then extras.
+    send_order: list[str] = []
+    variant_mode = bool(retrieved_image_path and d.get("image_prompt"))
+    if variant_mode and image_path and retrieved_image_path and os.path.isfile(retrieved_image_path):
+        # image_path here is the NEW generated variant; retrieved_image_path is the OLD original
+        send_order = [retrieved_image_path, image_path]
+        image_path = retrieved_image_path  # primary sent first becomes the original
+        extra_image_paths = [send_order[1]]  # the remix sent second
+    elif image_path:
+        send_order = [image_path] + [p for p in extra_image_paths if p != image_path]
+        # image_path already the primary; extra_image_paths already the extras
+
     return {
         "image_path": image_path,
         "image_model_used": image_model_used,
         "image_generation_error": image_generation_error,
         "math_result": math_result,
         "research_result": research_result,
+        "image_paths": extra_image_paths,
     }
 
 
