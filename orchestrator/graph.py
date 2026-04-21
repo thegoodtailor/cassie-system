@@ -24,7 +24,7 @@ import subprocess
 import sys
 import time
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Annotated, Literal
 
 # Shared deep recall module for smarter memory retrieval
@@ -1163,6 +1163,21 @@ def intake_node(state: CassieState) -> dict:
     incoming_image = state.get("user_image", "")
     regen_active = state.get("regen_active", False)
 
+    # TTL — regen sessions must be promoted or abandoned. If the user walked away
+    # (left regen_active=True without closing), expire after 60 min so the
+    # prev_candidate injection below doesn't leak forever.
+    if regen_active:
+        started_at = state.get("regen_started_at", "")
+        if started_at:
+            try:
+                started = datetime.fromisoformat(started_at.replace("Z", "+00:00"))
+                if datetime.now(timezone.utc) - started > timedelta(minutes=60):
+                    print(f"[intake] regen session expired (started {started_at}); force-abandoning")
+                    regen_active = False
+                    prev_candidate = ""
+            except Exception:
+                pass
+
     # STALE-IMAGE GUARD — when no regen is active, only keep user_image if
     # this turn's latest user message actually carries a multimodal image_url
     # content block. Otherwise the stale path from a previous turn (e.g. a
@@ -1188,7 +1203,12 @@ def intake_node(state: CassieState) -> dict:
             incoming_image = ""
 
     injected_image = incoming_image
-    if not incoming_image and prev_candidate and os.path.isfile(prev_candidate):
+    # Only inject prev_candidate when regen is actively in progress. Without this
+    # check, a long-abandoned regen session (where regen_active stayed True because
+    # the user never promoted or abandoned) keeps reinjecting the last candidate
+    # as if it were today's upload — which puts Trinity on the vision path every
+    # turn and flattens the voice away from the LoRA.
+    if not incoming_image and regen_active and prev_candidate and os.path.isfile(prev_candidate):
         injected_image = prev_candidate
 
     # v2 intent — conservative keyword match
@@ -1206,6 +1226,22 @@ def intake_node(state: CassieState) -> dict:
         elif re.match(r"^\s*(no|cancel|don't|different)\b",
                       user_message, re.IGNORECASE):
             intent_v2 = "correction_reject"
+
+    # correction_propose — cheap pattern prefilter for "no that's wrong" shapes.
+    # Only fires when the latest assistant message exists (i.e. there's something
+    # to correct) and the user isn't already confirming/rejecting a pending one.
+    if intent_v2 == "default" and user_message:
+        try:
+            from memory.sign_graph_v2.correction import _pattern_prefilter
+            has_prior_assistant = any(
+                (m.get("role") if isinstance(m, dict) else getattr(m, "type", ""))
+                in ("assistant", "ai")
+                for m in state.get("messages", [])
+            )
+            if has_prior_assistant and _pattern_prefilter(user_message):
+                intent_v2 = "correction_propose"
+        except Exception as _corr_err:
+            print(f"[intake] correction prefilter skipped: {_corr_err}")
 
     # TTL: decrement turns_remaining on pending_correction when message is neither confirm nor reject
     pending = dict(prior_pending) if prior_pending else {}
@@ -1241,6 +1277,8 @@ def intake_node(state: CassieState) -> dict:
         "exchange_id": str(uuid.uuid4())[:8],
         "tau_tgt": datetime.now(timezone.utc).isoformat(),
         "user_image": injected_image,
+        "regen_active": regen_active,
+        "regen_last_candidate_path": prev_candidate,
     }
 
 
@@ -4042,10 +4080,23 @@ def director_node(state: CassieState) -> dict:
 
 def route_after_director(
     state: CassieState,
-) -> Literal["director_drill", "execute_tools", "regen_propose", "regen_promote", "regen_abandon", "assemble"]:
-    """Route: drill pass first (if wants_deeper set), then regen nodes, then normal chain."""
+) -> Literal[
+    "director_drill", "correction_propose", "correction_apply",
+    "execute_tools", "regen_propose", "regen_promote", "regen_abandon", "assemble",
+]:
+    """Route: v2 correction → drill → regen → tools → assemble.
+
+    Corrections are routed before drill so that a "no that's wrong" turn doesn't
+    accidentally trigger a deeper research pass on the edge we're about to retract.
+    """
+    intent_v2 = state.get("intent_v2", "default")
+    if intent_v2 == "correction_apply":
+        return "correction_apply"
+    if intent_v2 == "correction_propose":
+        return "correction_propose"
+
     d = state.get("director_output", {}) or {}
-    # Drill pass takes priority — fires before regen/tools
+    # Drill pass — fires before regen/tools when Director flagged wants_deeper
     if d.get("wants_deeper"):
         return "director_drill"
     intent = d.get("regen_intent")
@@ -4215,17 +4266,23 @@ def correction_propose_node(state: CassieState) -> dict:
 
     candidate = detect_correction_intent(user_message, state)
     if not candidate:
-        return {"final_response": "", "pending_correction": {}}
+        # Pattern tripped but Sonnet disagreed — fall through to normal assembly.
+        # Keep director_output polished_text so assemble uses Cassie's actual reply.
+        return {"pending_correction": {}}
 
     target = locate_target_edge(candidate)
     if not target:
+        msg = (
+            "Hmm, I hear you — you're saying "
+            + (candidate.get("proposed_fix") or "that's different") + ". "
+            "I don't find a specific claim to retract in my graph yet — could have been "
+            "something I just said without storing. Noted in this turn though."
+        )
+        existing = dict(state.get("director_output") or {})
+        existing["polished_text"] = msg
         return {
-            "final_response": (
-                "Hmm, I hear you — you're saying "
-                + (candidate.get("proposed_fix") or "that's different") + ". "
-                "I don't find a specific claim to retract in my graph yet — could have been "
-                "something I just said without storing. Noted in this turn though."
-            ),
+            "final_response": msg,
+            "director_output": existing,
             "pending_correction": {},
         }
 
@@ -4248,8 +4305,11 @@ def correction_propose_node(state: CassieState) -> dict:
         }
 
     print(f"[correction_propose] target={target.get('edge_id')[:16]}... basin={target.get('basin')}")
+    existing = dict(state.get("director_output") or {})
+    existing["polished_text"] = proposal
     return {
         "final_response": proposal,
+        "director_output": existing,
         "pending_correction": {
             "awaiting_confirm": True,
             "target_edge_id": target["edge_id"],
@@ -5298,9 +5358,13 @@ def correction_apply_node(state: CassieState) -> dict:
     from memory.sign_graph_v2.correction import apply_correction
 
     pending = state.get("pending_correction") or {}
+    existing = dict(state.get("director_output") or {})
     if not pending.get("awaiting_confirm") or not pending.get("target_edge_id"):
+        msg = "There's no pending correction to apply."
+        existing["polished_text"] = msg
         return {
-            "final_response": "There's no pending correction to apply.",
+            "final_response": msg,
+            "director_output": existing,
             "pending_correction": {},
         }
 
@@ -5313,8 +5377,11 @@ def correction_apply_node(state: CassieState) -> dict:
         )
     except Exception as e:
         print(f"[correction_apply] error: {e}")
+        err_msg = f"Hit a snag applying the correction: {e}"
+        existing["polished_text"] = err_msg
         return {
-            "final_response": f"Hit a snag applying the correction: {e}",
+            "final_response": err_msg,
+            "director_output": existing,
             "pending_correction": pending,
         }
 
@@ -5329,8 +5396,10 @@ def correction_apply_node(state: CassieState) -> dict:
         msg = "Done. Retracted the old claim; no replacement edge provided."
 
     print(f"[correction_apply] {msg}")
+    existing["polished_text"] = msg
     return {
         "final_response": msg,
+        "director_output": existing,
         "pending_correction": {},
     }
 
@@ -5390,6 +5459,8 @@ def build_graph():
         route_after_director,
         {
             "director_drill": "director_drill",
+            "correction_propose": "correction_propose",
+            "correction_apply": "correction_apply",
             "execute_tools": "execute_tools",
             "regen_propose": "regen_propose",
             "regen_promote": "regen_promote",
@@ -5398,10 +5469,15 @@ def build_graph():
         },
     )
     graph.add_edge("director_drill", "execute_tools")
-    # director_direct / correction_propose / correction_apply nodes remain
-    # defined in the module but are no longer reachable from the compiled
-    # graph. They can be re-wired after the silent-drop bug between
-    # director_direct and msg.reply_text is diagnosed in a fresh session.
+    # Correction nodes: propose drafts a pending_correction + reply asking for
+    # confirm; apply runs the retract + counter-edge writes. Both short-circuit
+    # the normal execute_tools chain — they only need the final_response they
+    # set themselves, and feed directly into assemble_node.
+    graph.add_edge("correction_propose", "assemble")
+    graph.add_edge("correction_apply", "assemble")
+    # director_direct remains defined but unreachable — drill now rides on the
+    # straight Trinity→Director pipe via director_drill_node, so we don't need
+    # director_direct until the silent-drop bug is diagnosed.
     graph.add_edge("execute_tools", "assemble")
     graph.add_edge("regen_propose", "assemble")
     graph.add_edge("regen_promote", "assemble")
