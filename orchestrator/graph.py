@@ -4091,9 +4091,20 @@ def director_direct_node(state: CassieState) -> dict:
         text = "(memory lookup hit a snag — try asking again in a moment)"
 
     print(f"[director_direct] produced {len(text)} chars")
+    # director_output must be a dict matching the Director JSON shape — execute_tools_node
+    # reads fields like image_retrieval_query / image_prompt / regen_intent from it.
+    director_output_dict = {
+        "final_response": text,
+        "image_prompt": None,
+        "image_retrieval_query": None,
+        "image_retrieval_multi": False,
+        "regen_intent": "none",
+        "wants_deeper": [],
+        "used_tools": [],
+    }
     return {
-        "director_output": text,
-        "director_structured": {"wants_deeper": [], "final_response": text},
+        "director_output": director_output_dict,
+        "director_structured": director_output_dict,
         "final_response": text,
     }
 
