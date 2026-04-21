@@ -507,6 +507,10 @@ def write_pipeline_trace(
     director_prompt_context: str = "",
     topological_evidence: dict | None = None,
     recall_decision: dict | None = None,
+    trinity_memory_v2: str = "",
+    director_memory_v2: str = "",
+    retrieval_v2: dict | None = None,
+    intent_v2: str = "",
 ) -> None:
     """Write a complete pipeline trace — the canonical archive of new conversations.
 
@@ -534,6 +538,10 @@ def write_pipeline_trace(
         "director_prompt_context": director_prompt_context,
         "topological_evidence": topological_evidence,
         "recall_decision": recall_decision,
+        "trinity_memory_v2": trinity_memory_v2,
+        "director_memory_v2": director_memory_v2,
+        "retrieval_v2": retrieval_v2,
+        "intent_v2": intent_v2,
     }
 
     Path(PIPELINE_TRACES_JSONL).parent.mkdir(parents=True, exist_ok=True)

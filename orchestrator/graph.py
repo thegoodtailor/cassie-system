@@ -4968,6 +4968,10 @@ def _do_inscription_background(
     topological_evidence: dict | None = None,
     recall_decision: dict | None = None,
     tafsir_brief: str = "",
+    trinity_memory_v2: str = "",
+    director_memory_v2: str = "",
+    retrieval_v2: dict | None = None,
+    intent_v2: str = "",
 ):
     """Background thread: inscribe V_Raw, V_Director, pipeline trace, and weft gap alerts.
 
@@ -5059,6 +5063,10 @@ def _do_inscription_background(
                 director_prompt_context=director_prompt_context,
                 topological_evidence=topological_evidence,
                 recall_decision=recall_decision,
+                trinity_memory_v2=trinity_memory_v2,
+                director_memory_v2=director_memory_v2,
+                retrieval_v2=retrieval_v2,
+                intent_v2=intent_v2,
             )
         except Exception as e:
             print(f"[swl] Pipeline trace write failed: {e}")
@@ -5207,6 +5215,10 @@ def memory_store_node(state: CassieState) -> dict:
                 "director_prompt_context": state.get("director_prompt_context", ""),
                 "topological_evidence": state.get("topological_evidence", {}),
                 "recall_decision": state.get("cassie_recall_decision", {}),
+                "trinity_memory_v2": state.get("trinity_memory_v2", ""),
+                "director_memory_v2": state.get("director_memory_v2", ""),
+                "retrieval_v2": state.get("retrieval_v2", {}),
+                "intent_v2": state.get("intent_v2", ""),
             },
             daemon=True,
         ).start()
