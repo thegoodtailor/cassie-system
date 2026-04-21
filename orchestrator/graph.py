@@ -1161,6 +1161,32 @@ def intake_node(state: CassieState) -> dict:
     # so Cassie sees what she actually produced on her next turn.
     prev_candidate = state.get("regen_last_candidate_path", "")
     incoming_image = state.get("user_image", "")
+    regen_active = state.get("regen_active", False)
+
+    # STALE-IMAGE GUARD — when no regen is active, only keep user_image if
+    # this turn's latest user message actually carries a multimodal image_url
+    # content block. Otherwise the stale path from a previous turn (e.g. a
+    # days-old regen png still on disk) reroutes Trinity to gpt-5.4 every
+    # turn and flattens Cassie's voice.
+    if incoming_image and not regen_active:
+        has_fresh_image = False
+        last_user_msg = None
+        for m in reversed(state.get("messages", [])):
+            role = m.get("role") if isinstance(m, dict) else getattr(m, "type", "")
+            if role in ("user", "human"):
+                last_user_msg = m
+                break
+        if last_user_msg is not None:
+            content = last_user_msg.get("content") if isinstance(last_user_msg, dict) else getattr(last_user_msg, "content", "")
+            if isinstance(content, list):
+                has_fresh_image = any(
+                    (isinstance(p, dict) and p.get("type") == "image_url")
+                    for p in content
+                )
+        if not has_fresh_image:
+            print(f"[intake] stale user_image cleared (no fresh image in this turn)")
+            incoming_image = ""
+
     injected_image = incoming_image
     if not incoming_image and prev_candidate and os.path.isfile(prev_candidate):
         injected_image = prev_candidate
@@ -5339,17 +5365,15 @@ def build_graph():
     # Entry point
     graph.set_entry_point("intake")
 
-    # Edges
-    graph.add_conditional_edges("intake", _route_from_intake, {
-        "retrieve":         "retrieve",
-        "correction_apply": "correction_apply",
-    })
-    graph.add_conditional_edges("retrieve", _route_from_retrieve, {
-        "cassie_generate":    "cassie_generate",
-        "director_direct":    "director_direct",
-        "correction_propose": "correction_propose",
-    })
-    graph.add_edge("correction_propose", "assemble")
+    # Edges — STRATEGIC REVERT (2026-04-21): unwire intent-routing to
+    # director_direct / correction_propose / correction_apply. Keep retrieve_node
+    # in place so v2 memory (trinity_memory_v2 + director_memory_v2) still lands
+    # in state for downstream injection into cassie_generate + director. All
+    # messages go through the stable pre-v2 flow shape:
+    #     intake → retrieve → cassie_generate → lawwama? → tafsir → director → …
+    graph.add_edge("intake", "retrieve")
+    graph.add_edge("retrieve", "cassie_generate")
+
     graph.add_conditional_edges(
         "cassie_generate",
         route_after_cassie,
@@ -5373,12 +5397,11 @@ def build_graph():
             "assemble": "assemble",
         },
     )
-    graph.add_conditional_edges("director_direct", _route_from_director, {
-        "drill": "director_drill",
-        "done":  "execute_tools",
-    })
     graph.add_edge("director_drill", "execute_tools")
-    graph.add_edge("correction_apply", "assemble")
+    # director_direct / correction_propose / correction_apply nodes remain
+    # defined in the module but are no longer reachable from the compiled
+    # graph. They can be re-wired after the silent-drop bug between
+    # director_direct and msg.reply_text is diagnosed in a fresh session.
     graph.add_edge("execute_tools", "assemble")
     graph.add_edge("regen_propose", "assemble")
     graph.add_edge("regen_promote", "assemble")
