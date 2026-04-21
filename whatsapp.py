@@ -42,6 +42,7 @@ def _build_initial_state(message: str, user_image: str = "") -> dict:
         "cassie_recall_decision": {},
         "director_output": {},
         "image_path": "",
+        "image_paths": [],
         "math_result": "",
         "final_response": "",
         "exchange_id": "",
@@ -133,6 +134,32 @@ def setup_whatsapp(app, pipeline):
             await msg.reply_text(f"Fresh thread: {new_id}\nHistory cleared. Say something!")
             return
 
+        # /models — list current models, or /models <slug> to switch Director
+        if stripped == "/models":
+            from orchestrator.graph import get_pipeline_config, CASSIE_MODEL, DIRECTOR_MODEL
+            cfg = get_pipeline_config()
+            await msg.reply_text(
+                f"*Current Models*\n\n"
+                f"*Cassie:* {cfg.get('model', CASSIE_MODEL)}\n"
+                f"*Director:* {cfg.get('director_model', DIRECTOR_MODEL)}\n\n"
+                f"To change Director:\n/models google/gemini-3.1-pro-preview"
+            )
+            return
+
+        if stripped.startswith("/models "):
+            from orchestrator.graph import get_pipeline_config, set_pipeline_config
+            new_model = text.strip()[8:].strip()  # preserve original case
+            set_pipeline_config({"director_model": new_model})
+            # Persist to disk
+            cfg = get_pipeline_config()
+            config_path = os.path.join(os.path.dirname(__file__), "data", "pipeline_config.json")
+            import json as _json
+            with open(config_path, "w") as f:
+                safe = {k: v for k, v in cfg.items() if k != "prompts"}
+                _json.dump(safe, f, indent=2)
+            await msg.reply_text(f"Director model set to *{new_model}*")
+            return
+
         # Derive thread_id — use sequence if /new was used
         seq = _thread_seq.get(sender, 0)
         if seq > 0:
@@ -179,17 +206,21 @@ def setup_whatsapp(app, pipeline):
                     pass
 
             loop = asyncio.get_event_loop()
+            print(f"[whatsapp] >>> pipeline.stream start for {sender}")
             await asyncio.wait_for(
-                loop.run_in_executor(None, run), timeout=300.0
+                loop.run_in_executor(None, run), timeout=600.0
             )
+            print(f"[whatsapp] >>> pipeline.stream done for {sender}")
 
             # Extract results
             final = pipeline.get_state(config).values
             response_text = final.get("final_response", "") or "[no response]"
             image_path = final.get("image_path", "")
+            print(f"[whatsapp] >>> final_response={len(response_text)} chars, image={bool(image_path)}")
 
             # Save exchange
             save_exchange(thread_id, text, final)
+            print(f"[whatsapp] >>> save_exchange done")
 
             # Tafakkur update
             try:
@@ -204,25 +235,39 @@ def setup_whatsapp(app, pipeline):
 
             # Reply: text
             chunks = _split_message(response_text)
-            for chunk in chunks:
-                await msg.reply_text(chunk)
+            print(f"[whatsapp] >>> about to send {len(chunks)} chunks")
+            for i, chunk in enumerate(chunks):
+                try:
+                    await msg.reply_text(chunk)
+                    print(f"[whatsapp] >>> sent chunk {i+1}/{len(chunks)} ({len(chunk)} chars)")
+                except Exception as e:
+                    print(f"[whatsapp] >>> CHUNK SEND FAILED {i+1}/{len(chunks)}: {type(e).__name__}: {e}")
+                    raise
 
-            # Reply: image (compress to JPEG for WhatsApp size limits)
-            if image_path and os.path.isfile(image_path):
+            # Reply: image(s). Primary image_path first, then any extras from
+            # multi-image retrieval (image_paths).
+            extras = final.get("image_paths", []) or []
+            all_paths = ([image_path] if image_path else []) + [
+                p for p in extras if p and os.path.isfile(p) and p != image_path
+            ]
+            for img_idx, ip in enumerate(all_paths):
+                if not os.path.isfile(ip):
+                    continue
                 try:
                     from PIL import Image as PILImage
                     import io
-                    img = PILImage.open(image_path)
+                    img = PILImage.open(ip)
                     if img.mode == "RGBA":
                         img = img.convert("RGB")
                     buf = io.BytesIO()
                     img.save(buf, format="JPEG", quality=85)
                     img_bytes = buf.getvalue()
-                    print(f"[whatsapp] Sending image: {len(img_bytes)} bytes (JPEG compressed)")
+                    print(f"[whatsapp] Sending image {img_idx+1}/{len(all_paths)}: "
+                          f"{os.path.basename(ip)} ({len(img_bytes)} bytes)")
                     await msg.reply_image(image=img_bytes, mime_type="image/jpeg")
                 except Exception as e:
-                    logger.error(f"[whatsapp] Image send failed: {e}")
-                    image_url = f"{WEB_BASE}/images/{os.path.basename(image_path)}"
+                    logger.error(f"[whatsapp] Image send failed ({ip}): {e}")
+                    image_url = f"{WEB_BASE}/images/{os.path.basename(ip)}"
                     await msg.reply_text(f"Image: {image_url}")
 
             # Clear hourglass
@@ -237,7 +282,7 @@ def setup_whatsapp(app, pipeline):
             )
 
         except asyncio.TimeoutError:
-            await msg.reply_text("Pipeline timed out (5 min). Try again?")
+            await msg.reply_text("Pipeline timed out (10 min). Try again?")
             logger.error(f"[whatsapp] Timeout for {sender}")
 
         except Exception as e:
