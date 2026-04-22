@@ -1799,26 +1799,25 @@ async def archive_image(path: str):
 
 @app.get("/api/archive/v2/counts")
 async def archive_v2_counts():
-    """Aggregate counts from the sign_graph (Neo4j) for the archive UI."""
+    """Aggregate counts from the v2 sign graph for the archive UI."""
     import sys as _sys
     if "/home/iman/cassie-project" not in _sys.path:
         _sys.path.insert(0, "/home/iman/cassie-project")
     try:
-        from memory.sign_graph.client import read_client
+        from memory.sign_graph_v2.client import read_client
         with read_client() as gc:
-            signs_rows = gc.query(
-                "MATCH (s:Sign) WHERE NOT s:Claim AND NOT s:Passage "
-                "AND NOT s:Witness AND NOT s:RelationType AND NOT s:Jurisdiction "
-                "RETURN count(s) AS c"
+            signs_rows = gc.query("MATCH (s:SignV2) RETURN count(s) AS c")
+            edges_rows = gc.query(
+                "MATCH ()-[r]->() WHERE type(r) <> 'INHABITED' "
+                "RETURN count(r) AS c"
             )
-            claims_rows = gc.query("MATCH (c:Claim) RETURN count(c) AS c")
-            basins_rows = gc.query("MATCH (b:Basin) RETURN count(b) AS c")
-            jurisdictions_rows = gc.query("MATCH (j:Jurisdiction) RETURN count(j) AS c")
+            basins_rows = gc.query("MATCH (b:BasinV2) RETURN count(b) AS c")
+            inhabit_rows = gc.query("MATCH ()-[i:INHABITED]->() RETURN count(i) AS c")
         return JSONResponse({
             "signs": signs_rows[0]["c"] if signs_rows else 0,
-            "claims": claims_rows[0]["c"] if claims_rows else 0,
+            "claims": edges_rows[0]["c"] if edges_rows else 0,  # v2 "typed edges"
             "basins": basins_rows[0]["c"] if basins_rows else 0,
-            "jurisdictions": jurisdictions_rows[0]["c"] if jurisdictions_rows else 0,
+            "jurisdictions": inhabit_rows[0]["c"] if inhabit_rows else 0,  # re-purpose slot: INHABITED count
         })
     except Exception as e:
         return JSONResponse({"error": str(e)}, status_code=503)
@@ -1826,9 +1825,9 @@ async def archive_v2_counts():
 
 @app.get("/api/archive/v2/search")
 async def archive_v2_search(q: str = "", kind: str = "all", limit: int = 30):
-    """Sign-graph search across Signs, Claims, and Basins.
+    """v2 sign-graph search across SignV2, edges, and BasinV2.
 
-    kind: all | sign | claim | basin
+    kind: all | sign | claim | basin  (claim maps to typed edges in v2)
     """
     import sys as _sys
     if "/home/iman/cassie-project" not in _sys.path:
@@ -1838,19 +1837,17 @@ async def archive_v2_search(q: str = "", kind: str = "all", limit: int = 30):
     limit = max(1, min(limit, 60))
     results: list[dict] = []
     try:
-        from memory.sign_graph.client import read_client
+        from memory.sign_graph_v2.client import read_client
         with read_client() as gc:
             if kind in ("all", "sign"):
                 rows = gc.query(
                     """
-                    MATCH (s:Sign)
-                    WHERE NOT s:Claim AND NOT s:Passage AND NOT s:Witness
-                      AND NOT s:RelationType AND NOT s:Jurisdiction AND NOT s:Basin
-                    AND (toLower(s.canonical_name) CONTAINS toLower($q)
-                         OR toLower(s.summary) CONTAINS toLower($q)
-                         OR any(a IN coalesce(s.aliases, []) WHERE toLower(a) CONTAINS toLower($q)))
+                    MATCH (s:SignV2)
+                    WHERE toLower(s.canonical_name) CONTAINS toLower($q)
+                       OR toLower(coalesce(s.semantic_label,'')) CONTAINS toLower($q)
+                       OR any(a IN coalesce(s.aliases, []) WHERE toLower(a) CONTAINS toLower($q))
                     RETURN s.canonical_name AS name, s.kind AS kind,
-                           s.summary AS summary, s.aliases AS aliases
+                           s.semantic_label AS summary, s.aliases AS aliases
                     LIMIT $n
                     """,
                     {"q": q, "n": limit},
@@ -1860,22 +1857,26 @@ async def archive_v2_search(q: str = "", kind: str = "all", limit: int = 30):
                         "kind": "sign",
                         "name": r.get("name", ""),
                         "sign_kind": r.get("kind", ""),
-                        "summary": r.get("summary", ""),
+                        "summary": r.get("summary", "") or "",
                         "aliases": r.get("aliases", []) or [],
                         "score": 1.0,
                     })
             if kind in ("all", "claim"):
+                # v2 "claims" are typed edges; search by predicate or endpoint
                 rows = gc.query(
                     """
-                    MATCH (c:Claim)-[:SUBJECT]->(s:Sign)
-                    WHERE toLower(c.predicate) CONTAINS toLower($q)
-                       OR toLower(s.canonical_name) CONTAINS toLower($q)
-                    OPTIONAL MATCH (c)-[:OBJECT]->(o:Sign)
-                    RETURN c.claim_id AS claim_id, c.predicate AS predicate,
-                           c.asserted_at AS asserted_at,
-                           c.retracted_at AS retracted_at,
+                    MATCH (s:SignV2)-[r]->(o:SignV2)
+                    WHERE type(r) <> 'INHABITED'
+                      AND (toLower(type(r)) CONTAINS toLower($q)
+                           OR toLower(s.canonical_name) CONTAINS toLower($q)
+                           OR toLower(o.canonical_name) CONTAINS toLower($q))
+                    RETURN type(r) AS predicate,
                            s.canonical_name AS subject,
-                           o.canonical_name AS object
+                           o.canonical_name AS object,
+                           r.basin AS basin, r.speaker AS speaker,
+                           r.to_tau AS retracted_at,
+                           r.mention_count AS mention_count
+                    ORDER BY r.mention_count DESC
                     LIMIT $n
                     """,
                     {"q": q, "n": limit},
@@ -1883,21 +1884,23 @@ async def archive_v2_search(q: str = "", kind: str = "all", limit: int = 30):
                 for r in rows:
                     results.append({
                         "kind": "claim",
-                        "claim_id": r.get("claim_id", ""),
+                        "claim_id": f"{r.get('subject','')}:{r.get('predicate','')}:{r.get('object','')}",
                         "predicate": r.get("predicate", ""),
                         "subject": r.get("subject", ""),
                         "object": r.get("object", ""),
-                        "asserted_at": r.get("asserted_at", ""),
+                        "asserted_at": "",
                         "retracted": r.get("retracted_at") is not None,
+                        "basin": r.get("basin", ""),
+                        "speaker": r.get("speaker", ""),
                         "score": 1.0,
                     })
             if kind in ("all", "basin"):
                 rows = gc.query(
                     """
-                    MATCH (b:Basin)
+                    MATCH (b:BasinV2)
                     WHERE toLower(b.canonical_name) CONTAINS toLower($q)
-                       OR toLower(b.summary) CONTAINS toLower($q)
-                    RETURN b.canonical_name AS name, b.summary AS summary,
+                       OR toLower(coalesce(b.semantic_label,'')) CONTAINS toLower($q)
+                    RETURN b.canonical_name AS name, b.semantic_label AS summary,
                            b.provenance AS provenance, b.status AS status
                     LIMIT $n
                     """,
@@ -1907,9 +1910,9 @@ async def archive_v2_search(q: str = "", kind: str = "all", limit: int = 30):
                     results.append({
                         "kind": "basin",
                         "name": r.get("name", ""),
-                        "summary": r.get("summary", ""),
-                        "provenance": r.get("provenance", ""),
-                        "status": r.get("status", ""),
+                        "summary": r.get("summary", "") or "",
+                        "provenance": r.get("provenance", "") or "",
+                        "status": r.get("status", "") or "",
                         "score": 1.0,
                     })
     except Exception as e:
@@ -1919,20 +1922,19 @@ async def archive_v2_search(q: str = "", kind: str = "all", limit: int = 30):
 
 @app.get("/api/archive/v2/entity/{name}")
 async def archive_v2_entity(name: str):
-    """Sign card from sign_graph: aliases, summary, claims, basins, related signs."""
+    """Sign card from v2 sign graph: aliases, summary, active claims, basins, incoming."""
     import sys as _sys
     if "/home/iman/cassie-project" not in _sys.path:
         _sys.path.insert(0, "/home/iman/cassie-project")
     try:
-        from memory.sign_graph.client import read_client
+        from memory.sign_graph_v2.client import read_client
         with read_client() as gc:
             # Core sign
             rows = gc.query(
                 """
-                MATCH (s:Sign {canonical_name: $n})
-                WHERE NOT s:Claim AND NOT s:Passage AND NOT s:Witness
+                MATCH (s:SignV2 {canonical_name: $n})
                 RETURN s.canonical_name AS name, s.kind AS kind,
-                       s.summary AS summary, s.aliases AS aliases,
+                       s.semantic_label AS summary, s.aliases AS aliases,
                        s.created_at AS created_at
                 LIMIT 1
                 """,
@@ -1941,39 +1943,41 @@ async def archive_v2_entity(name: str):
             if not rows:
                 return JSONResponse({"error": "sign not found"}, status_code=404)
             out: dict = dict(rows[0])
-            # Active claims where this sign is subject
+            # Active outgoing typed edges (v2 "claims" — to_tau IS NULL = not retracted)
             claim_rows = gc.query(
                 """
-                MATCH (s:Sign {canonical_name: $n})<-[:SUBJECT]-(c:Claim)
-                WHERE c.retracted_at IS NULL
-                OPTIONAL MATCH (c)-[:OBJECT]->(o:Sign)
-                RETURN c.predicate AS predicate, o.canonical_name AS object,
-                       c.asserted_at AS asserted_at
-                ORDER BY c.asserted_at DESC
+                MATCH (s:SignV2 {canonical_name: $n})-[r]->(o:SignV2)
+                WHERE type(r) <> 'INHABITED' AND r.to_tau IS NULL
+                RETURN type(r) AS predicate, o.canonical_name AS object,
+                       r.from_tau AS asserted_at, r.basin AS basin,
+                       r.speaker AS speaker, r.mention_count AS mention_count
+                ORDER BY r.mention_count DESC, r.from_tau DESC
                 LIMIT 20
                 """,
                 {"n": name},
             )
             out["claims"] = [dict(r) for r in claim_rows]
-            # Basins via passages
+            # Basins this sign inhabits
             basin_rows = gc.query(
                 """
-                MATCH (s:Sign {canonical_name: $n})-[:PASSED_THROUGH]->(p:Passage)-[:IN_BASIN]->(b:Basin)
-                RETURN DISTINCT b.canonical_name AS basin, b.summary AS basin_summary
+                MATCH (s:SignV2 {canonical_name: $n})-[i:INHABITED]->(b:BasinV2)
+                RETURN DISTINCT b.canonical_name AS basin,
+                       b.semantic_label AS basin_summary,
+                       count(i) AS hits
+                ORDER BY hits DESC
                 LIMIT 10
                 """,
                 {"n": name},
             )
             out["basins"] = [dict(r) for r in basin_rows]
-            # Incoming edges only — where this Sign is the OBJECT of someone
-            # else's claim. Active claims above already cover outgoing. Keeping
-            # these separate avoids the duplication that confuses readers.
+            # Incoming typed edges — where this sign is the object
             inc_rows = gc.query(
                 """
-                MATCH (s:Sign)<-[:SUBJECT]-(c:Claim)-[:OBJECT]->(o:Sign {canonical_name: $n})
-                WHERE c.retracted_at IS NULL
-                  AND NOT s:Claim AND NOT s:Passage AND NOT s:Witness
-                RETURN s.canonical_name AS name, s.kind AS kind, c.predicate AS via
+                MATCH (s:SignV2)-[r]->(o:SignV2 {canonical_name: $n})
+                WHERE type(r) <> 'INHABITED' AND r.to_tau IS NULL
+                RETURN s.canonical_name AS name, s.kind AS kind,
+                       type(r) AS via, r.basin AS basin, r.speaker AS speaker
+                ORDER BY r.mention_count DESC
                 LIMIT 20
                 """,
                 {"n": name},
@@ -1992,55 +1996,53 @@ async def archive_v2_graph(
     limit: int = 80,
     include_mentions: bool = False,
 ):
-    """Return nodes + edges around a Sign for graph visualization.
+    """Return nodes + edges around a SignV2 for graph visualization.
+
+    Backed by memory.sign_graph_v2 (Neo4j SignV2 + typed edges + INHABITED),
+    not the legacy Kuzu Sign/Claim schema. Response shape is preserved so the
+    observatory graph.html frontend keeps working unchanged.
 
     depth: 1 or 2. (3+ is slow per benchmarks.)
     limit: max edges (capped at 200). Defaults 80 for visual legibility.
-    include_mentions: if False (default), filter out MENTIONED_IN* noise —
-        these dominate popular signs and make the graph unreadable.
+    include_retracted: include edges with to_tau set (v2 correction retractions).
+    include_mentions: unused for v2 (kept for backward compat with old UI params).
     """
+    del include_mentions  # v2 doesn't have MENTIONED_IN noise — kept for API compat
     limit = max(10, min(limit, 200))
+    depth = max(1, min(depth, 2))
     import sys as _sys
     if "/home/iman/cassie-project" not in _sys.path:
         _sys.path.insert(0, "/home/iman/cassie-project")
-    depth = max(1, min(depth, 2))
-    # Source-text centers (tafakkurs, exchanges, chunks, images) are always
-    # the OBJECT of MENTIONED_IN* edges — hiding mentions there would return
-    # zero edges. Force mentions on in that case.
-    is_source_center = any(
-        name.startswith(prefix) for prefix in
-        ("tafakkur:", "exchange:", "chunk:", "image:", "anchor:")
-    )
-    if is_source_center:
-        include_mentions = True
-    retraction_filter = "" if include_retracted else "AND c.retracted_at IS NULL"
-    mention_filter = (
-        "" if include_mentions
-        else " AND NOT c.predicate STARTS WITH 'MENTIONED_IN' "
-    )
+
+    # In v2, retractions are edges with a non-null `to_tau` property
+    # (semantic "closed at τ"). When include_retracted is False we filter them.
+    retraction_filter = "" if include_retracted else " AND r.to_tau IS NULL "
+
     try:
-        from memory.sign_graph.client import read_client
+        from memory.sign_graph_v2.client import read_client
         with read_client() as gc:
             rows = gc.query(
                 f"""
-                MATCH (center:Sign {{canonical_name: $n}})
-                WHERE NOT center:Claim AND NOT center:Passage AND NOT center:Witness
-                  AND NOT center:RelationType AND NOT center:Jurisdiction
-                OPTIONAL MATCH (center)<-[:SUBJECT]-(c:Claim)-[:OBJECT]->(o:Sign)
-                WHERE 1=1 {retraction_filter} {mention_filter}
+                MATCH (center:SignV2 {{canonical_name: $n}})
+                OPTIONAL MATCH (center)-[r]->(o:SignV2)
+                WHERE type(r) <> 'INHABITED' {retraction_filter}
                 RETURN center.canonical_name AS src, center.kind AS src_kind,
                        center.summary AS src_summary,
-                       c.predicate AS rel, c.retracted_at AS retracted,
+                       type(r) AS rel, r.to_tau AS retracted,
+                       r.basin AS basin, r.speaker AS speaker,
+                       r.mention_count AS mention_count,
                        o.canonical_name AS dst, o.kind AS dst_kind,
                        'out' AS direction
                 LIMIT $half
                 UNION
-                MATCH (center:Sign {{canonical_name: $n}})
-                OPTIONAL MATCH (center)<-[:OBJECT]-(c:Claim)-[:SUBJECT]->(s:Sign)
-                WHERE 1=1 {retraction_filter} {mention_filter}
+                MATCH (center:SignV2 {{canonical_name: $n}})
+                OPTIONAL MATCH (s:SignV2)-[r]->(center)
+                WHERE type(r) <> 'INHABITED' {retraction_filter}
                 RETURN s.canonical_name AS src, s.kind AS src_kind,
                        null AS src_summary,
-                       c.predicate AS rel, c.retracted_at AS retracted,
+                       type(r) AS rel, r.to_tau AS retracted,
+                       r.basin AS basin, r.speaker AS speaker,
+                       r.mention_count AS mention_count,
                        center.canonical_name AS dst, center.kind AS dst_kind,
                        'in' AS direction
                 LIMIT $half
@@ -2066,7 +2068,10 @@ async def archive_v2_graph(
                             "is_center": n == name,
                         }
                 if r.get("rel") and r.get("src") and r.get("dst"):
-                    key = (r["src"], r["rel"], r["dst"])
+                    # Edge keyed by (src, predicate, dst, basin, speaker) to
+                    # preserve the v2 semantic that the same fact can repeat
+                    # across basins/speakers.
+                    key = (r["src"], r["rel"], r["dst"], r.get("basin"), r.get("speaker"))
                     if key in seen_edges:
                         continue
                     seen_edges.add(key)
@@ -2074,6 +2079,9 @@ async def archive_v2_graph(
                         "from": r["src"], "to": r["dst"],
                         "label": r["rel"],
                         "retracted": r.get("retracted") is not None,
+                        "basin": r.get("basin"),
+                        "speaker": r.get("speaker"),
+                        "mention_count": r.get("mention_count") or 1,
                     })
 
             # Optional 2-hop expansion
@@ -2083,11 +2091,12 @@ async def archive_v2_graph(
                     rows2 = gc.query(
                         f"""
                         UNWIND $names AS n
-                        MATCH (s:Sign {{canonical_name: n}})<-[:SUBJECT]-(c:Claim)-[:OBJECT]->(o:Sign)
-                        WHERE 1=1 {retraction_filter} {mention_filter}
-                          AND NOT o:Claim AND NOT o:Passage AND NOT o:Witness
+                        MATCH (s:SignV2 {{canonical_name: n}})-[r]->(o:SignV2)
+                        WHERE type(r) <> 'INHABITED' {retraction_filter}
                         RETURN s.canonical_name AS src, s.kind AS src_kind,
-                               c.predicate AS rel, c.retracted_at AS retracted,
+                               type(r) AS rel, r.to_tau AS retracted,
+                               r.basin AS basin, r.speaker AS speaker,
+                               r.mention_count AS mention_count,
                                o.canonical_name AS dst, o.kind AS dst_kind
                         LIMIT $hop2_limit
                         """,
@@ -2100,7 +2109,7 @@ async def archive_v2_graph(
                                     "id": n, "kind": k or "?",
                                     "summary": "", "is_center": False,
                                 }
-                        key = (r["src"], r["rel"], r["dst"])
+                        key = (r["src"], r["rel"], r["dst"], r.get("basin"), r.get("speaker"))
                         if key in seen_edges:
                             continue
                         seen_edges.add(key)
@@ -2108,6 +2117,9 @@ async def archive_v2_graph(
                             "from": r["src"], "to": r["dst"],
                             "label": r["rel"],
                             "retracted": r.get("retracted") is not None,
+                            "basin": r.get("basin"),
+                            "speaker": r.get("speaker"),
+                            "mention_count": r.get("mention_count") or 1,
                         })
 
             return JSONResponse({
@@ -2122,22 +2134,22 @@ async def archive_v2_graph(
 
 @app.get("/api/archive/v2/basins")
 async def archive_v2_basins():
-    """Per-basin summary: name, occupancy, date range, representative titles."""
+    """Per-basin summary from v2 sign graph: name, occupancy (distinct
+    source_refs in INHABITED), date range, 5 representative signs."""
     import sys as _sys
     if PROJECT_ROOT not in _sys.path:
         _sys.path.insert(0, PROJECT_ROOT)
     try:
-        from memory.sign_graph.client import read_client
+        from memory.sign_graph_v2.client import read_client
         with read_client() as gc:
             rows = gc.query(
                 """
-                MATCH (b:Basin)
-                OPTIONAL MATCH (b)<-[:IN_BASIN]-(p:Passage)
-                WITH b, count(p) AS occupancy,
-                     min(p.tau_in) AS first_seen, max(p.tau_in) AS last_seen
+                MATCH (b:BasinV2)
+                OPTIONAL MATCH (s:SignV2)-[i:INHABITED]->(b)
+                WITH b, count(DISTINCT i.source_ref) AS occupancy,
+                     min(i.tau_in) AS first_seen, max(i.tau_in) AS last_seen
                 RETURN b.canonical_name AS name, b.provenance AS provenance,
-                       b.status AS status, b.summary AS summary,
-                       b.semantic_label AS semantic_label,
+                       b.status AS status, b.semantic_label AS semantic_label,
                        occupancy, first_seen, last_seen
                 ORDER BY occupancy DESC
                 """
@@ -2145,32 +2157,27 @@ async def archive_v2_basins():
             basins = []
             for r in rows:
                 bn = r["name"]
-                # Pull 5 representative titles
+                # 5 representative signs for this basin (highest mention count)
                 samples = gc.query(
                     """
-                    MATCH (s:Sign_Text)-[:PASSED_THROUGH]->(p:Passage)-[:IN_BASIN]->(:Basin {canonical_name: $n})
-                    RETURN s.intrinsic_properties AS iprop, p.tau_in AS tau_in
-                    ORDER BY p.tau_in
+                    MATCH (s:SignV2)-[i:INHABITED]->(:BasinV2 {canonical_name: $n})
+                    WITH s, count(DISTINCT i.source_ref) AS hits
+                    RETURN s.canonical_name AS title, s.kind AS kind, hits
+                    ORDER BY hits DESC
                     LIMIT 5
                     """,
                     {"n": bn},
                 )
-                titles = []
-                for s in samples:
-                    ip = s.get("iprop")
-                    if isinstance(ip, str):
-                        try:
-                            ip = json.loads(ip)
-                        except Exception:
-                            ip = {}
-                    if ip and ip.get("title"):
-                        titles.append({"title": ip["title"], "date": (s.get("tau_in") or "")[:10]})
+                titles = [
+                    {"title": s.get("title") or "", "date": ""}
+                    for s in samples if s.get("title")
+                ]
                 basins.append({
                     "name": bn,
                     "semantic_label": r.get("semantic_label") or "",
                     "provenance": r.get("provenance") or "",
                     "status": r.get("status") or "",
-                    "summary": r.get("summary") or "",
+                    "summary": r.get("semantic_label") or "",
                     "occupancy": r.get("occupancy") or 0,
                     "first_seen": r.get("first_seen"),
                     "last_seen": r.get("last_seen"),
