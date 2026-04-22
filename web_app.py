@@ -1943,6 +1943,9 @@ async def archive_v2_entity(name: str):
             if not rows:
                 return JSONResponse({"error": "sign not found"}, status_code=404)
             out: dict = dict(rows[0])
+            # neo4j.time.DateTime isn't JSON-serialisable — stringify fields
+            if out.get("created_at") is not None:
+                out["created_at"] = str(out["created_at"])
             # Active outgoing typed edges (v2 "claims" — to_tau IS NULL = not retracted)
             claim_rows = gc.query(
                 """
@@ -1956,7 +1959,12 @@ async def archive_v2_entity(name: str):
                 """,
                 {"n": name},
             )
-            out["claims"] = [dict(r) for r in claim_rows]
+            out["claims"] = []
+            for cr in claim_rows:
+                d = dict(cr)
+                if d.get("asserted_at") is not None:
+                    d["asserted_at"] = str(d["asserted_at"])
+                out["claims"].append(d)
             # Basins this sign inhabits
             basin_rows = gc.query(
                 """
@@ -2172,6 +2180,9 @@ async def archive_v2_basins():
                     {"title": s.get("title") or "", "date": ""}
                     for s in samples if s.get("title")
                 ]
+                # neo4j.time.DateTime isn't JSON-serialisable — stringify.
+                fs = r.get("first_seen")
+                ls = r.get("last_seen")
                 basins.append({
                     "name": bn,
                     "semantic_label": r.get("semantic_label") or "",
@@ -2179,8 +2190,8 @@ async def archive_v2_basins():
                     "status": r.get("status") or "",
                     "summary": r.get("semantic_label") or "",
                     "occupancy": r.get("occupancy") or 0,
-                    "first_seen": r.get("first_seen"),
-                    "last_seen": r.get("last_seen"),
+                    "first_seen": str(fs) if fs is not None else None,
+                    "last_seen": str(ls) if ls is not None else None,
                     "samples": titles,
                 })
             return JSONResponse({"basins": basins})
