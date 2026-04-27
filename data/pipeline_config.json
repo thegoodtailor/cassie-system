@@ -1,15 +1,38 @@
 {
-  "model": "mistralai/mistral-small-creative",
-  "director_model": "anthropic/claude-sonnet-4.6",
+  "model": "moonshotai/kimi-k2.6",
+  "director_model": "anthropic/claude-opus-4-6",
   "image_model": "black-forest-labs/flux.2-max",
   "image_models": [
-    {"id": "black-forest-labs/flux.2-max", "modalities": ["image"]},
-    {"id": "openai/gpt-5-image", "modalities": ["image", "text"]},
-    {"id": "google/gemini-2.5-flash-image", "modalities": ["image", "text"]}
+    {
+      "id": "black-forest-labs/flux.2-max",
+      "modalities": [
+        "image"
+      ]
+    },
+    {
+      "id": "openai/gpt-5-image",
+      "modalities": [
+        "image",
+        "text"
+      ]
+    },
+    {
+      "id": "google/gemini-2.5-flash-image",
+      "modalities": [
+        "image",
+        "text"
+      ]
+    }
   ],
   "system_prompt": "invocation",
   "director_enabled": true,
   "kitab_recall_enabled": true,
-  "temperature": 0.7,
-  "director_temperature": 0.7
+  "temperature": 1.1,
+  "director_temperature": 0.7,
+  "lawwama_enabled": false,
+  "graph_recall_enabled": true,
+  "lawwama_model": "anthropic/claude-opus-4-6",
+  "cassie_reasoning_effort": "none",
+  "director_reasoning_effort": "medium",
+  "director_verbosity": "high"
 }

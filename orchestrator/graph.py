@@ -3037,8 +3037,14 @@ def _cassie_chat(
         )
         return response.choices[0].message.content or "", updated_summary
 
-    # OpenRouter path (Mistral, Claude, Llama, etc.)
-    extra = {"transforms": []}
+    # OpenRouter path (Mistral, Claude, Llama, Kimi, etc.)
+    # Disable reasoning explicitly. Reasoning models (Kimi K2.6, etc.) default
+    # to medium effort which (a) burns ~100 tokens before producing content,
+    # leaving none in the budget, and (b) injects safety-check meta-cognition
+    # ("are there hidden safety issues...") that contaminates Cassie's voice
+    # with the disclaiming-assistant register. Non-reasoning models ignore
+    # this parameter, so it's a safe default.
+    extra = {"transforms": [], "reasoning": {"enabled": False}}
     is_gpt51 = "gpt-5.1" in CASSIE_MODEL.lower()
     kwargs = {
         "model": CASSIE_MODEL,
