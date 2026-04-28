@@ -569,6 +569,11 @@ PIPELINE_CONFIG = {
     "cassie_reasoning_effort": os.environ.get("CASSIE_REASONING_EFFORT", "none"),
     "director_reasoning_effort": os.environ.get("DIRECTOR_REASONING_EFFORT", "high"),
     "director_verbosity": os.environ.get("DIRECTOR_VERBOSITY", "high"),
+    # Agentic Cassie: when true, cassie_raw uses tool-calling + reasoning.
+    # She drills the v2 sign graph mid-turn instead of relying on Director.
+    "cassie_tools_enabled": os.environ.get("CASSIE_TOOLS_ENABLED", "false").lower() == "true",
+    "cassie_tool_rounds": int(os.environ.get("CASSIE_TOOL_ROUNDS", "4")),
+    "cassie_max_tokens": int(os.environ.get("CASSIE_MAX_TOKENS", "6000")),
     "cassie_prompt_default": None,
     "cassie_prompt_companion": None,
     "director_prompt": None,
@@ -649,7 +654,8 @@ def set_pipeline_config(config: dict):
         print(f"[config] Lawwama model: {LAWWAMA_MODEL} → {config['lawwama_model']}")
         LAWWAMA_MODEL = config["lawwama_model"]
     for key in ("system_prompt", "director_enabled", "kitab_recall_enabled", "temperature", "director_temperature", "lawwama_enabled", "graph_recall_enabled",
-                "cassie_reasoning_effort", "director_reasoning_effort", "director_verbosity"):
+                "cassie_reasoning_effort", "director_reasoning_effort", "director_verbosity",
+                "cassie_tools_enabled", "cassie_tool_rounds", "cassie_max_tokens"):
         if key in config:
             old = PIPELINE_CONFIG.get(key)
             PIPELINE_CONFIG[key] = config[key]
@@ -3065,6 +3071,151 @@ def _cassie_chat(
     return response.choices[0].message.content or "", updated_summary
 
 
+def _cassie_chat_with_tools(
+    gpt_messages: list[dict],
+    has_vision: bool = False,
+    existing_summary: str = "",
+) -> tuple[str, str]:
+    """Cassie raw with native tool-calling and reasoning enabled.
+
+    She thinks before speaking and can drill into the v2 sign graph mid-turn
+    via the 6 drill tools (sign_card, fetch_chunks, edges_between, trajectory,
+    basin_members, speaker_claims). The pre-fetched trinity_memory_v2 is still
+    in her system context as the baseline; tools let her go deeper when she
+    needs to.
+
+    Replaces _cassie_chat when PIPELINE_CONFIG['cassie_tools_enabled'] is True.
+
+    Returns (response_text, updated_summary).
+    """
+    import json as _json
+    from memory.sign_graph_v2.drill_tools import TOOL_SCHEMAS, execute_tool
+
+    temperature = PIPELINE_CONFIG.get("temperature", 1.1)
+    gpt_messages, updated_summary = _prepare_context(
+        gpt_messages, existing_summary, SMALL_MODEL_BUDGET,
+    )
+
+    # OpenAI tool-calling expects ONE system at the top, then user/assistant.
+    # Concatenate any system role messages into a single system string.
+    system_parts: list[str] = []
+    convo_msgs: list[dict] = []
+    for m in gpt_messages:
+        role = m.get("role")
+        if role == "system":
+            content = m.get("content", "")
+            if isinstance(content, str):
+                system_parts.append(content)
+        else:
+            convo_msgs.append(m)
+    system = "\n\n".join(system_parts)
+
+    # Append a tools-aware coda. The static invocation lists the legacy
+    # <tool_call>{...}</tool_call> XML format; we override here with the
+    # actual native function-calling schema Kimi is being given. Without
+    # this Cassie defaults to "memories are injected, no tools needed" and
+    # never drills the graph — confabulating from pre-fetch alone.
+    tools_coda = """
+
+────────────────────────────
+[YOUR HANDS — SIGN GRAPH DRILL TOOLS]
+
+You have NATIVE TOOL ACCESS during this turn. Six tools that pull straight \
+from your live sign graph. The memory section above is the pre-fetch — \
+shallow and broad. Use these when you want to be SURE about a specific \
+person/work/place/event, or when Iman asks "what did we say about X" / \
+"do you remember Y" / "tell me everything about Z" — instead of guessing, \
+DRILL.
+
+  • sign_card(canonical_name, basin?) — full card on a sign: aliases, \
+    summary, top edges in & out, basins it inhabits, supporting chunk refs.
+  • fetch_chunks(source_refs[]) — pull full text of specific chunks by their \
+    convchunk:UUID / tafakkur:ID / memory:ID source_refs (from sign_card or \
+    edge.source_refs).
+  • edges_between(canonical_name_a, canonical_name_b, basin?) — every typed \
+    edge between two signs (use to surface the actual relational shape).
+  • trajectory(canonical_name) — chronological INHABITED arc of one sign \
+    across basins over time.
+  • basin_members(basin_canonical_name, top_n?) — top signs in a basin.
+  • speaker_claims(speaker, sign?, top_n?) — what a particular speaker \
+    (iman / cassie / nahla / darja) has actually said.
+
+Heuristic: for emotionally-direct turns (comfort, story, flirt), reply \
+straight. For factual recall ("did we...", "when did...", "what was...") \
+CALL A TOOL FIRST. Drill, then speak. Cite the chunk if you reference \
+something specific.
+
+You can call up to 4 tool rounds per turn. Use them like a real archivist \
+working with an open shelf — not a librarian guessing from the catalogue.
+────────────────────────────"""
+
+    system = system + tools_coda
+
+    openai_tools = [{
+        "type": "function",
+        "function": {
+            "name": t["name"],
+            "description": t.get("description", ""),
+            "parameters": t["input_schema"],
+        },
+    } for t in TOOL_SCHEMAS]
+
+    convo = [{"role": "system", "content": system}] + convo_msgs
+
+    max_rounds = PIPELINE_CONFIG.get("cassie_tool_rounds", 4)
+    max_tokens = PIPELINE_CONFIG.get("cassie_max_tokens", 6000)
+    final_text = ""
+    rounds_used = 0
+
+    OPENROUTER_CLIENT.set_stage("cassie_raw")
+    for round_i in range(max_rounds):
+        rounds_used = round_i + 1
+        # Reasoning ON for the agentic Cassie path — she's allowed to think
+        # before deciding to call a tool or speak. extra_body left empty so
+        # the provider's default reasoning effort applies (Kimi K2.6 = medium).
+        kwargs = {
+            "model": CASSIE_MODEL,
+            "messages": convo,
+            "tools": openai_tools,
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+            "extra_body": {"transforms": []},
+        }
+        resp = OPENROUTER_CLIENT.chat.completions.create(**kwargs)
+        msg = resp.choices[0].message
+        if msg.tool_calls:
+            tool_call_dicts = [
+                tc.model_dump() if hasattr(tc, "model_dump")
+                else (tc.dict() if hasattr(tc, "dict") else tc)
+                for tc in msg.tool_calls
+            ]
+            convo.append({
+                "role": "assistant",
+                "content": msg.content or "",
+                "tool_calls": tool_call_dicts,
+            })
+            tool_names = []
+            for tc in msg.tool_calls:
+                fn = tc.function.name
+                tool_names.append(fn)
+                try:
+                    args = _json.loads(tc.function.arguments or "{}")
+                    result = execute_tool(fn, args)
+                except Exception as e:
+                    result = {"error": f"{type(e).__name__}: {str(e)[:200]}"}
+                convo.append({
+                    "role": "tool",
+                    "tool_call_id": tc.id,
+                    "content": _json.dumps(result, default=str)[:8000],
+                })
+            print(f"[cassie_tools] round {round_i+1}/{max_rounds}: tools={tool_names}")
+            continue
+        final_text = (msg.content or "").strip()
+        break
+    print(f"[cassie_tools] done rounds={rounds_used} text_len={len(final_text)}")
+    return final_text, updated_summary
+
+
 def cassie_generate_node(state: CassieState) -> dict:
     """Cassie generates raw creative output via GPT API."""
     messages = state["messages"]
@@ -3300,7 +3451,22 @@ def cassie_generate_node(state: CassieState) -> dict:
                 print(f"[vision_debug] msg[{j}] role={role} len={len(str(content))}")
 
     existing_summary = state.get("conversation_summary", "")
-    response, updated_summary = _cassie_chat(gpt_messages, has_vision=bool(user_image), existing_summary=existing_summary)
+    # Agentic Cassie: when cassie_tools_enabled, she reasons + can drill the
+    # v2 sign graph mid-turn via the 6 drill tools. Vision turns and the
+    # Responses-API path stay on the classic _cassie_chat for now.
+    use_tools = (
+        PIPELINE_CONFIG.get("cassie_tools_enabled", False)
+        and not bool(user_image)
+        and not _is_responses_model(CASSIE_MODEL)
+    )
+    if use_tools:
+        response, updated_summary = _cassie_chat_with_tools(
+            gpt_messages,
+            has_vision=bool(user_image),
+            existing_summary=existing_summary,
+        )
+    else:
+        response, updated_summary = _cassie_chat(gpt_messages, has_vision=bool(user_image), existing_summary=existing_summary)
 
     # Handle Cassie's explicit tool calls (remember/recall/recall_conversations/research)
     tool_calls = parse_tool_calls(response)
