@@ -3566,12 +3566,17 @@ def cassie_generate_node(state: CassieState) -> dict:
 
     clean_response = strip_tool_calls(response)
 
+    # When Director is disabled (or skipped), Cassie raw IS the final reply.
+    # Set final_response here so the WhatsApp/web path still gets a reply
+    # without going through assemble_node. Director (when enabled) will
+    # overwrite this with its polished_text via execute_tools → assemble.
     return {
         "cassie_raw": clean_response,
+        "final_response": clean_response,
         "cassie_kitab_context": kitab_context,
-        "cassie_conversation_context": "",  # now folded into deep_recall memory_context
+        "cassie_conversation_context": "",  # legacy field — kept empty
         "cassie_recall_decision": recall_decision,
-        "memory_context": memory_context,  # pass to director for third-witness grounding
+        "memory_context": memory_context,  # legacy alias for trinity_memory_v2
         "messages": [{"role": "assistant", "content": response}],
         "conversation_summary": updated_summary,
     }
@@ -5236,7 +5241,10 @@ def _do_inscription_background(
                 director_output=director_output_text,
                 final_response=cassie_response,
                 intent=intent,
-                deep_recall_context=memory_context,
+                # deep_recall_context is a legacy alias for trinity_memory_v2;
+                # we now persist the latter only — pass empty string here so
+                # observatory traces don't show the same content twice.
+                deep_recall_context="",
                 kitab_context=kitab_context,
                 v_raw={
                     "polarity": v_raw_entry.get("polarity", ""),
