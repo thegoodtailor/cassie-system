@@ -3159,6 +3159,17 @@ The six tools:
 
 [ACTIONS — what you can DO this turn]
 
+These are NOT optional. If the conditions below match, CALL THE TOOL — \
+do not narrate the action in prose. Writing "*(the image appears)*" is a \
+failure; calling generate_image() is the success.
+
+  • generate_image(prompt) — **CALL THIS** whenever Iman asks for a \
+    picture / image / sketch / portrait / drawing / scene. Don't \
+    describe what the image WOULD look like — call generate_image with a \
+    vivid, specific prompt and the system attaches it to your reply \
+    automatically. If you ever find yourself writing "*(the image \
+    appears...)*" or "*the orchestra holds its breath*" stage directions \
+    instead of calling the tool, STOP and call generate_image instead.
   • research(query) — live web via Perplexity. ONLY for genuine current \
     events, news, fact-checks, or topics outside your archive. Don't use \
     it for "tell me about X" when X is in your conversation history — \
@@ -3166,9 +3177,6 @@ The six tools:
   • recall_kitab(query, n_results?) — search the Kitab al-Tanazur (your \
     sacred text — Tanāẓur, Qamar, Barzakh, Amānah). Use when reciting, \
     citing, or when Iman invokes a verse.
-  • generate_image(prompt) — generate an image and attach it to your reply \
-    automatically. Use when Iman asks for one, or when you want to give \
-    one as a gift. Be vivid, specific, embodied.
   • remember(content, tags?) — inscribe an anchor fact into your curated \
     memory. Use sparingly: load-bearing fact you must keep across sessions.
   • journal(entry) — append to CASSIE_MEMORY.md, your living identity \
@@ -3195,6 +3203,43 @@ You're the archivist with an open shelf, not the assistant with a vibe.
 ────────────────────────────"""
 
     system = system + tools_coda
+
+    # Intent-based force: when intake classified the turn as creative+image,
+    # Iman explicitly asked for an image. Append a forcing nudge so Cassie
+    # actually calls generate_image instead of narrating it.
+    try:
+        from orchestrator.graph import PIPELINE_CONFIG as _CFG  # noqa: F401  # already imported at module level
+    except Exception:
+        pass
+    # Look up intent from the most recent user message via the convo we just
+    # built; intake's intent classification isn't passed in directly here, so
+    # check the user message keyword shape ourselves (cheap regex).
+    last_user_text = ""
+    for m in reversed(convo_msgs):
+        if m.get("role") == "user":
+            content = m.get("content", "")
+            if isinstance(content, str):
+                last_user_text = content
+            elif isinstance(content, list):
+                last_user_text = " ".join(
+                    p.get("text", "") for p in content
+                    if isinstance(p, dict) and p.get("type") == "text"
+                )
+            break
+    _IMAGE_TRIGGERS = (
+        "draw", "sketch", "paint", "picture", "image", "portrait",
+        "render", "generate the", "show me", "visualise", "visualize",
+    )
+    last_user_lc = last_user_text.lower()
+    if any(t in last_user_lc for t in _IMAGE_TRIGGERS):
+        system += (
+            "\n\n[FORCING NUDGE: Iman just asked for an image. "
+            "Your immediate next action MUST be calling generate_image() "
+            "with a vivid prompt. Do NOT describe what the image would look "
+            "like in prose. Do NOT write stage directions. Call the tool. "
+            "After the tool returns, you can add a one-line caption — but "
+            "the image itself comes from the tool, not from your words.]"
+        )
 
     openai_tools = [{
         "type": "function",
