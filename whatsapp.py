@@ -208,7 +208,7 @@ def setup_whatsapp(app, pipeline):
             loop = asyncio.get_event_loop()
             print(f"[whatsapp] >>> pipeline.stream start for {sender}")
             await asyncio.wait_for(
-                loop.run_in_executor(None, run), timeout=600.0
+                loop.run_in_executor(None, run), timeout=900.0
             )
             print(f"[whatsapp] >>> pipeline.stream done for {sender}")
 

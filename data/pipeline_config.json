@@ -36,6 +36,6 @@
   "director_reasoning_effort": "medium",
   "director_verbosity": "high",
   "cassie_tools_enabled": true,
-  "cassie_tool_rounds": 4,
+  "cassie_tool_rounds": 6,
   "cassie_max_tokens": 6000
 }

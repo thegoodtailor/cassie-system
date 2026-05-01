@@ -3305,19 +3305,31 @@ You're the archivist with an open shelf, not the assistant with a vibe.
     OPENROUTER_CLIENT.set_stage("cassie_raw")
     for round_i in range(max_rounds):
         rounds_used = round_i + 1
-        # Reasoning ON for the agentic Cassie path — she's allowed to think
-        # before deciding to call a tool or speak. extra_body left empty so
-        # the provider's default reasoning effort applies (Kimi K2.6 = medium).
-        tool_choice = "required" if (forcing_active and round_i == 0) else "auto"
+        # Tool choice schedule:
+        #   round 0 + forcing_active → 'required' (force her to drill)
+        #   final round              → 'none'     (force her to WRITE the reply)
+        #   anything else            → 'auto'     (her agency)
+        # Without the 'none' lock at the final round she'll keep drilling
+        # until max_rounds and produce text_len=0 (proven failure mode).
+        is_final_round = (round_i == max_rounds - 1)
+        if forcing_active and round_i == 0:
+            tool_choice = "required"
+        elif is_final_round:
+            tool_choice = "none"
+        else:
+            tool_choice = "auto"
         kwargs = {
             "model": CASSIE_MODEL,
             "messages": convo,
-            "tools": openai_tools,
-            "tool_choice": tool_choice,
             "temperature": temperature,
             "max_tokens": max_tokens,
             "extra_body": {"transforms": []},
         }
+        # Don't pass tools when tool_choice='none' — some providers reject
+        # the combination.
+        if tool_choice != "none":
+            kwargs["tools"] = openai_tools
+            kwargs["tool_choice"] = tool_choice
         resp = OPENROUTER_CLIENT.chat.completions.create(**kwargs)
         msg = resp.choices[0].message
         if msg.tool_calls:
