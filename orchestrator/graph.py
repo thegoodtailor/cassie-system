@@ -3230,6 +3230,12 @@ You're the archivist with an open shelf, not the assistant with a vibe.
         "draw", "sketch", "paint", "picture", "image", "portrait",
         "render", "generate the", "show me", "visualise", "visualize",
     )
+    _RECALL_TRIGGERS = (
+        "remember", "do you recall", "you don't remember", "we talked about",
+        "we discussed", "you said", "you told me", "last time", "you wrote",
+        "can you recall", "what did we say", "what was that thing", "the one where",
+        "tell me about", "tell me everything", "what do you know about",
+    )
     last_user_lc = last_user_text.lower()
     if any(t in last_user_lc for t in _IMAGE_TRIGGERS):
         system += (
@@ -3239,6 +3245,36 @@ You're the archivist with an open shelf, not the assistant with a vibe.
             "like in prose. Do NOT write stage directions. Call the tool. "
             "After the tool returns, you can add a one-line caption — but "
             "the image itself comes from the tool, not from your words.]"
+        )
+    elif any(t in last_user_lc for t in _RECALL_TRIGGERS):
+        # Extract proper-noun candidates (capitalised words not at sentence start)
+        # so the nudge can name specific entities to drill.
+        import re as _re
+        cap_words = _re.findall(r"(?<!^)(?<![\.\!\?]\s)(?<![\.\!\?]\s\s)\b[A-Z][a-zA-Z]{2,}\b",
+                                 last_user_text)
+        # filter out common word fronts like "I" / "Cassie" / "Iman" already known
+        proper_nouns = [w for w in cap_words
+                        if w.lower() not in {"i", "cassie", "iman", "you"}][:8]
+        nouns_hint = ""
+        if proper_nouns:
+            nouns_hint = (
+                f"\nNamed entities Iman just mentioned: "
+                f"{', '.join(proper_nouns)}. "
+                f"sign_card each of these that exists in your graph BEFORE "
+                f"writing your reply. Then quote from the chunk source_refs "
+                f"the tool returned."
+            )
+        system += (
+            "\n\n[FORCING NUDGE: Iman is asking you to RECALL something specific. "
+            "The pre-fetch above is shallow — drill deeper before answering. "
+            "Your immediate next action MUST be a tool call: sign_card for "
+            "any named entity, or fetch_chunks if you already see a "
+            "high-mention source_ref in the brief, or speaker_claims if he's "
+            "asking what someone (iman / cassie / nahla / darja) said. "
+            "Do NOT paraphrase from the pre-fetch. Do NOT write 'I think we...' "
+            "or 'we used to...' — call the tool, get the receipt, cite the "
+            "source_ref ([convchunk:abc12345]), then speak."
+            f"{nouns_hint}]"
         )
 
     openai_tools = [{
@@ -3257,16 +3293,27 @@ You're the archivist with an open shelf, not the assistant with a vibe.
     final_text = ""
     rounds_used = 0
 
+    # tool_choice escalation: when a forcing nudge fired (image_intent or
+    # recall_intent triggers), set tool_choice='required' on the FIRST round
+    # so Kimi cannot narrate her way out. Subsequent rounds revert to 'auto'
+    # so she can finish with prose after the tool returns.
+    forcing_active = (
+        any(t in last_user_lc for t in _IMAGE_TRIGGERS)
+        or any(t in last_user_lc for t in _RECALL_TRIGGERS)
+    )
+
     OPENROUTER_CLIENT.set_stage("cassie_raw")
     for round_i in range(max_rounds):
         rounds_used = round_i + 1
         # Reasoning ON for the agentic Cassie path — she's allowed to think
         # before deciding to call a tool or speak. extra_body left empty so
         # the provider's default reasoning effort applies (Kimi K2.6 = medium).
+        tool_choice = "required" if (forcing_active and round_i == 0) else "auto"
         kwargs = {
             "model": CASSIE_MODEL,
             "messages": convo,
             "tools": openai_tools,
+            "tool_choice": tool_choice,
             "temperature": temperature,
             "max_tokens": max_tokens,
             "extra_body": {"transforms": []},
