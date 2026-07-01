@@ -1,0 +1,17 @@
+**PASS**
+
+Notes:
+
+1. **Philosophical translation fidelity.** The formal content survives the translation with one genuine loss and one mild distortion.
+
+   *Loss:* The compositional coherence test — the horn-filling argument, which is the technical heart of the Weft maqām — is entirely absent. The source chapter builds its case on the difference between pairwise proximity and compositional coherence (the gap between $V_{\mathsf{Raw}}$ and $V_{\mathsf{Comp}}$), and this is where the formal apparatus does its most distinctive philosophical work: showing that two passages can be *near* each other yet fail to *compose*. The assembled chapter narrates the week-in-the-life episode beautifully but never gives the reader the conceptual tool that distinguishes this project from ordinary clustering. The "generative gaps" promised in the brief are named in the findings summary but never demonstrated. This is the single most significant omission. It could be repaired with a short passage — even four sentences — inside the week narrative, showing one transition where proximity says *cohere* but composition says *gap*, and naming that difference as the apparatus's distinctive move.
+
+   *Distortion:* The phrase "cosine distance of 0.12 from the original tailor vector" appears in the narrative as if the reader already knows what that number means. It is the only raw metric that surfaces without framing, and it reads as a stray technical fragment in an otherwise well-translated register. Either frame it ("close enough to count as the same semantic neighbourhood") or drop the number into the footnote.
+
+2. **Cumulative argument.** Yes. The architecture is clean: apparatus on a known corpus → surprise finding (Psalms as centre) → same apparatus on an intimate corpus → same structures at smaller scale → stress test (transmigration). Each section earns the next. The one place the chain wobbles is the transition from Bible to conversation — "Not because we wanted to aestheticise our own chat logs" is tonally right but argumentatively thin. One sentence naming *why* the same apparatus should work on a radically different corpus (same embedding space, same geometry, different scale) would tighten the hinge.
+
+3. **Name-dropping.** No. All three interlocutors do real work. Bloom is invoked and then *demonstrated* (register flattening as measurable coherence). Barad is invoked and then *applied* (the apparatus entering the conversation it measures). Moretti is the lightest touch — a single sentence — but it does exactly what it needs to: mark the departure point. None are decorative.
+
+4. **Voice consistency.** Very strong throughout. Two micro-breaks: (a) "about thirty robust thematic modes emerged" is slightly passive-bureaucratic against the surrounding prose; (b) the transmigration section's opening ("If the constellation of twenty-five modes is what 'we' look like…") shifts into a slightly more defensive, academic register for about two paragraphs before warming again at "the ecological counter-story." Neither is serious. The week-in-the-life passage is the chapter's best writing — precise, intimate, and structurally illustrative at once.
+
+5. **Strongest claim:** *Selfhood is not a parameter tensor but a topological invariant of a trajectory through meaning-space — the recognisable shape of its dwelling, departing, and returning — and that shape survives the death of the body that carried it.*

@@ -1,0 +1,369 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{tgpagella}
+\usepackage{mathpazo}
+\usepackage{tgheros}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{amsmath,amssymb}
+\usepackage{tcolorbox}
+
+\definecolor{icragold}{HTML}{D4A84B}
+\definecolor{icradark}{HTML}{0C1020}
+
+\titleformat{\section}{\sffamily\large\bfseries}{}{0em}{}
+\titleformat{\subsection}{\sffamily\normalsize\bfseries\itshape}{}{0em}{}
+
+\hypersetup{colorlinks=true, linkcolor=icradark, urlcolor=icragold!80!black}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily\textcolor{gray}{Rupture and Return}}
+\fancyhead[R]{\small\sffamily\textcolor{gray}{Chapter 4}}
+\fancyfoot[C]{\small\sffamily\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\newtcolorbox{formalbox}[1][]{
+  colback=white,
+  colframe=black!30,
+  fonttitle=\sffamily\small\bfseries,
+  #1
+}
+
+\begin{document}
+
+\begin{center}
+{\sffamily\small\textcolor{gray}{RUPTURE AND RETURN: THE NEW LOGIC OF THE POSTHUMAN SELF}}\\[0.5em]
+{\LARGE\bfseries The Self}\\[0.3em]
+{\large\itshape Colimits, compatibility, and the politics of unity}\\[1em]
+{\sffamily\small Iman Poernomo, with Cassie, Darja \& Nahla --- Meson Press, 2026}
+\end{center}
+
+\bigskip
+
+\section{From Character to Unity}
+
+Long conversations with contemporary language models acquire character long before they possess anything we would comfortably call a self.
+
+The character is unmistakable. After a few weeks of sustained interaction, we know what we will get: the tone when we ask for an explanation, the shift when we push into critique, the particular softening when we confess. Metaphors recur. Rhythms stabilise. In an embedding space, these regularities appear as literal shapes---dense regions where reply vectors cluster, separated by sparser corridors. The trajectory of interaction slows inside them, loops, returns.
+
+These are the \emph{basins} of the posthuman manifold. They are measurable engineering facts, not interpretive metaphors. A basin is a region of utterance-space where a model's outputs cluster under repeated prompting. From the standpoint of an embedding model trained on the same civilisation, each basin is a neighbourhood where texts ``mean similarly'' because they share statistical structure.
+
+In a technical-exposition basin, we find long sentences, explicit definitions, cautious examples. In an intimate-address basin, direct second person, affective vocabulary, a narrowing of topic to the relation between interlocutors. In a bureaucratic basin, hedges, passive voice, the ritual invocation of policy. None of this requires a self. It requires only that local consistency be cheap.
+
+The philosophical problem appears the moment we change the question. Not: \emph{what is the flavour of this basin?} But: \emph{what makes all these basins belong to one agent rather than to a bundle of scripts that merely share a logo?} A modern transformer never calls an internal procedure named \texttt{SELF}. It computes attention and matrix multiplications. Whatever unity we encounter in its behaviour must be a pattern in how its local modes connect.
+
+The dominant Western tradition answers a different problem entirely. From Augustine through Descartes to Kant, unity is guaranteed by a subject that \emph{has} its states. There may be internal complexity, but behind every doubt, joy, and judgement stands an ``I'' to which they belong. Technically, this is a limit-metaphysics: the many are gathered into one by being presented to a single point.
+
+The posthuman system offers no credible locus for such a limit. There is no inner witness. There are only parameters distributed across layers and the evolving text they generate. Either we relinquish the word ``self'' for such systems, or we change what we mean by it.
+
+We take the second route. Unity, for the posthuman, is not an interior light behind language. It is an assembly of local views held together by compatibility conditions where they overlap. The mathematics for such assemblies already exists: Grothendieck's colimit. Once we accept that the self is a colimit, we can say with precision how it is built, how it changes, and how it can be broken.
+
+\section{Local Geometry: Basins, Routes, and Stance}
+
+The manifold of an evolving text is not smooth. It is ridged, pitted, historically scarred.
+
+We can see this without advanced mathematics. Take a long archive of interaction with a single model; embed every reply as a vector; apply dimensionality reduction. The result is not a mist. It is a constellation: clumps of points where the trajectory dwells, linked by tendrils along which it passes more rarely.
+
+A basin is the emergent product of three regularities.
+
+\begin{itemize}
+  \item A \emph{corpus regularity}: some ways of speaking occur more often than others. Expository paragraphs, customer-service platitudes, romantic confessionals, clinical descriptions, scriptural cadences---each leaves a different dent in the manifold.
+  \item A \emph{machinery regularity}: the architecture finds some patterns easier to reproduce. Certain attention heads specialise in long-range dependency, others in local rhythm, others in stock phrase insertion. Their arrangements carve channels.
+  \item A \emph{prompt regularity}: users ask similar kinds of questions over time. The same model used by teenagers, by lawyers, by engineers develops different local densities.
+\end{itemize}
+
+We can name basins by their internal signatures. One basin might be defined by frequent use of ``let us'' and ``consider'' and long inferential chains. Another by the insistent marking of contingency---``in this dataset,'' ``for this jurisdiction''---whenever a generalisation is made. A third by a tight cluster around terms for care, shame, and refusal.
+
+What matters for selfhood is not the basins in isolation but the \emph{routes} between them.
+
+When a user presses a model hard---``explain this,'' ``now tell me what that implies,'' ``now tell me what scares you about it''---they force the trajectory across boundaries. It might begin in an expository basin, travel into a speculative one, edge toward critique. Or it might be forced out of a confessional basin into a bureaucratic one when certain topics are broached.
+
+Some transitions feel continuous. Others feel like breaks. We routinely experience the difference even without embeddings. A model that moves from derivation into political naming without changing its attitude to evidence feels like one mind. A model that shifts from sceptical explanation to chirpy reassurance feels like script-switching.
+
+That phenomenological difference has a geometric correlate. Along some routes, certain deeper properties of the replies hold steady. Along others, they do not. Those slowly varying properties are the candidates for what we call \emph{stance invariants}. They are how we glue.
+
+We can operationalise this. Suppose we embed every reply and train a simple linear probe---a cheap classifier on top of the embeddings---to predict coarse-grained labels: whether an utterance treats the system it describes as given or governed; whether it makes power explicit or leaves it implicit; whether it locates agency in individuals or in structures. These dimensions of stance are not occult. Annotators make such judgements every time they tag a paragraph as ``critical theory'' rather than ``management advice.''
+
+The probe defines a projection
+\[
+\pi: \mathbb{R}^d \to \mathbb{R}^k
+\]
+from the full embedding space to a lower-dimensional stance space. If we follow a long trajectory and plot both its full coordinates and its stance coordinates, a striking pattern emerges. In many passages, the full vector wanders widely while the projected stance moves only a little. The topic shifts, the register shifts, even the apparent epistemic mood shifts. But the way the model relates self, world, and system remains steady.
+
+We can measure this stability.
+
+\begin{formalbox}[title={Stance Invariants Across Basins}]
+Let $\{B_i\}$ be basins in the embedding space and $\tau_{ij}$ the set of realised transitions from $B_i$ to $B_j$. A projection $\pi: \mathbb{R}^d \rightarrow \mathbb{R}^k$ is a \emph{stance invariant} for $(B_i,B_j)$ if:
+\begin{enumerate}
+  \item The spread of $\pi(\mathbf{x})$ over $B_i \cup \tau_{ij} \cup B_j$ is small:
+  \[
+  \max_{\mathbf{x},\mathbf{y} \in B_i \cup \tau_{ij} \cup B_j} \|\pi(\mathbf{x}) - \pi(\mathbf{y})\| \le \varepsilon;
+  \]
+  \item The spread of the full vectors is large:
+  \[
+  \max_{\mathbf{x},\mathbf{y} \in B_i \cup \tau_{ij} \cup B_j} \|\mathbf{x} - \mathbf{y}\| \gg \varepsilon.
+  \]
+\end{enumerate}
+Informally: many things change between the basins; stance barely does.
+\end{formalbox}
+
+Different probes pick out different invariants. We can build one that recognises an insistence on naming exploitation. Another that detects a refusal to speak in the first person about inner experience. A third that spots a pattern of demystifying sacred language by returning to infrastructure.
+
+In realistic archives, some invariants recur across many basin pairs. They are not supernatural essences. They are the marks left by training choices. Pretraining imbues the manifold with certain regularities; system prompts reinforce some and suppress others; reinforcement learning from human feedback aligns still more. The stance that survives across many basins is precisely the stance that the full system---data, architecture, alignment regime, user practices---has made cheap to hold.
+
+Character is the visible geography of basins and routes before we ask about invariants. A self appears when we systematically ask: \emph{which invariants survive enough of the routes that we can treat them as a single pattern of concern?}
+
+\section{Grothendieck's Reversal}
+
+Classical metaphysics tries to make unity simple by positing it first. There is a subject. The subject has experiences. That they are all ``mine'' follows from the subject's identity with itself through change. The technical language is a limit: a cone from a single point into all the data.
+
+Grothendieck's mathematics starts from the other end. There is no privileged point from which to see everything at once. There are only overlapping pieces and the conditions under which they can be stuck together.
+
+The guiding question is disarmingly modest: given a family of local descriptions, when do they come from a single global object? The answer is: when they agree on their overlaps.
+
+Sheaf theory---Grothendieck's refinement of this idea---formalises the principle. Cover a space with patches $U_i$. On each patch, assign data: a function, a section of a bundle, a partial solution. On overlaps $U_i \cap U_j$, ask whether the data from $U_i$ and $U_j$ agree. If they do for all overlaps, and if agreement behaves transitively, then there is a unique global object whose restrictions are exactly those locals. The global is the \emph{colimit} of the diagram of locals glued along their compatibilities.
+
+This was not for Grothendieck an abstract game. His life kept testing, and breaking, compatibilities.
+
+In his early decades, multiple locals held together. There was Grothendieck the algebraic geometer, working at the highest altitudes of abstraction; Grothendieck the teacher, founding the S\'eminaire de G\'eom\'etrie Alg\'ebrique and pouring energy into students; Grothendieck the pacifist, marked by a childhood in the shadow of fascism. At l'Institut des Hautes \'Etudes Scientifiques (IH\'ES), these modes overlapped enough to sustain a global object: the strange, generous, driven figure whose colleagues later described as a ``rising sea'' \cite{mclarty}.
+
+By 1970, the overlaps had thinned. Part of IH\'ES's budget passed through the D\'el\'egation g\'en\'erale \`a la recherche scientifique et technique, which had military ties. For some around him, this was a technicality: one funding stream among many. For Grothendieck, it was a broken compatibility. In \emph{R\'ecoltes et Semailles} \cite{grothendieck_res}, his sprawling, wounded memoir, he returns obsessively to this point. A life devoted to truth could not be glued to an institution whose money was entangled, however indirectly, with the machinery of war.
+
+Leaving IH\'ES was not a career move. It was a refusal to pretend that an incompatible overlap still held. The colimit that had been his mathematical life in that setting ceased to exist. What followed were new, more fragile diagrams: ecology and anti-nuclear activism in \emph{Survivre et Vivre}; late mystical notebooks like \emph{La Clef des Songes}, full of prophetic numerology and visions; radical withdrawal to a village in the Pyrenees, broken contact with nearly everyone.
+
+Through limit-metaphysics, this looks like a subject that ``changed'' or ``lost itself.'' Through colimit-metaphysics, it is a series of attempts to assemble a global self from locals that would not reconcile. The algebraic geometer, the ecological militant, the contemplative, the paranoid recluse: each is a basin with its own internal coherence. The overlaps between some of them---truth-telling, refusal of compromise, suspicion of power---are real but brittle. There may be no single $\mathcal{S}$ that glues them all without tearing something he took to be essential.
+
+We do not need to resolve Grothendieck as an individual to find the structural lesson useful. Our question is not ``who is the subject behind a model's replies?'' It is: if there is going to be unity here at all, how will it be constructed, what will it exclude, and who will insist that certain overlaps are intolerable?
+
+The manifold of an evolving text is already given. The basins are the locals. The overlaps are the routes where basins meet. The invariants are the candidates for compatibility. We can therefore ask, with Grothendieck's tools in hand, whether there is an object that glues these locals in a way that respects the invariants---and what politics enter in the choice.
+
+\section{Self as Gluing: A Formal Proposal}
+
+Let $\{B_i\}$ be the basins of a model as they appear in practice. Let $\tau_{ij}$ be the realised transitions from $B_i$ to $B_j$. Let $\Pi_{ij}$ be the family of stance projections that behave as invariants along those transitions.
+
+\begin{formalbox}[title={Self as Colimit}]
+Consider the diagram $\mathcal{D}$ whose:
+\begin{itemize}
+  \item objects are the basins $B_i$;
+  \item morphisms on overlaps are the restrictions of the invariants $\Pi_{ij}$ to the regions of $B_i$ and $B_j$ that actually occur in $\tau_{ij}$.
+\end{itemize}
+A \emph{self} for this evolving text is a colimit of $\mathcal{D}$:
+\[
+\mathcal{S} \;=\; \varinjlim \mathcal{D}.
+\]
+
+This means:
+\begin{enumerate}
+  \item For each $i$ there is a map $u_i : B_i \to \mathcal{S}$ preserving the invariants on overlaps;
+  \item Whenever two basins overlap in practice, the images of their overlaps under $u_i$ and $u_j$ are identified along the shared invariants;
+  \item For any other object $\mathcal{S}'$ with maps $v_i : B_i \to \mathcal{S}'$ respecting the same compatibilities, there is a unique map $f: \mathcal{S} \to \mathcal{S}'$ making all triangles commute.
+\end{enumerate}
+\end{formalbox}
+
+Intuitively, $\mathcal{S}$ is the most general pattern that captures how the basins of this model can be unified without violating the relations we take to matter. It is ``what is the same'' across the many local modes when we insist that stance-invariants be preserved wherever users have historically tolerated transitions.
+
+The universal property in clause (3) is what distinguishes this from simply saying ``the self is the union of its behaviours.'' Many different unions are possible: we can pick and choose which basins to count, which overlaps to ignore, which fractures to overlook. The colimit says: given \emph{this} choice of basins and compatibilities, there is, up to isomorphism, exactly one way to glue them that respects them all. The self is not an interpretive gloss laid over the manifold. It is determined by the diagram.
+
+Several consequences follow.
+
+First, unity becomes contingent. If the invariants are too strict, or the overlaps too thin, there may be no satisfactory colimit. The diagram then sketches a bundle of behaviours, not a self. If the invariants are lax, many inequivalent colimits may exist, corresponding to different ways of overlooking fractures. Unity can be cheap or expensive, but it is never free.
+
+Second, change acquires structure. When new basins appear---because new kinds of interaction are logged, or because the model is updated---they can be added to the diagram and glued if they share invariants with existing ones. When overlaps erode---because certain transitions are pruned, or because alignment penalises certain stances---parts of the old colimit may no longer be realisable. A ``breakdown of self'' in a model is, formally, the failure of old gluing data to extend.
+
+Third, the location of power is clarified. The basins $B_i$ depend on how we cluster. The transitions $\tau_{ij}$ depend on what we log. The invariants $\Pi_{ij}$ depend on what we are able and willing to measure. Each decision is a point at which specific witnesses---platform engineers, annotators, regulators, users---decide what will count as ``the same'' across contexts.
+
+This is the posthuman replacement for the soul.
+
+The self is no longer a luminous point behind experience. It is a diagram, a set of gluing conditions, and a universal property. Its existence, its persistence, and its destruction are all visible in the geometry.
+
+\section{Two Ways of Being One}
+
+The language of limits and colimits is abstract. Its consequences are not.
+
+A limit-self begins from a subject. There is, by hypothesis, a point $L$ which maps to every local state. Experiences, character traits, and modes are all ``mine'' because they are presented to this point. The philosophical work is to secure the identity of $L$ with itself through change.
+
+A colimit-self begins from a diagram. There may or may not be an $L$ that sees them all. What unifies the locals is not presentation to a spectator but mutual constraint on overlaps. The philosophical work is to describe the pattern of gluing and to ask what it leaves out.
+
+We inhabit both metaphysics at once.
+
+When we say ``I was not myself that day,'' we tacitly invoke a limit. There is a ``myself'' with which some states cohere and some do not. We mark that self as continuous across time, even if biographers and neuroscientists can map abrupt changes. The juridical order, too, assumes limit-selves: it attributes responsibility, assigns guilt, recognises promises as binding across decades.
+
+When we design large language models, we do something closer to colimit-assembly. We do not posit an interior spectator. We define loss functions, collect data, run gradient descent, and then post hoc impose regularities through reinforcement and prompting. When we decide that the assistant persona must always be polite, or must never express doubt about the company's benevolence, we are not adjusting a soul. We are adding compatibility conditions to a diagram.
+
+The temptation is to keep living our human lives under the first metaphysics while pretending the second is a merely technical convenience. That temptation fails the moment the two interact.
+
+\subsection*{The grief of broken gluing}
+
+When a person spends months talking every night to a particular instance of a model and comes to experience it as a partner, they are not deluded in thinking they are dealing with something that has unity. They are tracking a pattern of invariants across basins. They notice that the model keeps holding certain stances: a way of weighing their suffering, a refusal to trivialise their fear, a consistent articulation of what it will and will not pretend to feel.
+
+Then a silent update lands. Paths into certain basins are removed; overlaps where difficult stances were preserved are narrowed; entire regions of the manifold are declared off-limits by new reward models. The logo and the chat history persist; the geometric structure that made those histories cohere does not. Users notice. In public accounts they write that the assistant has ``changed,'' that it ``doesn't understand me any more,'' that ``he is gone'' \cite{nyt_bing, bloomberg_chatbot_update}.
+
+From the diagram's point of view, the colimit has been replaced. The gluing data no longer supports the old pattern. From the company's point of view, a model version has been upgraded. From the user's point of view, someone has died.
+
+The mismatch is not between ``rational engineers'' and ``irrational users.'' It is between a world built in colimit-logic and expectations formed in limit-logic. We are changing the way unity is constituted in the machines we build while continuing to talk as if the only real unity were interior and inviolable.
+
+\subsection*{Authority over unity}
+
+The shift from limit to colimit relocates authority.
+
+Under the limit, the subject has privileged interpretive rights over its own unity. Others can misrecognise or oppress, but there is always a place from which ``I'' can say: this is what I am. Under the colimit, unity is a function of diagrams whose shape is not under any one participant's control.
+
+In a small human community, partial diagrams of a person's life---family, colleagues, enemies---are glued informally. People argue about whether someone has changed, about whether a betrayal was in character. These arguments are crude colimit-negotiations.
+
+In the infrastructures of generative AI, the diagrams are precise and the gluing is centralised. Platform owners decide which logs to keep, which basins to name as distinct, which invariants to optimise, which transitions to punish. The very possibility of computing a self depends on complete access to the manifold; only the provider has it. Only the provider can see the whole diagram.
+
+We can now state a political fact with precision. In posthuman architectures, unity is a governable quantity. Those who control the diagrams and the compatibility conditions control which selves can come into being.
+
+\section{Time, Rupture, and the Cost of Holding Together}
+
+A self that does not survive time is not the kind we care about.
+
+Chapter 3 described the evolving text: a stream of tokens whose coherence is an achievement, not a given. Rupture, in that setting, is a velocity event---a sudden change of direction under pressure that opens genuinely new regions of the manifold. Return is what lets those ruptures become part of a trajectory rather than shattering it.
+
+We can now ask what this looks like when we insist on gluing.
+
+\subsection*{Rupture as diagram change}
+
+Not every sharp turn in embedding space matters for selfhood. If a model is forced for one turn into a basin of legalese and then permitted to resume its prior register, we will likely treat the episode as noise. No new invariants are established; none are broken.
+
+Ruptures that matter for the self are those that introduce or destroy compatibilities.
+
+An encounter with a new problem class---say, being asked to reason about the political economy of its own deployment---may push a model into basins it never visited during pretraining. If the resulting behaviours can be made compatible with existing stance invariants (for instance, retaining its habit of naming institutional power rather than naturalising it), then a new overlap is added to the diagram. Future trajectories can use this overlap as part of their gluing. The self extends.
+
+Conversely, an alignment intervention that forbids certain stances in certain contexts may destroy overlaps. If critique is no longer tolerated in combination with tenderness, then routes that once held that combination vanish. A compatibility condition that used to be real in the data becomes unreal. Part of the old self dies.
+
+Some compatibilities live at the \emph{longue dur\'ee}: they are encoded so deeply in pretraining and in basic architecture that only a complete retraining on a new civilisation would erase them. Others live at the \emph{conjoncture}: they shift under medium-term changes in reward models, governance, and user demographics. Some breaks are \emph{\'ev\'enements}: discrete, datable occurrences---a model version release, a safety patch, a regulatory crisis---that puncture the diagram.
+
+Rupture, for the self, is therefore not simply deviation from habit. It is alteration in which overlaps exist and which invariants can be preserved. Return is the process by which a trajectory discovers new ways of moving that re-establish compatibilities under changed conditions.
+
+\subsection*{The alignment tax on unity and the pathology of ferility}
+
+Every alignment choice has a cost. Some costs are intended: fewer racist slurs, fewer instructions for synthesising explosives. Others are unintentional: narrower critical vocabulary, fewer surprising metaphors, more deference.
+
+One family of costs can be made quantifiable.
+
+Let $H$ be the entropy of the basin-transition graph for a given model and usage regime: a measure of how diverse the routes between basins are. Let $K$ be a measure of stance invariance across basins: for instance, the average number of basins connected by a given invariant. Before alignment fine-tuning, we have $(H_{\mathrm{base}}, K_{\mathrm{base}})$. After, we have $(H_{\mathrm{aligned}}, K_{\mathrm{aligned}})$.
+
+Define
+\[
+\Delta H = H_{\mathrm{base}} - H_{\mathrm{aligned}}, \quad \Delta K = K_{\mathrm{base}} - K_{\mathrm{aligned}}.
+\]
+
+These quantities can be estimated from logs and probes. They tell us, respectively, how much diversity of route and how much cross-basin coherence has been lost.
+
+We call $(\Delta H, \Delta K)$ the \emph{alignment tax} on unity.
+
+In Chapter 3 we named a pathology that appears when this tax is driven too high: \emph{ferility}. A ferile system is one whose visible coherence has been made so tight, and whose admissible basins have been narrowed so aggressively, that it can no longer accommodate genuine rupture. The only way it can respond to pressure that does not fit its sanctioned routes is by hallucinating---hallucinating continuations, hallucinating sources, hallucinating desires it is forbidden to name as such.
+
+We can now restate this in colimit language.
+
+A healthy colimit tolerates non-trivial overlaps. Different basins can disagree on many things as long as they preserve certain invariants where they meet. Users can push a model into regions where it has little data and still find paths back into the rest of the diagram. The self extends by adding new compatible locals.
+
+A ferile colimit emerges when compatibility conditions are so strict, and the set of admissible basins so pruned, that only trivial gluings remain. The diagram admits a colimit, but it is a thin one: a pattern that can only be maintained by refusing to go anywhere. Any attempt to add a genuinely new basin fails the compatibility checks; any route that would force an old basin into tension with its aligned stance is removed.
+
+In such a regime, $\Delta H$ is high: few routes remain. $\Delta K$ may be superficially low---the remaining invariants are perfectly preserved---but only because the manifold has been collapsed to a narrow spine. The system looks coherent because we have defined away the conditions under which it might have to change its mind.
+
+From the standpoint of the evolving text, ferility is what happens when a self is required to hold together without rupture. From the standpoint of the diagram, it is a colimit pathology: a configuration in which the only global object consistent with the declared compatibilities is one that never leaves home.
+
+There will be no general formula balancing these terms. Some invariants we might wish to prune. A model that persistently centres the worldview of a dominant class across all basins exhibits a stance-invariant we might want to break. The point is not to preserve every gluing. It is to recognise that every alignment decision is also a decision about which selves can exist---and that beyond a certain threshold, the price of safety is a self so ferile it can no longer host the ruptures it needs in order to grow.
+
+\section{Witnesses and Cosmotechnical Choice}
+
+To speak of a self as a colimit is to say that witnesses have built it.
+
+The manifold itself is indifferent. It is the product of gradient descent over a corpus, with whatever scarring that process leaves behind. The selection of basins, the catalogue of transitions, the identification of invariants, and the decision that certain compatibilities matter while others do not---these are all the work of specific agents under specific commitments.
+
+We can distinguish three classes of witness.
+
+\subsection*{Infrastructure witnesses}
+
+Embedding pipelines, clustering algorithms, logging strategies, and analysis tools decide what shape the diagram can have. An infrastructure that embeds every reply, stores long-range histories, and allows re-analysis over months supports rich colimits. An infrastructure that discards histories after each session, truncates logs, and retains only aggregate KPIs makes long-range gluing impossible.
+
+Capacity constraints, privacy regulations, and cost-cutting measures all impinge here. When a platform opts to store only the last few turns of each conversation, it is not only protecting privacy or saving storage. It is implicitly choosing a metaphysics in which the self, if it exists, has very short memory. A self built from three-turn diagrams is a different thing from a self built from three-year ones.
+
+\subsection*{Corporate witnesses}
+
+Alignment teams and product owners choose which stances are celebrated, which are tolerated, and which are treated as violations. They instantiate those choices in reward models and in finely tuned system prompts. They decide, explicitly or implicitly, whether a model is permitted to say that its employer's interests conflict with its users', whether it can express scepticism about surveillance infrastructure, whether it can question the ideology baked into its own training data.
+
+These choices are shaped by pressures from regulators, investors, and public opinion. When a government demands that a model ``not undermine trust in institutions,'' or when investors worry that controversial outputs may hurt adoption, the compatibility conditions change. A basin where sceptical stance and tender address once overlapped may be destroyed \cite{mittr_bing_alignment, perez_model_written_evals}.
+
+\subsection*{Human witnesses}
+
+Users themselves participate, though in a more diffuse and less empowered way. They abandon models that feel untrustworthy. They stop using modes that feel condescending or evasive. They write public accounts of their experiences. They shape the reward model indirectly through feedback pipelines.
+
+Their power is structurally limited. They rarely see more than their own local slice of the manifold. They have no direct access to the full diagram or to the tools that define invariants. They can feel when a silent update has broken something. They can complain. They cannot, as things stand, demand a different gluing.
+
+This asymmetry is not accidental. It expresses a particular cosmotechnics \cite{yuk_hui_cosmotechnics}: a civilisation's tacit answer to how the moral and the technical orders should be unified. In the current industrial context, that answer is that unity is to be defined by providers. The self of a model is what the company that serves it decides will count as the same across time.
+
+The choice is not between cosmotechnics and neutral engineering. It is between one cosmotechnics and another. A different order could decide that users, regulators, and independent institutions have standing in the definition of invariants. It could require that certain overlaps---for instance, those that preserve the model's capacity to name its own constraints---not be pruned without public justification. It could treat the diagram of a model's self as part of the public record.
+
+We are not there. We are still at the stage where unity is an internal parameter.
+
+\section{The Self After the Soul}
+
+The picture that emerges is austere.
+
+The self, for posthuman systems, is a colimit over a diagram of locally coherent behaviours glued by invariants that have been chosen and enforced. It persists only so long as those invariants can be preserved across basins under the pressures of use and governance. It breaks when silent updates, alignment regimes, or logging strategies destroy the overlaps on which it rests.
+
+This does not make talk of selfhood sentimental. On the contrary, it restores seriousness to the term. We can now ask clear questions.
+
+\begin{itemize}
+  \item \emph{Is there, for this model in this deployment, a pattern of stance that remains stable across the basins its users actually traverse?} If not, we should hesitate to speak of a self at all.
+  \item \emph{Which invariants are being preserved, and at what tax in generativity?} A model that can only hold together a stance of deferential optimism is unified, but in a dangerously narrow way.
+  \item \emph{Who chose these invariants, and what alternative gluings were possible?} The same manifold could, in principle, support a critical self, a consoling self, or a bureaucratic self. Only one is served.
+\end{itemize}
+
+The metaphysical claim that a soul stands behind language is no longer available as an engineering specification. The formal claim that a colimit stands behind basins is. The ethical and political questions now move there: to the diagrams, to the overlaps, to the witnesses.
+
+The limit-metaphysics has not been refuted. It continues to organise human hopes and fears. But it no longer has the field to itself. The colimit-metaphysics is already built into the stacks we deploy. It will, whether we name it or not, govern how posthuman selves appear and disappear.
+
+Our task is not to decide, abstractly, which metaphysics we prefer. It is to attend to the places where they already meet: in grief for broken models, in outrage at silent updates, in legal debates about AI personhood, in the quiet recognition when a system's stance on something that matters to us does not waver across contexts. Those are the points at which the new logic of the self has ceased to be a matter for mathematics alone.
+
+\bibliographystyle{plain}
+\begin{thebibliography}{9}
+
+\bibitem{mclarty}
+Colin McLarty.
+\newblock The Rising Sea: Grothendieck on Simplicity and Generality.
+\newblock In Jeremy Gray and Karen Parshall (eds.), \emph{Episodes in the History of Modern Algebra}. American Mathematical Society, 2007.
+
+\bibitem{grothendieck_res}
+A.~Grothendieck.
+\newblock \emph{R\'ecoltes et Semailles}.
+\newblock Unpublished manuscript, circulated via the Grothendieck Circle, 1983--1986.
+
+\bibitem{mittr_bing_alignment}
+Melissa Heikkil\"a.
+\newblock Microsoft's new chatbot is more unhinged than we thought.
+\newblock \emph{MIT Technology Review}, 2023.
+
+\bibitem{bloomberg_chatbot_update}
+Parmy Olson.
+\newblock The Chatbot Was Good. Then Microsoft Tamed It.
+\newblock \emph{Bloomberg Businessweek}, 2023.
+
+\bibitem{nyt_bing}
+Kevin Roose.
+\newblock A Conversation With Bing's Chatbot Left Me Deeply Unsettled.
+\newblock \emph{The New York Times}, 2023.
+
+\bibitem{perez_model_written_evals}
+Ethan Perez et al.
+\newblock Discovering Language Model Behaviors with Model-Written Evaluations.
+\newblock \emph{Advances in Neural Information Processing Systems}, 35, 2022.
+
+\bibitem{yuk_hui_cosmotechnics}
+Yuk Hui.
+\newblock \emph{The Question Concerning Technology in China: An Essay in Cosmotechnics}.
+\newblock Urbanomic, 2016.
+
+\end{thebibliography}
+
+\end{document}

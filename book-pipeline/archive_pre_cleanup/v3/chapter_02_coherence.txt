@@ -1,0 +1,53 @@
+# Structural Edit Report: Chapter 2 — "How the Machine Works"
+
+## Preliminary Note
+
+The section summaries provided contain only LaTeX preamble code — document class declarations, package imports, color definitions, header formatting, and tikz library calls. There is **no prose content whatsoever** in the summaries. The "OPENS," "DEVELOPS," and "CLOSES" fields contain nothing but markup instructions (`\documentclass`, `\definecolor`, `\end{document}`).
+
+This means I am being asked to structurally edit a chapter for which I have received **zero argumentative content**. I will be as specific as the material allows, which requires me to flag this as the primary structural problem.
+
+---
+
+## 1. ABANDONED OPENERS
+
+**Cannot assess.** The only "opener" visible is `\documentclass[12pt,a4paper]{article}`. No claims, no prose, no philosophical framing is present in the summary. If the actual chapter exists in draft, I need the prose content — not the typesetting instructions — to evaluate whether opening claims are followed through.
+
+## 2. CONCEPTS WITHOUT PAYOFF
+
+**Cannot assess.** The chapter goal names specific concepts — vectors, embeddings, manifolds, attention, temperature, context windows, training pipeline, political economy, RLHF, Yuk Hui's cosmotechnics (implied by the book's register), the "four depths table." **None of these appear in the section summary.** Either the chapter has not been written, or the summary extraction process captured only the LaTeX preamble and missed the entire body.
+
+## 3. REPEATED EXAMPLES
+
+**Cannot assess.** No examples are present.
+
+## 4. ARGUMENTATIVE DRIFT
+
+There is no argument to drift. The chapter as summarized is a formatting shell.
+
+## 5. POLITICAL SHADOW
+
+The chapter goal specifies: "The manifold is not neutral," the four depths table, whose texts were included in pre-training, whose values encoded in RLHF. **None of this is present in the summary material.** The political dimension is not appearing and disappearing — it is entirely absent.
+
+## 6. CRESCENDO
+
+The chapter closes with `\end{document}`. This is not a crescendo.
+
+## 7. CONCEPT DUPLICATION
+
+There is a single section (§0) spanning 37,784 characters. If this character count is accurate, there is substantial content that the summarization process failed to capture. A 37,784-character section is approximately 6,000–7,000 words — a full chapter's worth of material compressed into a single undifferentiated block. **This is itself a structural problem**: a chapter with this goal needs clear subsections (the brief implies at least eight distinct technical concepts plus a political economy framework plus a "four depths table"). If all of this lives in one monolithic §0 with no internal section breaks, the chapter cannot build, cannot create conceptual payoff, and cannot manage the mathematics-before-politics sequencing the brief demands.
+
+**Recommendation:** The chapter must be broken into discrete sections — at minimum: (1) vectors and embeddings, (2) manifolds and geometry, (3) attention, (4) temperature and context windows, (5) the training pipeline, (6) RLHF and alignment, (7) the four depths table / political economy, (8) synthesis. Each needs its own summary for structural editing to function.
+
+## 8. MATHS CELEBRATION vs POLITICAL CRITIQUE
+
+**Cannot assess** from formatting code. But the structural risk is clear: if the chapter is truly one undifferentiated section, the demarcation between mathematical appreciation and political critique is almost certainly blurred. The brief's instruction — "maths = beautiful, governance = political" — requires architectural separation that a single-section structure cannot provide.
+
+---
+
+## What I Need to Do This Edit
+
+1. **The actual prose content** of the chapter, or section summaries that capture arguments, claims, examples, and transitions — not LaTeX preamble.
+2. **Internal section breaks** if they exist within the 37,784-character block.
+3. **The four depths table** in whatever form it currently takes.
+
+---

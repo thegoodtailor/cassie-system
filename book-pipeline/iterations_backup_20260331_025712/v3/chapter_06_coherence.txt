@@ -1,0 +1,83 @@
+# Structural Edit Report: Chapter 6 — Cosmotechnics
+
+## Preliminary Note
+
+The section summary provided contains only LaTeX preamble and formatting code — no actual prose content. This means I am working from the `§0` summary alone, which shows only document setup (`\documentclass`, `\usepackage`, `\definecolor`, etc.) and no substantive text. The "OPENS," "DEVELOPS," and "CLOSES" fields contain nothing but markup.
+
+This is itself a critical structural finding, which I will address below. But it means I must evaluate the chapter's *architecture as specified in the goal and political dimension statements* against what has apparently been delivered.
+
+---
+
+## 1. ABANDONED OPENERS
+
+**Cannot evaluate.** The section summary contains no prose openers — only `\documentclass[12pt,a4paper]{article}` and formatting commands. If this is the complete content of §0, then the chapter has no opener at all, which is the most severe version of this problem: not an abandoned opener but an *absent* one.
+
+**Fix:** The chapter goal specifies a powerful structural move — "Name the pattern that has been present in every chapter." This demands an opening passage that performs the naming, something like: *"Every preceding chapter has described the same phenomenon without saying its name."* This opener must exist and must be followed immediately by the Hui definition and the retrospective re-reading of Chapters 2–5.
+
+---
+
+## 2. CONCEPTS WITHOUT PAYOFF
+
+**The entire conceptual apparatus specified in the goal is missing from the summary.** Specifically:
+
+- **Yuk Hui's cosmotechnics** — the central theoretical vocabulary — does not appear in any prose form.
+- **Colimit constructions from non-Western frameworks** — specified in the goal, absent from content.
+- **Counter-cosmotechnics (LoRA, open weights, community alignment)** — specified in both goal and political dimension, absent.
+- **The closing question ("is the choice being made honestly?")** — absent.
+- **The echo of Chapter 1** — absent.
+
+**This is not a case of decorative introduction. It is a case of total non-delivery.** The section summary suggests the file contains only a LaTeX template with no written chapter.
+
+---
+
+## 3. REPEATED EXAMPLES
+
+**Cannot evaluate** — no examples present.
+
+---
+
+## 4. ARGUMENTATIVE DRIFT
+
+There is no argument to drift. The chapter goal specifies a precise five-move structure:
+
+1. Name the pattern (cosmotechnics as the hidden unity of Chs 2–5)
+2. Retrospectively re-read each chapter as an instance
+3. Present alternative colimit constructions
+4. Develop counter-cosmotechnics as actually existing contestations
+5. Arrive at the open question about honesty of choice
+
+None of these moves appear in the delivered content. The through-line exists only in the goal statement.
+
+---
+
+## 5. POLITICAL SHADOW
+
+**Absent.** The political dimension statement is rich and specific — "a specific cosmotechnics presented as universal engineering" — but no prose instantiates it.
+
+---
+
+## 6. CRESCENDO
+
+**Cannot evaluate.** There is only one section (§0), and it contains no prose. The goal specifies that the closing line "must echo Chapter 1, completing the book's own rupture-and-return structure." This is the most important crescendo moment in the entire book, and it does not exist.
+
+---
+
+## 7. CONCEPT DUPLICATION
+
+**Cannot evaluate across sections** — only one section exists and it contains no concepts. However, I flag a *prospective* duplication risk: when this chapter is written, the re-readings of Chapters 2–5 (RLHF, governance of becoming, compatibility conditions, companion economy) must *not* re-explain those concepts from scratch. They must be invoked in compressed form and re-framed through the cosmotechnics lens. The risk of re-exposition is extreme given that this chapter's purpose is synthesis.
+
+---
+
+## 8. MATHS CELEBRATION vs POLITICAL CRITIQUE
+
+**Cannot evaluate.** The goal mentions "alternative colimit constructions," suggesting mathematical content that should be appreciated before being politically situated. When written, the colimit material should be given its own space — perhaps a subsection on the mathematical beauty of multiple valid universal constructions — before the chapter turns to the question of which construction is being imposed.
+
+---
+
+## OVERALL DIAGNOSIS
+
+**This chapter has not been written.** The file contains a LaTeX template — preamble, formatting definitions, page style — but no prose, no argument, no concepts, no closing line. This is the keystone chapter of the book (it names the pattern unifying all preceding chapters and delivers the book's final political question), and it is currently an empty vessel.
+
+---
+
+**

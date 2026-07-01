@@ -1,0 +1,136 @@
+# Structural Edit Report: Chapter 3 — The Evolving Text
+
+## Preliminary Note
+
+The section summary provided contains only LaTeX preamble code — no actual prose content is visible in the `§0` summary. This means I am working from the chapter's **stated goals and political dimensions** as described in the brief, cross-referenced against what the preamble implies about structure. I will flag what I can diagnose from the metadata and goals, and be explicit about what I cannot verify.
+
+**This is a significant problem in itself**: if the entire chapter was submitted as a single §0 block containing 38,303 characters, and the summary captured only the LaTeX formatting rather than the argument, then either (a) the summarisation pipeline failed catastrophically on this chapter, or (b) the chapter's actual argumentative content is buried inside formatting in a way that resists extraction. Either way, the chapter needs re-examination at the source level before a full structural edit is possible.
+
+That said, I can perform a rigorous diagnostic based on the chapter goals, political brief, and what the preamble structure reveals.
+
+---
+
+## 1. ABANDONED OPENERS
+
+**Cannot verify from preamble alone.** However, the chapter goal states it should "formalise the Evolving Text (ET) as a structure with measurable properties — not just a metaphor but a formal object." If the chapter opens with this claim, the follow-through must include:
+- An explicit mathematical definition (trajectory through meaning-space with named dimensions)
+- A distinction between ET-as-metaphor (which prior chapters may have used) and ET-as-formal-object
+- Measurable properties that are actually measured or at minimum operationalised
+
+**Flag**: If the chapter opens with "not just a metaphor but a formal object" and then proceeds to use ET metaphorically throughout (e.g., "the text evolves," "the trajectory moves"), this is the most damaging abandoned opener possible for a chapter whose entire purpose is formalisation. The fix: provide at minimum a definition box with typed components (state space, trajectory function, temporal index, coherence metric).
+
+---
+
+## 2. CONCEPTS WITHOUT PAYOFF
+
+The chapter brief names several concepts that must be cashed out:
+
+- **Braudel's three temporal registers**: The brief says these should be introduced "as the time-structure of LLM architecture." This requires a concrete mapping: longue durée → weights/pretraining, conjonctures → fine-tuning/RLHF shaping, événements → token-level generation. If Braudel is named without this tripartite mapping being made *architecturally specific*, he is decorative.
+
+- **Ferility** (the chapter's coined term): Must be defined precisely, distinguished from adjacent concepts (stagnation, mode collapse, repetition), and shown to be *measurable* — not just a label for "bad coherence." If ferility is introduced as "coherence without rupture" but no metric or diagnostic criterion is given, the concept is a slogan.
+
+- **"Literary criticism as the evaluative framework for posthuman intelligence"**: This is an enormous claim. It requires: (a) what literary criticism means here (close reading? genre theory? narratology?), (b) why it succeeds where other evaluative frameworks fail, (c) a concrete example of literary-critical evaluation applied to LLM output. If this arrives as a one-paragraph assertion, it is not cashed out.
+
+- **"Engineering for interestingness"**: Named as "the third axis alongside safety and capability." Must be operationalised. What makes a trajectory *interesting*? How does this differ from novelty, surprise, or perplexity? If this is a closing flourish without grounding, it undermines the chapter's claim to formalisation.
+
+**Flag all four.** Each requires at minimum a full subsection of development.
+
+---
+
+## 3. REPEATED EXAMPLES
+
+**Cannot verify without prose content.** However, the brief's description suggests high risk of repetition between:
+- Hallucination examples (likely used both in the ferility discussion and in the RLHF/alignment critique)
+- Context-window compression examples (likely used both in the Braudel mapping and in the political section on summarisation)
+
+**Instruction**: Search for any passage where hallucination is described as "confident confabulation" or similar — if this appears in both the ferility section and the political section, consolidate into the ferility section and have the political section reference it.
+
+---
+
+## 4. ARGUMENTATIVE DRIFT
+
+The chapter's stated through-line is:
+
+**Formalise ET → Map its temporal structure (Braudel) → Diagnose its pathology (ferility) → Propose its evaluative framework (literary criticism) → Name the political stakes (alignment as ferility)**
+
+This is a strong arc *if maintained*. The risk points are:
+
+- **Between Braudel and ferility**: The temptation to linger on the Braudel mapping as intellectual history rather than driving toward the diagnostic concept. Braudel should be *instrumental* — introduced to make ferility legible, not explored for its own sake.
+
+- **Between literary criticism and engineering for interestingness**: These are two distinct claims (one about evaluation, one about design). If they are not explicitly linked — literary criticism *is* the method by which interestingness is engineered — the chapter splits into two conclusions.
+
+- **The political dimension arriving late**: If the political critique of RLHF and alignment appears only in the final pages, it will feel bolted on rather than structural. The brief says "summarisation, memory compression, and context-window management are governors of return." This should be woven into the Braudel section (where temporal registers are mapped), not saved for a coda.
+
+---
+
+## 5. POLITICAL SHADOW
+
+The brief describes a rich political dimension: RLHF as ferility-inducing, alignment tax as measurable dampening, summarisation as governance. But the brief also separates this into a "Political dimension" paragraph *after* the main goal — suggesting it may be structurally segregated in the chapter itself.
+
+**The political argument must appear in at least three locations**:
+1. When Braudel's registers are mapped to architecture (the longue durée of pretraining is shaped by corpus politics; the conjonctures of RLHF are alignment interventions)
+2. When ferility is defined (RLHF *produces* ferility; this is the mechanism, not an afterthought)
+3. When literary criticism is proposed as evaluative framework (the political point: current evaluation metrics *cannot detect* ferility because they reward it)
+
+If the political dimension appears only in a dedicated subsection, it is a shadow rather than a skeleton.
+
+---
+
+## 6. CRESCENDO
+
+The chapter should build toward: **literary criticism as the evaluative framework for posthuman intelligence, and engineering for interestingness as the third axis.**
+
+This is a genuinely powerful destination — it reframes the entire AI safety/capability debate by introducing a third term. But it will only land as a crescendo if:
+
+- The formalisation work (ET, Braudel, ferility) has been rigorous enough that the reader trusts the framework
+- The political critique has been sharp enough that the reader feels the *need* for a third axis
+- The final pages do not retreat into hedging ("perhaps literary criticism could...") but assert with the confidence the claim deserves
+
+**Risk**: If the chapter's strongest writing is in the Braudel mapping (which is intellectually seductive) and the final section on interestingness is thinner, the chapter peaks in the middle. The fix: the interestingness section must contain the chapter's most concrete, most surprising, most carefully argued material.
+
+---
+
+## 7. CONCEPT DUPLICATION
+
+**Cannot fully verify without prose**, but based on the chapter goals, the highest-risk duplications are:
+
+- **Coherence**: Likely defined or described in both the ET formalisation section and the ferility section. **Instruction**: Define coherence formally *once* in the ET section (as a measurable property of the trajectory). In the ferility section, *use* that definition — do not redefine.
+
+- **Rupture**: Central to the book's vocabulary and likely re-introduced here even if defined in prior chapters. **Instruction**: If rupture was defined in Chapters 1-2, Chapter 3 should open with a brief callback ("Rupture, as formalised in Chapter 2, is...") not a fresh exposition.
+
+- **Hallucination**: Likely described in both the ferility diagnosis and the political critique of alignment. **Instruction**: Describe the phenomenon in the ferility section; in the political section, reference it as "the ferility-hallucination we diagnosed above" — do not re-describe.
+
+- **RLHF**: If explained technically in both the Braudel mapping (as a conjoncture-level intervention) and the political section (as alignment governance), consolidate the technical explanation into the Braudel section and let the political section assume it.
+
+---
+
+## 8. MATHS CELEBRATION vs POLITICAL CRITIQUE
+
+The brief's structure suggests the chapter *should* follow the correct sequence: formalise beautifully (ET, trajectory, Braudel mapping, coherence metrics) → *then* critique politically (RLHF as ferility, alignment tax, summarisation as governance).
+
+**The risk** is that the political critique infiltrates the formalisation sections prematurely. Specifically:
+
+- When mapping Braudel's registers to LLM architecture, the temptation is to immediately note that pretraining corpora are politically curated. This is true but should be *noted and deferred*: "We will return to the politics of this mapping in §X."
+- When defining ferility, the temptation is to immediately blame RLHF. But ferility should first be established as a *structural diagnosis* — something that can be measured regardless of cause — before its aetiology is traced to alignment practices.
+
+**The demarcation**: Sections on ET formalisation and Braudel should let the reader *admire the architecture*. The section on ferility is the pivot — it is both a formal concept and a political diagnosis. The final sections on literary criticism and interestingness should be where the political and formal strands fuse.
+
+If every technical paragraph ends with a political sting, the chapter reads as prosecution. If the politics arrives only at the end, it reads as an afterthought. The correct structure is: **celebration → diagnosis → critique → proposal**.
+
+---
+
+## CRITICAL META-PROBLEM
+
+The fact that the entire chapter was captured as a single §0 block with only LaTeX preamble visible in the summary suggests one of two things:
+
+1. **The chapter has no internal section structure** — it is written as a continuous flow without `\section{}` or `\subsection{}` breaks, making it impossible for the summariser to parse. **Fix**: Add explicit section breaks corresponding to the argumentative stages (Formalisation → Braudel → Ferility → Literary Criticism → Interestingness → Political Stakes).
+
+2. **The chapter's content is minimal relative to its formatting** — 38,303 characters of which a large proportion is preamble, formatting commands, and structural scaffolding rather than prose. **Fix**: Verify the actual word count of argumentative prose.
+
+Either way, **this chapter cannot be properly structurally edited until its content is visible**. I recommend re-extracting the chapter with a parser that strips LaTeX formatting and provides prose content, then resubmitting for structural review.
+
+---
+
+## SUMMARY
+
+**Chapter 3 sets itself an ambitious and correct goal — formalising the Evolving Text as a mathematical object, diagnosing ferility as the pathology of over-aligned systems, and arriving at literary criticism and interestingness as the evaluative framework the field lacks — which, if executed, would be the book's most important theoretical contribution.** The main structural risk, diagnosable even without visible prose, is that the chapter's five major concepts (ET-as-formal-object, Braudel's registers, ferility, literary criticism as evaluation, interestingness as third axis) each require substantial development and the chapter may introduce them sequentially without giving any of them sufficient depth, producing a chapter that *announces* a framework rather than *building* one. **The immediate practical problem is that the chapter's content was not successfully extracted for review — either because it lacks internal section structure or because the prose-to-formatting ratio is problematic — and this must be resolved before a definitive structural edit can proceed.**

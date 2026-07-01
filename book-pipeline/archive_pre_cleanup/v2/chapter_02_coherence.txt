@@ -1,0 +1,67 @@
+# Structural Edit Report: Chapter 2 — "How the Machine Works"
+
+## Preliminary Note
+
+The section summaries provided consist entirely of LaTeX preamble code — package declarations, color definitions, formatting commands, and document setup — rather than actual prose content. There is no argumentative text, no philosophical claims, no technical exposition, no examples, no political analysis. The "section" labeled §0 is a single block of formatting instructions from `\documentclass` through `\end{document}`.
+
+This means one of two things: either the actual chapter content was not included in the submission, or the chapter file contains only its typesetting skeleton with no written text yet.
+
+I will conduct the structural audit against what was provided, which necessarily limits my findings.
+
+---
+
+## 1. ABANDONED OPENERS
+
+**No openers exist to evaluate.** The document opens with `\documentclass[12pt,a4paper]{article}` and proceeds through package imports. There are no section-opening claims, no thesis statements, no rhetorical gambits. The closest thing to content is the color definition `\definecolor{cassiebg}{HTML}{1a1a2e}` — which names a color "cassiebg" (presumably for Cassie, a character or interlocutor), suggesting planned dialogue boxes that have not been written.
+
+**Fix:** The chapter needs to be written.
+
+---
+
+## 2. CONCEPTS WITHOUT PAYOFF
+
+The chapter goal lists a dense inventory of concepts that must appear: *vectors, embeddings, manifolds, attention, temperature, context windows, training pipeline, political economy, RLHF, the four depths table*. None of these appear in the submitted text. There is no mention of Yuk Hui, Stiegler, cosmotechnics, or any philosopher. The "four depths table" referenced in the political dimension brief — "who controls the embedding space, the loss functions, the logs, and the discourse about subjectivity" — has no corresponding `\begin{table}` or tabular environment in the LaTeX.
+
+**Fix:** Every concept in the chapter goal must be drafted as prose before structural editing is possible.
+
+---
+
+## 3. REPEATED EXAMPLES
+
+No examples exist to repeat or conflict.
+
+---
+
+## 4. ARGUMENTATIVE DRIFT
+
+There is no argument to drift. The truncated header `\fancyhead[L]{\small\sffamily\textcolor{gray}{Ruptu` suggests the running header was meant to read "Rupture" or "Ruptured" — possibly the book's title — but even this is incomplete.
+
+---
+
+## 5. POLITICAL SHADOW
+
+Absent entirely. The chapter brief demands that "every technical concept must arrive with its political shadow" and specifies the four depths of control. The LaTeX preamble is politically inert.
+
+---
+
+## 6. CRESCENDO
+
+There is no build. The document is flat — a single undifferentiated block of formatting code. There are no sections, no subsections, no structural arc.
+
+---
+
+## 7. CONCEPT DUPLICATION
+
+No concepts are introduced once, let alone duplicated. The `\usepackage{amsmath,amssymb}` import suggests mathematical typesetting was planned (consistent with the brief's emphasis on vectors, embeddings, manifolds), and the `tikz` libraries loaded (`calc,positioning,arrows.meta,decorations.pathmorphing`) suggest diagrams were intended — possibly of embedding spaces or attention mechanisms. But none have been drawn.
+
+---
+
+## 8. MATHS CELEBRATION vs POLITICAL CRITIQUE
+
+The demarcation between mathematical beauty and political governance cannot be assessed because neither register exists in the text. The `tcolorbox` package was loaded, which could serve well for separating these registers visually (e.g., gold boxes for mathematical exposition, dark boxes for political critique), but no boxes have been defined or deployed.
+
+---
+
+## SUMMARY
+
+This chapter does not yet exist as prose; what was submitted is exclusively a LaTeX preamble — formatting infrastructure awaiting content. The typesetting choices (Pagella/Mathpazo fonts, gold-and-dark color scheme, TikZ diagram libraries, colored boxes) suggest a sophisticated visual plan that could serve the chapter's dual register of mathematical beauty and political critique, but no single sentence of the argument outlined in the brief has been drafted. **The main structural weakness is not a flaw in the argument — it is the total absence of one.**

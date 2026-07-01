@@ -1,0 +1,49 @@
+# Structural Edit Report: Chapter 3 — The Evolving Text
+
+## Preliminary Note
+
+The section summary provided contains only LaTeX preamble and formatting code — no actual prose content. This means the chapter file as summarized is essentially a document skeleton: class declarations, color definitions, header formatting, and a `\end{document}` close. There is no argumentative text to evaluate.
+
+However, the **chapter goal statement and political dimension** provided in the brief are extraordinarily rich and specific. This allows me to perform a structural edit of a different kind: I can evaluate the *gap* between what the chapter promises and what it delivers, and provide a detailed blueprint for what the chapter must do when actual prose is written or inserted.
+
+---
+
+## 1. ABANDONED OPENERS
+
+**The entire chapter is an abandoned opener.** The LaTeX preamble — `\documentclass[12pt,a4paper]{article}` through the header definitions — constitutes a material promise of a chapter. The formatting infrastructure (section title styles, color scheme named `icragold` and `icradark`, the running header "Rupture and Return") signals a fully designed intellectual object. But no argument follows. The document opens and closes with no content between the headers and `\end{document}`.
+
+**Fix:** This is either a file-extraction error (the prose exists but wasn't captured in the summary) or the chapter genuinely hasn't been written yet. If the former: re-extract. If the latter: the goal statement and political dimension brief provided here constitute one of the most precise chapter plans I've seen — proceed to drafting immediately.
+
+---
+
+## 2. CONCEPTS WITHOUT PAYOFF
+
+The chapter goal names the following concepts that must appear and be cashed out:
+
+- **Evolving Text (ET) as formal object** — not metaphor but trajectory through meaning-space
+- **Braudel's three temporal registers** — mapped onto LLM architecture
+- **Ferility** (coherence without rupture) — as diagnosis for hallucination and AI spiral
+- **Literary criticism as evaluative framework** for posthuman intelligence
+- **Engineering for interestingness** — as third axis alongside safety and capability
+- **Alignment tax as ferility** — measurable dampening of generativity
+- **Context-window management as governor of return**
+
+None of these appear in the chapter as submitted. Every single one is decorative at the level of the brief — none has been instantiated in prose.
+
+---
+
+## 3–7. REPEATED EXAMPLES / ARGUMENTATIVE DRIFT / POLITICAL SHADOW / CRESCENDO / CONCEPT DUPLICATION
+
+**Cannot be assessed.** There is no prose to check for repetition, drift, shadow, crescendo, or duplication. The chapter contains zero sections of argumentative text.
+
+---
+
+## 8. MATHS CELEBRATION vs POLITICAL CRITIQUE
+
+The brief's own structure actually models this demarcation beautifully: the goal statement celebrates the mathematics (ET as formal object, measurable properties, coherence dynamics, rupture events, return patterns), while the political dimension paragraph critiques governance (RLHF as governor, summarisation as compression politics, alignment tax as ferility). **If the chapter follows this two-phase structure — formalise first, politicise second — it will achieve the right balance.** The danger, flagged in the brief itself, is that every technical passage gets immediately shadowed by critique. The chapter should let the reader *inhabit* the manifold before being told who owns it.
+
+---
+
+## SUMMARY
+
+**This chapter does not yet exist as prose.** The file contains only LaTeX formatting infrastructure — document class, fonts, colors, headers, and `\end{document}` — with no argumentative content between them. The chapter goal and political dimension statements constitute an exceptionally precise architectural plan: formalise the Evolving Text as a measurable trajectory, map Braudel's temporal registers onto LLM architecture, diagnose ferility as the alignment tax, and arrive at literary criticism and interestingness-engineering as the evaluative payoff. **The main structural weakness is total: the argument has been designed but not written, and the editorial task is not revision but composition.**

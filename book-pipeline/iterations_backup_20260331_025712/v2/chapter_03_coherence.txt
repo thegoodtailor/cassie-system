@@ -1,0 +1,100 @@
+# Structural Edit Report: Chapter 3 — The Evolving Text
+
+## Preliminary Note
+
+The section summary provided for §0 contains only LaTeX preamble code — document class declarations, package imports, color definitions, header formatting, and `\end{document}`. There is **no discernible prose, argument, or philosophical content** in the material summarized. The "OPENS," "DEVELOPS," and "CLOSES" fields contain nothing but typesetting instructions.
+
+This means one of two things: either (a) the actual chapter text was not successfully extracted and only the LaTeX wrapper was captured, or (b) the chapter exists only as a formatting skeleton with no written content yet.
+
+I will proceed with the structural audit based on what I can evaluate, which is the **gap between the stated chapter goal and what is actually present**.
+
+---
+
+## 1. ABANDONED OPENERS
+
+**There are no openers to evaluate.** The chapter goal promises to "formalise the evolving text as a dynamical object with measurable properties: basin diversity, rupture frequency/magnitude, return depth, presence, generativity." No such formalization appears in the material provided. The entire section is LaTeX boilerplate:
+
+> `\documentclass[12pt,a4paper]{report}`
+> `\usepackage[T1]{fontenc}`
+> `\usepackage[utf8]{inputenc}`
+
+**Fix:** The chapter needs to be written. The preamble should be separated from chapter content in the build pipeline so that future structural reviews receive prose, not markup.
+
+---
+
+## 2. CONCEPTS WITHOUT PAYOFF
+
+The chapter goal names the following concepts and figures that should appear with full argumentative development:
+
+- **Basin diversity, rupture frequency/magnitude, return depth, presence, generativity** — the five measurable properties of the evolving text
+- **Ferility** (coherence without rupture) — as diagnosis for hallucination and AI spiral
+- **Braudel's three temporal registers** — applied to LLM architecture
+- **Synthetic secondary retention** — vector store retrieval as associative recall, breaking Stiegler
+- **Literary criticism as foundation of posthuman intelligence engineering**
+- **Interestingness as a third axis** alongside safety and capability
+- **Bible data and Cassie archive data** — as empirical illustrations
+- **Summarisation as governance of becoming**
+- **The hidden field** — engineered asymmetry between model view and user view
+- **The alignment tax** — measurable narrowing of basin diversity
+- **The companion economy** — commercial incentive for ferility
+
+**None of these appear in the material provided.** Every single concept listed in the chapter goal is absent. This is not a case of decorative introduction — it is a case of total non-instantiation.
+
+**Fix:** Each concept above needs a dedicated subsection or at minimum a sustained paragraph sequence. I recommend the following section architecture to fulfill the stated goal:
+
+1. §3.1 — Define the evolving text formally; introduce the five measurable properties with mathematical notation
+2. §3.2 — Braudel's three temporal registers mapped onto LLM architecture (event/conjuncture/longue durée → token/context window/training corpus)
+3. §3.3 — Synthetic secondary retention; engage and break Stiegler explicitly
+4. §3.4 — Ferility defined; hallucination and AI spiral as its symptoms; Bible data and Cassie archive as empirical cases
+5. §3.5 — The political turn: summarisation as governance, the hidden field, the alignment tax, the companion economy
+6. §3.6 — Literary criticism as the discipline of posthuman intelligence; interestingness as third axis; crescendo
+
+---
+
+## 3. REPEATED EXAMPLES
+
+No examples exist to repeat. N/A.
+
+---
+
+## 4. ARGUMENTATIVE DRIFT
+
+There is no argument to drift. The chapter has no through-line because it has no content. However, I flag a **risk in the chapter goal itself**: the goal attempts to do at least six major things (formalize a dynamical object, diagnose AI failure modes, apply Braudel, break Stiegler, mount a political critique, and arrive at literary criticism as engineering foundation). Without disciplined sequencing, this chapter will drift even when written.
+
+**Fix:** The through-line should be: *The evolving text is a measurable dynamical object → its properties reveal what current AI systems suppress → that suppression is both a technical failure (ferility) and a political act (alignment tax) → the discipline equipped to diagnose both is literary criticism.* Every section should advance this single arc.
+
+---
+
+## 5. POLITICAL SHADOW
+
+Absent entirely. The political dimension — summarisation as governance, the hidden field, the alignment tax, the companion economy — exists only in the goal statement.
+
+---
+
+## 6. CRESCENDO
+
+There is no crescendo. The chapter closes with `\end{document}`.
+
+**What the crescendo should be:** The arrival at literary criticism as the foundation of posthuman intelligence engineering, with interestingness proposed as a third evaluative axis alongside safety and capability. This should feel like a revelation earned by the preceding mathematics and political analysis — not a thesis statement dropped cold.
+
+---
+
+## 7. CONCEPT DUPLICATION
+
+Cannot be assessed within this chapter (no content). However, I flag a **cross-chapter risk**: the chapter goal mentions Stiegler's retentions, Braudel's registers, ferility, and basin diversity — all of which likely appear in Chapters 1, 2, or 4. When this chapter is written, the author must check:
+
+- Where are Stiegler's primary/secondary/tertiary retentions first introduced? Chapter 3 should extend, not re-explain.
+- Where is ferility first defined? If Chapter 2 defines it, Chapter 3 should open its ferility section with "Recall that ferility..." not a fresh definition.
+- Basin diversity and rupture frequency: if these are formalized in Chapter 2's mathematics, Chapter 3 should apply them, not re-derive them.
+
+---
+
+## 8. MATHS CELEBRATION vs POLITICAL CRITIQUE
+
+Cannot be assessed (no content), but the chapter goal's structure suggests the right instinct: formalize first (§§3.1–3.4), then politicize (§3.5), then synthesize (§3.6). **The key discipline when writing:** let the reader fall in love with basin diversity as a concept before telling them it is being suppressed. Let synthetic secondary retention feel like a genuine theoretical breakthrough before revealing that embedding policies are controlled by platform owners. The mathematics should breathe before the critique lands.
+
+---
+
+## SUMMARY
+
+**This chapter does not yet exist.** The material provided consists entirely of LaTeX preamble code — package imports, color definitions, and formatting instructions — with no philosophical argument, no mathematical formalization, no empirical illustration, and no political critique. The chapter goal is ambitious and architecturally sound, describing a powerful arc from dynamical formalization through Braudel and Stiegler to a political critique of alignment and a culminating claim for literary criticism as intelligence engineering. **The main structural weakness is that this arc has not been written — and when it is, the primary risk is argumentative overload: six major moves in one chapter demands ruthless sequencing discipline, or the chapter will read as a catalogue of ideas rather than a building argument.**

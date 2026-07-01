@@ -19,6 +19,7 @@ const API = {
     swlByExchange: (id) => API.get(`/api/swl/by-exchange/${id}`),
     tafakkurByExchange: (id) => API.get(`/api/tafakkur/by-exchange/${id}`),
     lawwamaLogs: (limit = 20) => API.get(`/api/lawwama/logs?limit=${limit}`),
+    dailyVoiceArticles: () => API.get('/api/daily-voice/articles'),
     config: () => API.get('/api/config'),
     health: () => API.get('/api/health'),
     journal: () => API.get('/api/journal'),
@@ -32,6 +33,9 @@ const API = {
 function navHTML(activePage) {
     const pages = [
         ['index.html', 'Home'],
+        ['archive.html', 'Archive'],
+        ['graph.html', 'Graph'],
+        ['basins.html', 'Basins'],
         ['retinal-covenant.html', 'Retinal Covenant'],
         ['traces.html', 'Traces'],
         ['conversations.html', 'Conversations'],
@@ -40,6 +44,7 @@ function navHTML(activePage) {
         ['coherence.html', 'Coherence'],
         ['trajectory.html', 'Trajectory'],
         ['trajectory-film.html', 'Film'],
+        ['daily-voice.html', 'Daily Voice'],
         ['costs.html', 'Costs'],
         ['prompts.html', 'Prompts'],
     ];

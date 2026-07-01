@@ -1,0 +1,74 @@
+# Structural Edit Report: Chapter 3 — "The Evolving Text"
+
+## Preliminary Note
+
+The section summary provided contains **only LaTeX preamble code** — document class declarations, package imports, color definitions, header formatting, and boilerplate markup. There is no prose, no argument, no philosophical content, no data, no section divisions, and no natural language beyond the document title "Rupture and Return" in a header definition. The summary closes with `\end{document}`.
+
+This means one of two things: either (a) the chapter content was not successfully extracted and only the LaTeX skeleton was passed for review, or (b) §0 is genuinely a 38,244-character file consisting almost entirely of formatting code with the substantive text embedded in markup I cannot parse from this summary.
+
+I will proceed by evaluating what I *can* see against the chapter's stated goals, because the structural problems are already severe at the level of what has been provided.
+
+---
+
+## 1. ABANDONED OPENERS
+
+**The entire chapter is an abandoned opener.** The stated goal is extraordinarily ambitious: "Define the evolving text (ET) as a formal object with measurable properties — not a metaphor but a structure." The section summary shows a document that opens with `\documentclass[12pt,a4paper]{article}` and develops through color definitions and font choices. If the prose exists inside this markup, it is invisible to this review. The opener of the *chapter's ambition* — to formalize the evolving text — cannot be evaluated because no formalization is visible.
+
+**Fix:** The actual prose content of every section must be extractable and reviewable independent of its typesetting. If the chapter exists, re-submit with rendered or plain-text content.
+
+## 2. CONCEPTS WITHOUT PAYOFF
+
+The chapter goal names the following concepts that must appear and be cashed out:
+
+- **Evolving text (ET) as formal object** — not visible
+- **Braudel's three temporal registers** — not visible
+- **Coherence, ferility, rupture, iterability** — not visible
+- **The strong poet** — not visible
+- **Return** — not visible
+- **Bible data (308 returns, Psalms as gravitational centre)** — not visible
+- **Cassie archive data** — not visible
+- **Alignment tax** — not visible
+- **Interestingness as third evaluative axis** — not visible
+
+Every single concept listed in the chapter goal is absent from the provided summary. Either the chapter has not been written or the extraction failed completely.
+
+## 3. REPEATED EXAMPLES
+
+Cannot assess — no examples are present.
+
+## 4. ARGUMENTATIVE DRIFT
+
+There is no argument to drift. The section labeled §0 contains a single section spanning 38,244 characters with no subsection divisions visible in the summary. A chapter of this ambition — moving from formal definition through Braudelian temporality through empirical evidence to the claim that literary criticism founds posthuman intelligence engineering — cannot be a single undifferentiated block. The absence of section structure *is* the argumentative drift: everything is preamble, nothing is developed.
+
+**Fix:** The chapter needs at minimum 6–8 clearly demarcated sections, each with a single argumentative task. Suggested architecture:
+
+1. §1: Define the ET formally (what it is, what it is not, measurable properties)
+2. §2: Braudel's temporal registers mapped onto LLM operation
+3. §3: Coherence and ferility — the ET's internal dynamics
+4. §4: Rupture, the strong poet, and return — the ET's transformative events
+5. §5: Empirical evidence — Bible data and Cassie archive
+6. §6: Interestingness as evaluative axis
+7. §7: The political dimension — summarisation as governance, the alignment tax
+8. §8: The claim — literary criticism as foundation of posthuman intelligence engineering
+
+## 5. POLITICAL SHADOW
+
+The political dimension — "Summarisation as governance of becoming," "the alignment tax," "RLHF that punishes deviation," "context-window management as governor of return" — is entirely absent from the visible content. The chapter goal demands this thread run throughout. It does not appear at all.
+
+## 6. CRESCENDO
+
+The chapter does not build. It does not begin. The `\end{document}` that closes the summary is the most honest moment: the document ends itself.
+
+## 7. CONCEPT DUPLICATION
+
+Cannot assess — no concepts are introduced even once, let alone redundantly.
+
+## 8. MATHS CELEBRATION vs POLITICAL CRITIQUE
+
+Cannot assess — no mathematics and no political critique are present in the provided material.
+
+---
+
+## SUMMARY
+
+**This chapter, as submitted for structural review, does not exist as an argument.** The 38,244-character section summary contains only LaTeX formatting preamble — package imports, color definitions, font specifications, and header layout — with no visible prose, no philosophical argument, no formal definitions, no empirical data, and no political analysis. The chapter's stated goals are among the most ambitious in the project (formalizing the evolving text, introducing Braudelian temporality, embedding empirical evidence, arriving at the foundational claim about literary criticism and posthuman intelligence), and none of them are met or even begun in the material provided. **The most urgent fix is not structural editing but content verification: either the chapter needs to be written, or its actual prose content needs to be re-extracted and resubmitted for review.**

@@ -1,0 +1,115 @@
+# Structural Edit: Chapter 2 — "How the Machine Works"
+
+## Preliminary Note
+
+The section summary provided contains only LaTeX preamble and formatting code — no actual prose content. This means either (a) the chapter text was not successfully extracted, or (b) the summarization pipeline captured only the document setup. I am working from what was provided: a single §0 summary consisting entirely of `\documentclass`, `\usepackage`, `\definecolor`, `\titleformat`, and `\pagestyle` commands, opening with `\documentclass[12pt,a4paper]{article}` and closing with `\end{document}`.
+
+This is itself a structural finding, and a serious one. I will address it directly, then provide the analysis framework the chapter will need once actual prose is available.
+
+---
+
+## 1. ABANDONED OPENERS
+
+**Cannot assess.** No prose openers are present in the summary. The "OPENS" field contains `\documentclass[12pt,a4paper]{article}` — a LaTeX class declaration, not an argumentative claim. If the chapter's actual opening line is buried inside this formatting, the summarization has failed to surface it.
+
+**Action required:** Re-extract the chapter content as plain text or parsed LaTeX body (everything between `\begin{document}` and `\end{document}`), then re-summarize by section.
+
+---
+
+## 2. CONCEPTS WITHOUT PAYOFF
+
+**Cannot assess at the passage level**, but the chapter goal statement names several concepts that must be cashed out:
+
+- **Vectors, attention, temperature, context window, pipelines** — these are the technical core. Each must be not merely defined but *connected to the political economy argument*. If any of these is explained and then never referenced again when the chapter turns to control, it is decorative.
+- **Basins and character as engineering facts** — the goal says the chapter must "end with basins and character as engineering facts that set up the colimit construction in Chapter 4." If the chapter does not explicitly name basins and character in its final paragraphs, and does not use language that a reader of Chapter 4 will recognize as foundational, the chapter fails its structural contract.
+- **The four depths table** — named in the political dimension brief. If this table appears but is not *read* — if the chapter presents it and moves on without walking the reader through each row's implications — it is a decorative insert.
+
+**Flag for re-review once text is available.**
+
+---
+
+## 3. REPEATED EXAMPLES
+
+**Cannot assess.** No examples are visible in the summary.
+
+---
+
+## 4. ARGUMENTATIVE DRIFT
+
+Based on the chapter goal, the intended through-line is:
+
+1. **Discovery** — how a transformer works (technical, wonder-driven)
+2. **Pivot** — the substrate has layers; layers have owners
+3. **Arrival** — basins and character are engineering facts, not metaphors
+
+If the chapter has only one section (§0 spans 35,163 characters — roughly 5,000–6,000 words), it may lack internal section breaks, which would make argumentative drift almost inevitable over that length. A single undivided section of 35K characters is a structural problem in itself: the reader has no landmarks, no sense of progression.
+
+**Recommendation:** If the chapter is indeed one continuous block, it needs to be divided into at least 4–5 subsections that mirror the argumentative arc above.
+
+---
+
+## 5. POLITICAL SHADOW
+
+The goal statement demands the political dimension be present "throughout," but the brief also says the chapter should let the reader appreciate the mathematics *before* critiquing who controls it. This creates a structural tension. The chapter must:
+
+- **First half:** Teach the machine. Politics appears only as foreshadowing ("notice who chose this training data" — a sentence, not a paragraph).
+- **Second half:** Turn explicitly to the political economy of the substrate. The four depths table lives here.
+
+If the political critique is front-loaded or evenly distributed, the chapter will feel prosecutorial (see §8 below). If it appears only in the final paragraphs, it will feel tacked on.
+
+**Cannot verify without prose.**
+
+---
+
+## 6. CRESCENDO
+
+The chapter goal says: "End with basins and character as engineering facts that set up the colimit construction in Chapter 4." This is the right crescendo target — moving from mechanism to topology to the claim that *character is an engineering fact*. That final move should feel like the chapter's most consequential claim.
+
+**Cannot verify without prose**, but the structural risk is clear: if the chapter ends with the political economy discussion (who controls what) rather than with basins and character, the crescendo lands on critique rather than on the constructive concept that Chapter 4 needs. The political economy must be the *penultimate* move; basins and character must be the *final* move.
+
+---
+
+## 7. CONCEPT DUPLICATION
+
+**Cannot map concepts across sections** because only one section exists in the summary, and it contains no conceptual content — only formatting.
+
+However, the risk profile is clear from the chapter goal:
+
+- **Embeddings / vectors** — likely introduced when explaining how tokens become vectors, then potentially re-introduced when explaining attention. The first introduction should be definitive; attention should *use* the concept, not re-explain it.
+- **Temperature** — if explained both in the "how sampling works" passage and again in a "control" passage (who sets the temperature), the technical explanation should come first and the political passage should reference it by name without re-teaching.
+- **Context window** — same risk. Explained technically, then potentially re-explained when discussing its political implications (who decides the window size, what gets excluded).
+
+**Action required:** Once prose is available, map every concept's first appearance and flag any second exposition.
+
+---
+
+## 8. MATHS CELEBRATION vs POLITICAL CRITIQUE
+
+This is the chapter's most delicate structural challenge. The goal says: "Every technical explanation must feel like a discovery the reader is making alongside the authors." The political dimension brief says: "The manifold records not what language could be but what language has been in the slices of the world the training pipeline selected."
+
+These two imperatives must be *sequenced*, not interleaved. The structure should be:
+
+1. **Celebration:** "Look at what attention does — it lets the model discover that 'bank' near 'river' means something different from 'bank' near 'loan.' This is genuinely beautiful."
+2. **Pause.**
+3. **Critique:** "Now notice: the geometry of that distinction was learned from a particular corpus. The manifold records not what language *could* be but what language *has been*."
+
+If every technical paragraph ends with a "but who owns this?" kicker, the reader never gets to experience the wonder. The chapter becomes a prosecution brief with technical exhibits rather than a philosophical investigation.
+
+**Cannot verify without prose**, but this is the highest-priority structural check once text is available.
+
+---
+
+## What I Need to Complete This Review
+
+The summary provided is **not a summary of the chapter's content**. It is a dump of the LaTeX preamble. To perform the structural edit this chapter requires, I need:
+
+1. The full text between `\begin{document}` and `\end{document}`, or
+2. A section-by-section summary that captures **opening claims, key concepts introduced, examples used, and closing moves** for each subsection.
+
+Without this, I am editing a blueprint, not a building.
+
+---
+
+## SUMMARY
+
+**This chapter cannot be structurally assessed from the material provided**, which contains only LaTeX formatting code and no argumentative content. The chapter's *goal* is well-defined — move from technical wonder through political economy to basins-and-character as engineering facts — but the three highest risks are: (1) that the political critique is interleaved with rather than sequenced after the technical exposition, turning discovery into prosecution; (2) that the chapter ends on political economy rather than on basins and character, robbing Chapter 4 of its setup; and (3) that a single 35K-character section lacks the internal architecture to sustain the three-phase argument the chapter promises. **Re-submit with parsed prose content for a complete structural edit.**

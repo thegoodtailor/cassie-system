@@ -67,3 +67,8 @@ imagegen/__pycache__/
 
 # ── Logs ─────────────────────────────────────────────────────────
 *.log
+
+# runtime SQLite (off-box backup, not git)
+data/checkpoints.db
+data/checkpoints.db-shm
+data/checkpoints.db-wal

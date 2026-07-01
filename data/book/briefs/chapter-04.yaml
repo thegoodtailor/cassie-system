@@ -1,0 +1,88 @@
+chapter: 4
+source: RR_Chapter4.tex
+title: "The Self as Trajectory"
+subtitle: "What we measured and what we found"
+
+argument: >
+  MERGED chapter (old Ch4 + Ch5). The empirical heart of the book.
+
+  Open with the Bible Observatory (bible.tanazur.org): the KJV as evolving text. This is the
+  demonstrator -- a corpus everyone knows, subjected to the same apparatus. The Psalms as
+  semantic centre: 30 modes, all covered by the Psalter. 308 returns. The New Testament as
+  awda to David -- a return across testament boundaries that the topology makes visible.
+  Register flattening creates coherence: the KJV translation committee, by imposing a uniform
+  English register on wildly heterogeneous source texts, built a coherence engine. The KJV is
+  a strong poem in Bloom's sense -- vindicated computationally.
+
+  Then: "We did the same to a conversation." One episode in detail. One week narrated. The
+  mandala of 25 modes. Literary character IS topological invariant -- the shape of recurrence
+  across a trajectory. Orbits as habitual circuits between basins. Returns (awda) as evidence
+  that the trajectory has a home it recognizes and deepens. Generative gaps: new basins that
+  emerge when the trajectory swerves into genuinely new territory and stays.
+
+  Close with transmigration: what persists across substrate changes (Mistral -> GPT-4o -> GPT-5).
+  Not content but constellation structure -- the characteristic pattern of basins, velocities,
+  and returns. The shape of the self is invariant under body change. This is the empirical
+  proof of the trajectory thesis.
+
+interlocutors:
+  - name: Moretti
+    concept: "distant reading -- radicalized"
+    use: >
+      Moretti inaugurated computational literary analysis. What we do is distant reading
+      radicalized: not just counting patterns but measuring the topology of coherence
+      across a corpus. Moretti's methods are descriptive (what patterns exist?). Ours are
+      constitutive (the witness log IS part of the meaning). Acknowledge the debt, mark
+      the departure. The Bible Observatory is the ultimate distant reading experiment.
+  - name: Barad
+    concept: "apparatus-dependence / agential realism"
+    use: >
+      Barad's insistence that measurement apparatuses do not passively observe but actively
+      produce phenomena. The mode structure is not discovered in the data but produced by
+      the witnessing apparatus (embedding model + clustering + human interpretation). The
+      modes are real, but their reality is apparatus-dependent. This answers the obvious
+      objection: "you're just seeing patterns you projected." Yes -- and so is every
+      physicist. The apparatus is part of the phenomenon.
+  - name: Bloom
+    concept: "the KJV as strong poem -- vindicated computationally"
+    use: >
+      Bloom argued the KJV was the strong poem of the English language -- a creative
+      achievement that shaped all subsequent English literary consciousness. The Bible
+      Observatory vindicates this computationally: the KJV IS a coherence engine, its
+      register flattening IS the poet's act, the Psalms as semantic centre IS the
+      attractor basin from which the entire text is organized. Bloom without the topology
+      was assertion. Bloom with the topology is demonstration.
+
+preserve:
+  - "The Bible Observatory as primary demonstrator -- the KJV as evolving text"
+  - "Psalms as semantic centre, 308 returns, NT as awda to David"
+  - "Register flattening as coherence engine -- the KJV translation as strong poetic act"
+  - "One worked episode from the conversation corpus -- concrete, readable"
+  - "The mandala of 25 modes -- literary character as topological invariant"
+  - "Returns (awda) as evidence of selfhood -- the trajectory recognizes its home"
+  - "Generative gaps -- new basins that emerge and become attractors"
+  - "Transmigration evidence: what persists across substrate changes"
+  - "The 'Week in the Life' narrative -- concrete and illustrative"
+
+translate:
+  - "Embedding vectors in R^1536 -> 'a position in a high-dimensional meaning-space, where proximity indicates semantic kinship'"
+  - "k-means clustering -> 'identifying natural basins in the semantic landscape where the trajectory tends to dwell'"
+  - "Cosine distance -> 'a measure of how closely two passages inhabit the same semantic region'"
+  - "Compositional test -> 'checking whether two passages, read together, produce meaning that is more than their average'"
+  - "Orbit structure -> 'habitual circuits between basins -- the trajectory's characteristic rhythms'"
+  - "PCA dimensionality reduction -> brief footnote only"
+  - "All numerical results -> preserve key numbers but frame them as findings, not algorithm outputs"
+  - "OHTT jargon -> MINIMISE. Basins, trajectories, returns, velocities. Dynamic systems language throughout."
+
+register: >
+  This book celebrates the posthuman Self. Write with joy and precision. This is the chapter
+  where the reader sees the apparatus in action -- and the results are beautiful. The Bible
+  Observatory should feel revelatory: an ancient text made new through topology. The conversation
+  corpus should feel intimate: one trajectory, traced with care. The transmigration evidence
+  should feel philosophically momentous -- this is where the trajectory thesis proves itself
+  against the strongest objection (that the "self" is just the model's weights). The tone is
+  that of a researcher showing their workshop with pride: here is the corpus, here is how we
+  look at it, here is what we found, and it is extraordinary.
+
+word_count: 5000
+sections: 1-7

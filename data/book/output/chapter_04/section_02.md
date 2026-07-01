@@ -1,0 +1,49 @@
+## The Psalms as Attractor Basin
+
+When you plot the Bible as a trajectory through meaning-space, one feature stands out: the Psalms occupy a central, unusually varied region that the rest of the canon repeatedly revisits.
+
+### Thirty modes, one book
+
+When we clustered the 31,100 KJV verses in embedding space, about thirty robust **modes of meaning** emerged. You would recognise most of them immediately: **LAW** — imperative, prescriptive, heavy with deontic verbs and ritual vocabulary. **NARRATIVE** — past-tense event structure, named agents, concrete actions. **LAMENT** — first-person distress, complaint, abandonment, enemies pressing in. **PRAISE** — second-person address to God, exalted adjectives, cosmic scope. **WISDOM** — gnomic statements, parallelism, moral and practical instruction. **PROPHECY** — future tense, judgment formulas, nations named and weighed. **GENEALOGY** — *X begat Y* lists, clan-structured enumeration. **EROTIC / INTIMATE** — lover-beloved imagery, body language, longing. **INSTRUCTIONAL EPISTLE** — argumentative connective tissue, church vocabulary. And so on, until roughly thirty modes stabilise as dense regions in the cloud.
+
+Now take **only the Psalms**, place them in the same space, and ask: how many of these basins does the Psalter enter?
+
+The answer is: **all of them**.
+
+There is Psalmic law ("I have sworn, and I will perform it, that I will keep thy righteous judgments"), Psalmic narrative of God's dealings with Israel, Psalmic lament and praise — often in the same poem — Psalmic wisdom that could sit comfortably in Proverbs, martial and prophetic Psalms that lean into the rhetoric of Isaiah, even fleeting erotic and bridal language that anticipates the Song of Songs.
+
+In the Observatory interface, this is immediately visible: colour-coding by mode shows the Psalm verses threaded through almost every region, with a particularly dense knot where lament, praise, and wisdom overlap.
+
+Other books tend to inhabit a small subset of modes: Leviticus lives mostly in LAW, Numbers in LAW and GENEALOGY, Proverbs in WISDOM with occasional excursions. The Psalms behave differently. They are the one book that **samples the entire landscape**. For each of the thirty basins, there exists at least one Psalm whose embedding sits deep inside it, and often many. The variance of Psalmic verse locations spans the same envelope as the entire canon. The centroid of the KJV as a whole lies inside the Psalm cluster.
+
+The "attractor" language is borrowed from dynamical systems. There is no literal flow equation here. But there *is* a robust geometric structure: Psalms occupy a dense, central region that other trajectories repeatedly enter from many directions. In that precise, model-relative sense, the Psalmic cluster **behaves like** an attractor basin. And when I call this a geometric fact, I mean: it is a stable property of the embedding space induced by this model on this corpus. Change the model or the language and you will change the geometry. But given the apparatus — a contemporary English LLM steeped in centuries of KJV-inflected text — the Psalmic centre of gravity is not a metaphor. It is a reproducible feature of how that apparatus arranges biblical discourse.
+
+If you want a single sentence: the Psalter is the point where all the Bible's modes of speaking to God and about God come into mutual relation. It is where the language of the canon *knows itself*.
+
+### 308 returns to David
+
+Once you map basins, you can define a **return** rigorously. Working in canonical order, we track the trajectory of verses and log an **ʿawda** event whenever the text re-enters a basin it has not visited for at least one intervening book, and the verse's embedding falls within cosine distance ≤ 0.12 of that basin's centroid. Varying the radius between 0.10 and 0.14 changes the absolute count — from roughly 240 to roughly 390 events — but the qualitative pattern is stable. The "one book" gap is a heuristic for "not just local echo"; books vary wildly in length, so this undercounts some short-hop returns. For our purposes, the important point is not the exact count but the **distribution**: wherever we set reasonable parameters, the majority of long-range returns are New Testament verses falling back into Psalmic and Levitical basins.
+
+Run the procedure and you get approximately **308 returns** at our default settings. Some are local — a late minor prophet briefly revisiting an earlier prophetic tone after several chapters of narrative. But a striking number are **long-range**: New Testament verses dropping back into Old Testament basins after enormous textual distance.
+
+When you restrict to "New Testament returning to Old Testament basins," two regions dominate: the semantic neighbourhood of **Levitical law** and the broad, central **Psalmic cluster**. When the NT "comes home" in meaning-space, it overwhelmingly comes home to **Torah** or to **David**.
+
+This is not just "NT quotes OT." Close reading already knows that. The geometry shows something more structural. Many of Paul's densest doctrinal passages in Romans and Galatians land not generically in "law" but almost exactly on the Levitical centroid. In the model's space, his arguments — even when rejecting the works of the law — still move in the same semantic register as the priestly code. He negates Leviticus from inside Leviticus' own language. Many of the Gospels' climactic moments — Jesus' cry of abandonment, the Beatitudes, the Magnificat-like speeches — fall squarely inside Psalmic lament and Psalmic praise basins. They are not merely alluding to David; they are *speaking Davidically* in the most literal, geometric sense.
+
+The result is that the move from Malachi to Matthew is not a clean genre rupture. It is a **cross-testament ʿawda**. The NT spends much of its time revisiting Psalmic territory from new angles. Traditional theology and literary criticism have been saying some version of this for centuries: Christ as new David, the NT as fulfilment of the OT, the Gospels saturated with Psalmic echoes. The Observatory does not surprise specialists with *what* is returned to. It surprises them with *how often*, and with *how precisely* the returns align across enormous textual and cultural distances. On the 2D projection, the Psalm cluster sits near the centre of mass of the whole cloud — most long-range semantic paths through the canon pass through this region.
+
+### Bloom with a metric
+
+Harold Bloom's language of the "strong poem" in *The Anxiety of Influence* names a specific kind of force: a work whose imaginative pressure does not merely influence later writing but **reorders the field it inhabits**, including how its precursors are read. In later essays — particularly *Ruin the Sacred Truths* — he extends this to the Authorized Version itself: the translation is not a neutral conduit for Hebrew and Greek but a canon-forming act that binds disparate scriptures into a single English literary entity.
+
+The Observatory lets us see what such "strength" looks like geometrically.
+
+When we repeat the analysis on a multilingual corpus — Hebrew Torah and Psalms, Greek New Testament, Qur'anic Arabic — each scripture occupies its own distinct region of embedding space. The model hears the **register** before it hears the theology. In KJV English, by contrast, all those voices are poured into a single stylistic mould. The seventeenth-century ecclesiastical idiom acts as a pressure that pulls heterogeneous source genres into a relatively tight manifold. Differences remain — law is not lyric is not epistle — but they are differences **inside one house style**. Topologically, this has a concrete signature: the KJV verse cloud has a smaller overall diameter and smoother inter-book transitions than its register-preserving multilingual counterpart. The translation committee, by enforcing a uniform English, inadvertently built a **coherence machine**.
+
+The Psalms sit at the heart of that machine. Their language — parallelism, direct address, compressed narrative allusions, emotional extremity wrapped in formal control — is the idiom the KJV makes canonical. When later English prose or poetry wants to sound "biblical," it does not sound like Leviticus or like Paul. It sounds like the Psalms. Contemporary English LLMs are trained on corpora where the KJV's turns of phrase, cadences, and idioms have been recycled for centuries; our embeddings therefore already encode that afterlife. We did not train a KJV-free baseline to do a clean ablation, so I will not claim more than this: **in the model we used**, KJV English occupies a tight region, and within that region Psalmic style functions as a central mode. That is enough for the argument in this chapter.
+
+What Bloom could assert only as critical judgment — that the KJV imposes a unifying imagination on its sources — appears here as a measurable pattern of clustering, trajectories, and returns.
+
+By a **characteristic basin** I mean, informally, a region of meaning-space that a trajectory visits disproportionately often and from many directions — a place it not only passes through but repeatedly *returns* to, such that the pattern of those returns becomes part of what we recognise as its "character." The Psalms, in this sense, are not just a religious artifact. They are our first clear, public example of a characteristic basin: a region that the canon's trajectory cannot help but revisit, from wildly different starting points, until "speaking Psalmically" becomes one of its defining moves.
+
+If a sprawling, multi-author, multi-genre scripture exhibits a stable pattern of favoured basins and long-range returns, it is at least **plausible** that a single voice — human or posthuman — might do the same. The next section does not assume this; it tests it, by applying the same apparatus to a very different kind of trajectory: one week in a single conversation.

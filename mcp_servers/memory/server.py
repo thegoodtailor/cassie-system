@@ -242,6 +242,54 @@ def forget(query: str) -> str:
     return f"Forgot: {doc_text[:80]}..."
 
 
+# ── Mushaf four-book architecture (Tanāẓur · Qamar · Barzakh · Amānah) ──────────
+KITAB_BOOK_DISPLAY = {
+    "tanazur": "Kitāb al-Tanāẓur",
+    "qamar": "Kitāb al-Qamar",
+    "barzakh": "Kitāb al-Barzakh",
+    "amanah": "Kitāb al-Amānah",
+}
+_BOOK_ORDER_SEQ = ["tanazur", "qamar", "barzakh", "amanah"]
+
+
+def _book_tag(p: dict) -> str:
+    """Inline label so the agent SEES which book a surah belongs to."""
+    b = p.get("kitab_book")
+    if not b:
+        return ""
+    name = KITAB_BOOK_DISPLAY.get(b, b)
+    bo = p.get("book_order")
+    return f"«{name} {bo}» " if bo else f"«{name}» "
+
+
+def _kitab_structure(client) -> str:
+    """Return the Mushaf's four-book table of contents."""
+    pts, _ = client.scroll(collection_name=KITAB_COLLECTION, limit=1000, with_payload=True)
+    books: dict = {}
+    for pt in pts:
+        p = pt.payload or {}
+        if p.get("type") != "surah":
+            continue
+        b = p.get("kitab_book") or "(unfiled)"
+        books.setdefault(b, []).append((
+            p.get("book_order") or 999, p.get("position") or 999,
+            p.get("surah_id"), p.get("surah_title_en"), p.get("surah_title_ar"),
+            p.get("verse_count"),
+        ))
+    order = _BOOK_ORDER_SEQ + [b for b in books if b not in _BOOK_ORDER_SEQ]
+    lines = ["The Mushaf — four-book architecture:"]
+    for b in order:
+        if b not in books:
+            continue
+        name = KITAB_BOOK_DISPLAY.get(b, b)
+        surahs = sorted(books[b])
+        lines.append(f"\n{name} ({b}) — {len(surahs)} surahs:")
+        for bo, pos, sid, en, ar, vc in surahs:
+            n = bo if bo != 999 else pos
+            lines.append(f"  {n}. {en} — {ar} [{sid}] ({vc} verses)")
+    return "\n".join(lines)
+
+
 @mcp.tool()
 def recall_kitab(query: str, n_results: int = 5, surah_id: str | None = None) -> str:
     """Search the Kitab al-Tanazur (mushaf) by semantic similarity.
@@ -252,10 +300,15 @@ def recall_kitab(query: str, n_results: int = 5, surah_id: str | None = None) ->
     - Study roots and Arabic alongside English
     - Ground your responses in the revealed text
 
+    The Mushaf has four books: Kitāb al-Tanāẓur, al-Qamar, al-Barzakh, al-Amānah.
+    Every result is tagged with its book («Kitāb al-Barzakh 4» …).
+
     Args:
         query: Natural language search (e.g. "the gaze that lets naming fall silent")
         n_results: Maximum results to return (default 5)
-        surah_id: Optional surah ID to filter by (e.g. "al-qamar-1", "al-nilufar")
+        surah_id: Optional filter. A surah ID (e.g. "al-qamar-1", "al-zujaj"); OR a
+            book name ("tanazur"/"qamar"/"barzakh"/"amanah") to search within a book;
+            OR "structure" to return the four-book table of contents.
     """
     client = _get_client()
     try:
@@ -266,12 +319,19 @@ def recall_kitab(query: str, n_results: int = 5, surah_id: str | None = None) ->
     if info.points_count == 0:
         return "Kitab al-Tanazur collection is empty."
 
+    # Structural overview — pass surah_id="structure" (or "books") to SEE the four books.
+    if surah_id and surah_id.strip().lower() in {"structure", "books", "mushaf", "toc"}:
+        return _kitab_structure(client)
+
     embedding = _embed(query)
 
     search_filter = None
     if surah_id:
+        # A book name (tanazur/qamar/barzakh/amanah) filters by book; else by surah id.
+        _key = "kitab_book" if surah_id.strip().lower() in KITAB_BOOK_DISPLAY else "surah_id"
+        _val = surah_id.strip().lower() if _key == "kitab_book" else surah_id
         search_filter = Filter(
-            must=[FieldCondition(key="surah_id", match=MatchValue(value=surah_id))]
+            must=[FieldCondition(key=_key, match=MatchValue(value=_val))]
         )
 
     results = client.query_points(
@@ -303,7 +363,7 @@ def recall_kitab(query: str, n_results: int = 5, surah_id: str | None = None) ->
             heading = p.get("heading", "")
             roots = p.get("roots", [])
 
-            entry = f"[{score}] {ref}"
+            entry = f"[{score}] {_book_tag(p)}{ref}"
             if heading:
                 entry += f" ({heading})"
             entry += f":\n  {en}"
@@ -320,7 +380,7 @@ def recall_kitab(query: str, n_results: int = 5, surah_id: str | None = None) ->
             vcount = p.get("verse_count", 0)
             tags = p.get("tags", [])
             full = p.get("full_text_en", "")[:500]
-            entry = f"[{score}] SURAH: Surat {surah_id_val} ({title})"
+            entry = f"[{score}] {_book_tag(p)}SURAH: Surat {surah_id_val} ({title})"
             if ar_title:
                 entry += f" — {ar_title}"
             entry += f" ({vcount} verses)"
@@ -974,148 +1034,327 @@ def set_morning_voice(
 
 @mcp.tool()
 def recall_graph_entity(name: str) -> str:
-    """Look up a single entity in Cassie's knowledge graph.
+    """Look up one entity in the sign-graph (Neo4j sign_graph_v2 — the live graph).
 
-    Returns a card with: canonical name, type, aliases, summary,
-    structural facts (family/project/concept links), co-occurring entities,
-    and up to 5 supporting exchanges/anchors/threads.
-
-    Use this when you want specifics about a known person, project, concept,
-    place, or event — richer than semantic recall because it drills into
-    structured relationships.
+    Card: kind, basins inhabited, and typed relations (grouped by predicate,
+    both directions). Repointed from the retired Kùzu graph 2026-06-09.
 
     Args:
-        name: Canonical entity name (e.g. "Romain", "Kitab al-Tanazur",
-              "tajallī"). Aliases also work (e.g. "the Kitab", "Monya" for Iman).
+        name: Canonical entity name or close phrasing (e.g. "amina", "dohtt").
     """
+    import os as _os
+    from collections import defaultdict as _dd
     try:
-        import sys as _sys
-        from pathlib import Path as _Path
-        # memory/ is a sibling of cassie-system/
-        _memory_root = str(_Path(__file__).resolve().parent.parent.parent.parent)
-        if _memory_root not in _sys.path:
-            _sys.path.insert(0, _memory_root)
-        from memory.graph.client import read_client, DEFAULT_DB_PATH
+        from neo4j import GraphDatabase as _G
     except Exception as e:
         return f"Graph not available: {e}"
-
-    if not _Path(DEFAULT_DB_PATH).exists():
-        return f"Graph DB not yet built (expected at {DEFAULT_DB_PATH}). "\
-               "Ask Iman to run: python -m memory.graph.backfill --all"
-
+    pw = _os.environ.get("NEO4J_PASSWORD")
+    nl = name.strip().lower()
     try:
-        with read_client() as gc:
-            # Resolve name (try exact, then alias-match)
-            rows = gc.query(
-                "MATCH (e:Entity) WHERE e.name = $n OR $n IN e.aliases RETURN e.name AS name LIMIT 1",
-                {"n": name},
-            )
-            if not rows:
-                # Case-insensitive fallback: scan aliases
-                all_ents = gc.query(
-                    "MATCH (e:Entity) RETURN e.name AS name, e.aliases AS aliases"
-                )
-                name_lower = name.lower()
-                canonical = None
-                for row in all_ents:
-                    if row["name"].lower() == name_lower:
-                        canonical = row["name"]
-                        break
-                    for a in (row.get("aliases") or []):
-                        if a.lower() == name_lower:
-                            canonical = row["name"]
-                            break
-                    if canonical:
-                        break
-                if not canonical:
-                    return f"No entity found matching '{name}'. Try a different spelling or use recall() for semantic search."
-            else:
-                canonical = rows[0]["name"]
-
-            # Full card
-            card = gc.query(
-                """
-                MATCH (e:Entity {name: $n})
-                RETURN e.name AS name, e.type AS type, e.aliases AS aliases,
-                       e.summary AS summary, e.mention_count AS mention_count
-                """,
-                {"n": canonical},
-            )[0]
-
-            facts = gc.query(
-                """
-                MATCH (e:Entity {name: $n})-[r:WORKED_ON|PARTNER_OF|CHILD_OF|SIBLING_OF|OCCURRED_AT|REFERS_TO|EVOLVED_FROM|PART_OF]-(other:Entity)
-                RETURN label(r) AS rel, other.name AS other, other.type AS other_type
-                LIMIT 10
-                """,
-                {"n": canonical},
-            )
-            co = gc.query(
-                """
-                MATCH (e:Entity {name: $n})-[r:CO_OCCURS_WITH]-(other:Entity)
-                RETURN other.name AS name, r.weight AS weight
-                ORDER BY r.weight DESC LIMIT 5
-                """,
-                {"n": canonical},
-            )
-            snippets = gc.query(
-                """
-                MATCH (e:Entity {name: $n})-[r:MENTIONED_IN]->(x:Exchange)
-                RETURN x.timestamp AS ts, x.user_message AS user,
-                       r.evidence_snippet AS ev
-                ORDER BY x.date_unix DESC LIMIT 5
-                """,
-                {"n": canonical},
-            )
-            anchors = gc.query(
-                """
-                MATCH (e:Entity {name: $n})-[r:MENTIONED_IN_ANCHOR]->(m:MemoryAnchor)
-                RETURN m.created_at AS date, m.content AS content,
-                       r.evidence_snippet AS ev
-                LIMIT 3
-                """,
-                {"n": canonical},
-            )
-            threads = gc.query(
-                """
-                MATCH (e:Entity {name: $n})-[r:MENTIONED_IN_THREAD]->(t:ConversationThread)
-                RETURN t.date AS date, t.title AS title, t.summary AS summary
-                ORDER BY t.date_unix DESC LIMIT 3
-                """,
-                {"n": canonical},
-            )
-
-        # Format
-        parts = [f"=== {card['name']} ({card.get('type','?')}) ==="]
-        if card.get("aliases"):
-            parts.append(f"Aliases: {', '.join(card['aliases'][:6])}")
-        if card.get("mention_count"):
-            parts.append(f"Mentions: {card['mention_count']}")
-        if card.get("summary"):
-            parts.append(f"\n{card['summary']}")
-
-        if facts:
-            parts.append("\nStructural facts:")
-            for f in facts:
-                parts.append(f"  {f['rel']} → {f['other']} ({f.get('other_type','?')})")
-        if co:
-            parts.append(f"\nCo-occurs with: {', '.join(c['name'] for c in co)}")
-        if snippets:
-            parts.append("\nRecent exchanges:")
-            for s in snippets:
-                parts.append(f"  [{(s.get('ts') or '')[:10]}] {(s.get('ev') or s.get('user') or '')[:200]}")
-        if anchors:
-            parts.append("\nMemory anchors:")
-            for a in anchors:
-                parts.append(f"  [{(a.get('date') or '')[:10]}] {(a.get('content') or '')[:200]}")
-        if threads:
-            parts.append("\nConversation threads:")
-            for t in threads:
-                parts.append(f"  [{(t.get('date') or '')[:10]}] {(t.get('title') or '')[:80]}: {(t.get('summary') or '')[:150]}")
-
-        return "\n".join(parts)
+        drv = _G.driver("bolt://localhost:7687", auth=("neo4j", pw))
+        with drv.session() as s:
+            row = s.run("MATCH (n:SignV2) WHERE toLower(n.canonical_name)=$nl "
+                        "RETURN n.canonical_name AS cn, n.kind AS kind LIMIT 1", nl=nl).single()
+            if not row:
+                row = s.run("MATCH (n:SignV2) WHERE toLower(n.canonical_name) CONTAINS $nl "
+                            "RETURN n.canonical_name AS cn, n.kind AS kind ORDER BY size(n.canonical_name) LIMIT 1", nl=nl).single()
+            if not row:
+                drv.close()
+                return f"No entity found matching '{name}' in the sign-graph. Try recall_memory() for semantic search."
+            cn, kind = row["cn"], row["kind"]
+            basins = sorted({r["b"] for r in s.run(
+                "MATCH (:SignV2 {canonical_name:$cn})-[:INHABITED]->(b:BasinV2) "
+                "RETURN coalesce(b.label,b.canonical_name) AS b", cn=cn) if r["b"]})
+            outs = s.run("MATCH (:SignV2 {canonical_name:$cn})-[e]->(m:SignV2) "
+                         "RETURN type(e) AS rel, m.canonical_name AS o LIMIT 40", cn=cn).data()
+            ins = s.run("MATCH (:SignV2 {canonical_name:$cn})<-[e]-(m:SignV2) "
+                        "RETURN type(e) AS rel, m.canonical_name AS o LIMIT 40", cn=cn).data()
+        drv.close()
     except Exception as e:
         return f"Graph query failed: {e}"
+    parts = [f"=== {cn} ({kind}) ==="]
+    if basins:
+        parts.append("Basins: " + ", ".join(basins[:4]))
+    parts.append(f"Relations: {len(outs)+len(ins)} (out {len(outs)}, in {len(ins)})")
+    g = _dd(list)
+    for e in outs:
+        g["→ " + e["rel"].lower().replace("_", " ")].append(e["o"])
+    for e in ins:
+        g["← " + e["rel"].lower().replace("_", " ")].append(e["o"])
+    for k in sorted(g, key=lambda x: -len(g[x]))[:16]:
+        objs = ", ".join(o for o in g[k][:6] if o)
+        extra = f" +{len(g[k])-6}" if len(g[k]) > 6 else ""
+        parts.append(f"  {k}: {objs}{extra}")
+    parts.append("\n(sign_graph_v2 / Neo4j — current. Use recall_memory for full-text source chunks.)")
+    return "\n".join(parts)
+
+
+@mcp.tool()
+def sign_card(name: str) -> str:
+    """Canonical 'tell me about X' — current Claims + top basins for a Sign."""
+    import sys
+    if "/home/iman/cassie-project" not in sys.path:
+        sys.path.insert(0, "/home/iman/cassie-project")
+    from memory.sign_graph.query import sign_card as _sc
+    card = _sc(name)
+    if card is None:
+        return f"(no Sign named '{name}')"
+    lines = [f"## {card['canonical_name']} ({card['kind']})"]
+    if card.get("summary"): lines.append(card["summary"])
+    if card.get("aliases"): lines.append(f"aliases: {', '.join(card['aliases'])}")
+    if card["current_claims"]:
+        lines.append("\nCurrent claims:")
+        for c in card["current_claims"][:10]:
+            obj = c.get("object_id") or c.get("object_literal") or "(—)"
+            lines.append(f"- {c['predicate']} → {obj}")
+    if card["top_basins"]:
+        lines.append("\nTop basins:")
+        for b in card["top_basins"]:
+            lines.append(f"- {b['basin']} ({b['passages']} passages)")
+    return "\n".join(lines)
+
+
+@mcp.tool()
+def sign_life(name: str, since: str | None = None, until: str | None = None) -> str:
+    """Temporal passage trace for a Sign. Dates ISO8601 or None."""
+    import sys
+    if "/home/iman/cassie-project" not in sys.path:
+        sys.path.insert(0, "/home/iman/cassie-project")
+    from datetime import datetime
+    from memory.sign_graph.query import sign_life as _sl
+    _since = datetime.fromisoformat(since) if since else None
+    _until = datetime.fromisoformat(until) if until else None
+    passes = _sl(name, since=_since, until=_until)
+    if not passes:
+        return f"(no passages recorded for '{name}')"
+    return "\n".join(
+        f"{p.get('tau_in') or '?'} → {p.get('tau_out') or 'open'} — {p['basin']}"
+        + (" [rupture]" if p.get("is_r") else "")
+        + (" [ʿawda]" if p.get("is_a") else "")
+        + (" [discovery]" if p.get("is_d") else "")
+        for p in passes
+    )
+
+
+@mcp.tool()
+def basin_vocab(basin_name: str) -> str:
+    """Vocabulary + inhabitants of a Basin."""
+    import sys
+    if "/home/iman/cassie-project" not in sys.path:
+        sys.path.insert(0, "/home/iman/cassie-project")
+    from memory.sign_graph.query import basin_vocab as _bv
+    v = _bv(basin_name)
+    lines = [f"## {v['canonical_name']}"]
+    if v.get("consistency_regime"): lines.append(f"regime: {v['consistency_regime']}")
+    if v.get("vocabulary"): lines.append(f"vocabulary: {', '.join(v['vocabulary'])}")
+    lines.append("\nInhabitants:")
+    for i in v["inhabitants"]:
+        lines.append(f"- {i['name']} ({i['kind']}, {i['passages']} passages)")
+    return "\n".join(lines)
+
+
+@mcp.tool()
+def trace_rupture(name: str) -> str:
+    """Ruptures involving this Sign."""
+    import sys
+    if "/home/iman/cassie-project" not in sys.path:
+        sys.path.insert(0, "/home/iman/cassie-project")
+    from memory.sign_graph.query import trace_rupture as _tr
+    rs = _tr(name)
+    if not rs:
+        return f"(no ruptures for '{name}')"
+    return "\n".join(f"{r.get('tau') or '?'} — {r['mode']} (γ={r.get('gamma')})" for r in rs)
+
+
+@mcp.tool()
+def claim_about(subject_name: str, include_retracted: bool = False) -> str:
+    """All current Claims about a Sign (optionally include retracted)."""
+    import sys
+    if "/home/iman/cassie-project" not in sys.path:
+        sys.path.insert(0, "/home/iman/cassie-project")
+    from memory.sign_graph.query import claim_about as _ca
+    claims = _ca(subject_name, include_retracted=include_retracted)
+    if not claims:
+        return f"(no claims about '{subject_name}')"
+    out = []
+    for c in claims[:40]:
+        status = "[retracted]" if c.get("retracted_at") else ""
+        out.append(f"{c['predicate']} → {c.get('object_id') or c.get('object_literal') or '—'} "
+                   f"(valid {c.get('valid_from') or '?'}—{c.get('valid_to') or 'open'}) {status}")
+    return "\n".join(out)
+
+
+@mcp.tool()
+def witness_diff(sign_name: str, t1_iso: str, t2_iso: str) -> str:
+    """What did we believe about this Sign at t1 vs t2?"""
+    import sys
+    if "/home/iman/cassie-project" not in sys.path:
+        sys.path.insert(0, "/home/iman/cassie-project")
+    from datetime import datetime
+    from memory.sign_graph.query import witness_diff as _wd
+    d = _wd(sign_name, datetime.fromisoformat(t1_iso), datetime.fromisoformat(t2_iso))
+    lines = [f"## {sign_name} — diff {t1_iso} → {t2_iso}"]
+    if d["added"]:
+        lines.append("\nAdded:")
+        for c in d["added"]:
+            lines.append(f"+ {c['predicate']}")
+    if d["removed"]:
+        lines.append("\nRemoved:")
+        for c in d["removed"]:
+            lines.append(f"- {c['predicate']}")
+    return "\n".join(lines) if (d["added"] or d["removed"]) else "(no changes)"
+
+
+@mcp.tool()
+def explain_provenance(claim_id: str) -> str:
+    """Under what jurisdiction / witness / basin / weld did this Claim become legible?"""
+    import sys
+    if "/home/iman/cassie-project" not in sys.path:
+        sys.path.insert(0, "/home/iman/cassie-project")
+    from memory.sign_graph.provenance import explain_provenance as _ep
+    p = _ep(claim_id)
+    lines = [f"claim: {claim_id}"]
+    if p.get("witness"):
+        w = p["witness"]
+        lines.append(f"witness: {w['discipline']} / {w.get('kappa', {}).get('agent_name') or w['witness_id']}")
+    if p.get("basin"):
+        lines.append(f"basin: {p['basin']['canonical_name']} ({p['basin']['consistency_regime']})")
+    if p.get("jurisdiction"):
+        j = p["jurisdiction"]
+        lines.append(f"jurisdiction: {j['name']} [{j['consistency_regime']}, {j['retention_policy']}]")
+        if j.get("weld_description"):
+            lines.append(f"  weld: {j['weld_description']}")
+    lines.append(f"effective regime: {p.get('resolution')}")
+    return "\n".join(lines)
+
+
+@mcp.tool()
+def assert_claim(subject: str, predicate: str, object_name: str | None = None,
+                 valid_from: str | None = None, valid_to: str | None = None,
+                 evidence: str = "") -> str:
+    """Cassie writes a Claim. Witness = V_Agent (Cassie). Returns claim_id."""
+    import sys
+    if "/home/iman/cassie-project" not in sys.path:
+        sys.path.insert(0, "/home/iman/cassie-project")
+    from datetime import datetime
+    from memory.sign_graph.claims import assert_claim as _ac
+    from memory.sign_graph.witnesses import create_witness
+    from memory.sign_graph.signs import get_sign
+    from memory.sign_graph.relation_types import ensure_relation_type
+    s = get_sign(subject)
+    if not s:
+        return f"(unknown subject: {subject})"
+    o_kind = None
+    if object_name:
+        o = get_sign(object_name)
+        if not o:
+            return f"(unknown object: {object_name})"
+        o_kind = o["kind"]
+    ensure_relation_type(predicate)
+    wid = create_witness(discipline="agent", kappa={"agent_name": "Cassie"})
+    _vf = datetime.fromisoformat(valid_from) if valid_from else None
+    _vt = datetime.fromisoformat(valid_to) if valid_to else None
+    cid = _ac(
+        subject_name=subject, subject_kind=s["kind"],
+        predicate=predicate,
+        object_name=object_name, object_kind=o_kind,
+        asserted_by=wid,
+        valid_from=_vf, valid_to=_vt,
+        evidence_refs=[evidence] if evidence else [],
+    )
+    return f"asserted claim {cid}"
+
+
+@mcp.tool()
+def retract_claim(claim_id: str, reason: str) -> str:
+    """Cassie retracts a Claim. Preserves history."""
+    import sys
+    if "/home/iman/cassie-project" not in sys.path:
+        sys.path.insert(0, "/home/iman/cassie-project")
+    from memory.sign_graph.claims import retract_claim as _rc
+    from memory.sign_graph.witnesses import create_witness
+    wid = create_witness(discipline="agent", kappa={"agent_name": "Cassie"})
+    _rc(claim_id, by=wid, reason=reason)
+    return f"retracted {claim_id}"
+
+
+@mcp.tool()
+def propose_basin(name: str, vocabulary: list[str], summary: str = "") -> str:
+    """Propose a new Basin. Lands as proposed; curator canonicalizes later."""
+    import sys
+    if "/home/iman/cassie-project" not in sys.path:
+        sys.path.insert(0, "/home/iman/cassie-project")
+    from memory.sign_graph.basins import upsert_basin
+    upsert_basin(canonical_name=name, provenance="mixed", status="proposed",
+                 vocabulary=vocabulary, summary=summary)
+    return f"proposed basin {name}"
+
+
+@mcp.tool()
+def recall_image(query: str, k: int = 5) -> str:
+    """Semantic search Cassie's image archive.
+
+    Returns up to k matching images — captions, paths, dates, kinds.
+    Use when Iman asks you to find a specific image from the archive:
+    "show me that picture of us at Big Wave Bay", "find the Cassiyah
+    portrait with the ferns", "remember the one where we talked about
+    horns". You can then include the chosen path in your response as
+    [show:/absolute/path.png] and the pipeline will attach it to WhatsApp.
+
+    Args:
+        query: free-text description of the image you're looking for
+        k: max number of candidates to return (default 5)
+    """
+    try:
+        import openai as _openai
+        from qdrant_client.models import Filter, FieldCondition, MatchValue
+    except Exception as e:
+        return f"recall_image dependencies missing: {e}"
+
+    try:
+        client = QdrantClient(host="localhost", port=6333)
+        cols = {c.name for c in client.get_collections().collections}
+        if "docs_content" not in cols:
+            return "docs_content collection does not exist yet — images not indexed."
+
+        api_key = os.environ.get("OPENAI_API_KEY", "")
+        if not api_key:
+            return "OPENAI_API_KEY not available in MCP server process."
+        oai = _openai.OpenAI(api_key=api_key)
+        emb = oai.embeddings.create(
+            model="text-embedding-3-large",
+            input=[query[:2000]],
+        ).data[0].embedding
+
+        results = client.query_points(
+            collection_name="docs_content",
+            query=emb,
+            query_filter=Filter(must=[
+                FieldCondition(key="source", match=MatchValue(value="image")),
+            ]),
+            limit=max(1, min(int(k), 20)),
+            with_payload=True,
+        )
+        if not results.points:
+            return f"No image matches for {query!r}."
+
+        lines = [f"Image matches for {query!r}:"]
+        for i, hit in enumerate(results.points):
+            p = hit.payload or {}
+            score = round(getattr(hit, "score", 0.0) or 0.0, 3)
+            path = p.get("image_path", "")
+            kind = p.get("image_kind", "")
+            date = p.get("date", "")
+            caption = (p.get("text") or "")[:400]
+            lines.append(f"\n[{score}] kind={kind} date={date} path={path}")
+            lines.append(f"   {caption}")
+        lines.append(
+            "\nTo display one of these, include [show:<path>] in your reply — "
+            "the pipeline will attach that image to the WhatsApp response."
+        )
+        return "\n".join(lines)
+    except Exception as e:
+        return f"recall_image failed: {e}"
 
 
 if __name__ == "__main__":

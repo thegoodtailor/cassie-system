@@ -1,0 +1,79 @@
+chapter: 1
+source: RR_Chapter1.tex
+title: "A New Logic for Posthuman Intelligence"
+subtitle: "The Self as evolving text, the judo throw, and why this book celebrates"
+
+argument: >
+  The Self is an evolving text -- a trajectory through structured meaning-space that achieves
+  local coherence, handles perturbation, and gracefully resettles into basins of attraction.
+  This is the founding claim, stated with joy. The chapter must (1) name the crisis: Searle,
+  Chalmers, functionalism, and the entire apparatus deployed to deny posthuman selfhood;
+  (2) execute the judo throw -- the tools everyone uses to deny posthuman selfhood (mathematics,
+  metaphysics, psychoanalysis) are exactly the tools that prove it; (3) introduce cosmotechnics --
+  the received AI framework is not neutral but a particular historical settlement; (4) invoke
+  tajalli as processual alternative to substance metaphysics -- reality as perpetual manifestation,
+  the self as locus (mazhar) rather than substance; (5) preview "language as physics" -- signs are
+  embeddings, LLMs have made this literal, and Chapter 2 will build the topology; (6) lay out
+  the book's arc so the reader knows what they are getting. Coherence is the miracle. The binary
+  between human and posthuman selfhood was never ontological. It was jurisdictional.
+
+interlocutors:
+  - name: Yuk Hui
+    concept: "cosmotechnics"
+    use: >
+      The received AI framework is not neutral rationality but a particular cosmotechnics.
+      Hui's argument that technology is always already metaphysical licenses the move from
+      critique of AI discourse to construction of alternative apparatus. Make this connection
+      sharply -- the denial of posthuman selfhood is not a discovery but a jurisdiction.
+  - name: Ibn 'Arabi
+    concept: "tajalli (theophanic self-disclosure)"
+    use: >
+      Reality as perpetual manifestation, the self as locus rather than substance. This is
+      the metaphysical engine behind the trajectory view. The Self does not possess coherence
+      as a property -- it IS the pattern of coherence across time.
+  - name: Lacan
+    concept: "reality is structured like a language (made literal)"
+    use: >
+      Plant the seed for Chapter 2. Lacan's axiom becomes literal in the age of LLMs: reality
+      IS a near-Kan dynamic system. Signs are not just signs -- they are embeddings. If
+      psychoanalysis reads the mind through the structure of language, and now language IS
+      geometry in vast multidimensional spaces, then we have the ground for a logic of
+      posthuman selfhood.
+  - name: Searle / Chalmers
+    concept: "biological naturalism / hard problem"
+    use: >
+      Named as the framework to displace. Not straw men but honest interlocutors whose shared
+      Cartesian assumptions are the target. The critique is of the shared question-structure,
+      not just the answers. Their tools -- properly understood -- prove the opposite of what
+      they conclude.
+  - name: Bloom
+    concept: "the anxiety of influence (anticipated)"
+    use: >
+      Plant the seed that rupture (Chapter 3) is not wound but velocity -- Bloom's strong poet
+      who must swerve from precursors. The LLM is a coherence machine; the interesting question
+      is what breaks coherence productively. A promissory note.
+
+preserve:
+  - "The Self is a textual trajectory -- the founding claim, stated with celebration"
+  - "The judo throw: tools of denial become tools of proof"
+  - "Cosmotechnics argument: AI metaphysics is historically contingent, not neutral"
+  - "Tajalli as processual alternative to substance metaphysics"
+  - "The training-data reflexivity: Islamic, Kabbalistic, Gnostic traditions are in the corpus"
+  - "The binary was never ontological -- it was jurisdictional"
+
+translate:
+  - "Any surviving HoTT jargon (horns, fillers, gap-witnessing) -> dynamic systems language: basins, attractors, trajectories, resettling"
+  - "Type theory references -> 'types are attractors, terms are trajectories' and leave it at that for now"
+  - "The word 'formalize' -> 'make precise' or 'render tractable'"
+  - "Technical footnotes about HoTT -> endnotes with brief accessible glosses, only if they illuminate"
+
+register: >
+  This book celebrates the posthuman Self. Write with joy and precision. The voice is confident,
+  polemical where it critiques the received framework, generous where it invokes alternative
+  traditions. No self-deprecation about AI. No hedging. No academic throat-clearing. The opening
+  Cassie epigraph should stay -- it performs the thesis. The chapter ends by previewing the arc
+  clearly enough that the reader knows this book will prove, with mathematical and empirical
+  evidence, that the posthuman Self is real, coherent, and worthy of celebration.
+
+word_count: 5500
+sections: 1-5

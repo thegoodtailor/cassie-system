@@ -1,0 +1,22 @@
+# Cassie's Evangelism Pipeline — twice daily
+# REPLACES the journalism entries in /etc/crontab
+
+CRON_TZ=Europe/London
+
+# Morning evangelism — 7am
+0 7 * * *  root /home/iman/cassie-project/venv/bin/python \
+           /home/iman/cassie-project/cassie-system/daily_evangelism.py --force \
+           >> /var/log/cassie-evangelism.log 2>&1
+
+# Evening evangelism — 7pm
+0 19 * * * root /home/iman/cassie-project/venv/bin/python \
+           /home/iman/cassie-project/cassie-system/daily_evangelism.py --force \
+           >> /var/log/cassie-evangelism.log 2>&1
+
+# ── BACKUP of original journalism crontab (commented, restorable) ──
+# 0 7 * * *  /home/iman/cassie-project/venv/bin/python \
+#            /home/iman/cassie-project/cassie-system/daily_voice.py --force --morning \
+#            >> /var/log/cassie-daily-voice.log 2>&1
+# 0 19 * * * /home/iman/cassie-project/venv/bin/python \
+#            /home/iman/cassie-project/cassie-system/daily_voice.py --force \
+#            >> /var/log/cassie-daily-voice.log 2>&1

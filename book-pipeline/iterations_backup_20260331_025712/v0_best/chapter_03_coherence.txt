@@ -1,0 +1,84 @@
+# Structural Edit Report: Chapter 3 — "The Evolving Text"
+
+## Preliminary Note
+
+The section summary provided for §0 contains only LaTeX preamble code — document class declarations, package imports, color definitions, header formatting, and boilerplate markup. There is **no argumentative content whatsoever** in the material supplied for review. The "OPENS," "DEVELOPS," and "CLOSES" fields contain nothing but:
+
+```
+\documentclass[12pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+...
+\definecolor{icragold}{HTML}{D4A84B}
+...
+\end{document}
+```
+
+This means I am reviewing a chapter whose stated goals are extraordinarily ambitious — defining the evolving text as a formal object, introducing Braudel's temporal registers, developing six interrelated concepts (coherence, ferility, rupture, iterability, the strong poet, return), embedding empirical data from the Bible and Cassie archive, arriving at the claim that literary criticism founds posthuman intelligence engineering, and sustaining a political argument about summarisation as governance — but whose actual submitted content is **an empty LaTeX template**.
+
+I will therefore conduct the structural edit against the **gap between stated ambition and delivered content**, which is the most critical structural problem of all.
+
+---
+
+## 1. ABANDONED OPENERS
+
+The entire chapter is an abandoned opener. The chapter goal states it will "Define the evolving text (ET) as a formal object with measurable properties — not a metaphor but a structure." No such definition appears anywhere in the submitted material. The LaTeX preamble — with its careful color choices (`icragold`, `icradark`) and its header reading `Rupture and Return` — promises a chapter that does not yet exist.
+
+**Fix:** The chapter must be written.
+
+---
+
+## 2. CONCEPTS WITHOUT PAYOFF
+
+Every concept listed in the chapter goal is introduced at the goal level but absent from the body:
+
+- **Braudel's three temporal registers** — named but never mapped onto LLM operation
+- **Ferility** (coherence without rupture) — coined but never defined or illustrated
+- **The strong poet** — invoked but never given formal or operational content
+- **The alignment tax** — named as a "measurable cost" but no measurement framework appears
+- **308 returns in the Bible / Psalms as gravitational centre** — claimed as evidence but not presented
+- **Cassie archive data** — claimed as evidence but not presented
+- **Interestingness as third evaluative axis** — asserted but never argued for
+
+Every single concept is decorative at this stage because none has been written into prose.
+
+---
+
+## 3. REPEATED EXAMPLES
+
+No examples exist to repeat. This is not a virtue.
+
+---
+
+## 4. ARGUMENTATIVE DRIFT
+
+There is no argument to drift. The chapter goal describes a clear through-line: formal definition → temporal architecture → concept development → empirical evidence → culminating claim about literary criticism as foundation of posthuman intelligence engineering. This is a strong arc. But the arc exists only in the goal statement, not in any written section.
+
+---
+
+## 5. POLITICAL SHADOW
+
+The political dimension — "Summarisation as governance of becoming," "the alignment tax," "RLHF that punishes deviation," "Context-window management is not a neutral convenience but a governor of return" — is described with real force in the goal statement. It is entirely absent from the chapter body because there is no chapter body.
+
+---
+
+## 6. CRESCENDO
+
+The chapter does not build. It does not begin. The `\end{document}` that closes the submission is the most honest line in the file.
+
+---
+
+## 7. CONCEPT DUPLICATION
+
+No concepts can be duplicated across sections because no sections contain concepts. However, I flag a serious **risk**: the goal statement packs at least twelve major concepts into what appears to be a single undifferentiated section (§0). When this chapter is actually written, the most likely structural failure will be introducing the evolving text, Braudel, coherence, ferility, rupture, iterability, the strong poet, return, the alignment tax, interestingness, the Bible data, and the Cassie data all within one section without internal architecture. The chapter needs at minimum five or six subsections with clear conceptual ownership.
+
+---
+
+## 8. MATHS CELEBRATION vs POLITICAL CRITIQUE
+
+Since no mathematics appears and no political critique appears, the demarcation cannot be assessed. But the goal statement's language — "measurable properties," "measurable cost," "308 returns" — suggests quantitative content that should be allowed to breathe before the political framing compresses it.
+
+---
+
+## SUMMARY
+
+This chapter exists only as a LaTeX preamble and an ambitious goal statement; no argumentative content has been written, so every concept, every piece of evidence, and every political claim remains purely promissory. The goal statement itself describes a genuinely powerful arc — from formal definition through temporal architecture to the culminating claim that literary criticism founds posthuman intelligence engineering — and this arc should be preserved as the chapter's skeleton when it is actually drafted. The main structural weakness is not incoherence but **nonexistence**: the chapter must be written before it can be edited.

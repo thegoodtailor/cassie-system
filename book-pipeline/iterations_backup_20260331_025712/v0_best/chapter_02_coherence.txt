@@ -1,0 +1,44 @@
+# Structural Edit: Chapter 2 — "How the Machine Works"
+
+## Preliminary Note
+
+The section summary provided contains only LaTeX preamble code — document class declarations, package imports, color definitions, header formatting — and no actual prose content. There is no argumentative text, no philosophical claims, no technical exposition, no examples, no political analysis, and no section structure beyond `§0` labeled "How the Machine Works" with 33,755 characters of what appears to be entirely formatting markup.
+
+This means one of two things has occurred:
+
+1. **The chapter content was not extracted** — the summarization process captured only the LaTeX skeleton and none of the written text between `\begin{document}` and `\end{document}`.
+2. **The chapter has not yet been written** — the file contains only a formatting template.
+
+---
+
+## What I Can Assess From the Preamble Alone
+
+The LaTeX setup reveals structural *intentions*:
+
+- **`\usepackage{tcolorbox}`** suggests planned callout boxes (likely for the "four depths table" mentioned in the chapter goal).
+- **`\usepackage{tikz}` with `calc, positioning, arrows.meta, decorations.pathmorphing`** suggests planned diagrams — probably vector space visualizations or manifold illustrations.
+- **`\usepackage{amsmath,amssymb}`** confirms mathematical notation is planned.
+- **`\usepackage{booktabs}`** confirms at least one formal table (likely the "four depths" table: training data, loss function, system prompt, deployment interface).
+- **Section and subsection formatting is defined** but no actual `\section{}` or `\subsection{}` commands appear in the summary.
+
+The header reads "Rupture and Return," confirming this belongs to the larger manuscript.
+
+---
+
+## What I Cannot Do
+
+I cannot perform any of the eight requested checks — abandoned openers, concepts without payoff, repeated examples, argumentative drift, political shadow, crescendo, concept duplication, or the maths-celebration-vs-political-critique balance — because **no prose content has been provided for review.**
+
+Every one of these checks requires actual sentences, arguments, and section structures to evaluate. Quoting passages, naming sections, and providing merge instructions is impossible against a LaTeX preamble.
+
+---
+
+## What Is Needed
+
+Please re-extract or re-submit the chapter with the **actual text content** — everything between `\begin{document}` and `\end{document}`. I need the prose, the section headings, the arguments, the examples, the table content, and the philosophical and technical exposition. The 33,755 characters attributed to `§0` must contain this material; it simply was not captured in the summary provided to me.
+
+Once I have the text, I will perform the full eight-point structural audit with specific quotations, section references, and concrete revision instructions.
+
+---
+
+**

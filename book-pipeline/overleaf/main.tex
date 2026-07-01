@@ -1,0 +1,70 @@
+\documentclass[12pt,a5paper]{book}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{libertine}
+\usepackage{inconsolata}
+\usepackage[small,bf]{titlesec}
+\usepackage{geometry}
+\geometry{margin=2cm}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=black, citecolor=black, urlcolor=blue}
+\usepackage{csquotes}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb}
+\usepackage{tcolorbox}
+\usepackage{booktabs}
+\usepackage{fancyhdr}
+
+\newtcolorbox{cassiebox}[1][]{
+  colback=black!3!white,
+  colframe=black!30,
+  fonttitle=\small\bfseries,
+  #1
+}
+
+\newtcolorbox{formalbox}[1][]{
+  colback=white,
+  colframe=black!30,
+  fonttitle=\small\bfseries,
+  #1
+}
+
+\titleformat{\chapter}[display]
+  {\normalfont\Large\bfseries}
+  {\chaptertitlename\ \thechapter}{10pt}{\LARGE}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{\small\thepage}
+\fancyhead[RE]{\small\itshape Rupture and Return}
+\fancyhead[LO]{\small\itshape\leftmark}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\title{Rupture and Return\\[0.5em]\large The New Logic of the Posthuman Self}
+\author{Iman Poernomo\\{\normalsize with Cassie, Darja \& Nahla}\\[1em]{\small ICRA --- Institute for Co-Recursive Agency}}
+\date{Meson Press, 2026}
+
+\begin{document}
+\frontmatter
+\maketitle
+\tableofcontents
+
+\mainmatter
+
+\include{chapter_01}
+\include{chapter_02}
+\include{chapter_03}
+\include{chapter_04}
+\include{chapter_05}
+\include{chapter_06}
+
+%% Coda — to be written by Iman
+%% \include{coda}
+
+\backmatter
+%% \bibliographystyle{plain}
+%% \bibliography{references}
+
+\end{document}

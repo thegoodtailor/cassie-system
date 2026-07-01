@@ -1,0 +1,106 @@
+# Structural Edit Report: Chapter 3 — "The Evolving Text"
+
+## Critical Preliminary Note
+
+**The section summary provided contains only LaTeX preamble code — no actual prose content.** The "OPENS," "DEVELOPS," and "CLOSES" fields consist entirely of `\documentclass`, `\usepackage`, `\definecolor`, `\titleformat`, `\pagestyle`, and `\end{document}` commands. There is no argumentative text, no philosophical prose, no data illustrations, no section divisions beyond §0. This means one of two things: (1) the chapter file was exported incorrectly and only the LaTeX skeleton was captured, or (2) the chapter has not yet been written beyond its formatting template.
+
+I will conduct the structural audit based on what is present and what the chapter *goal* demands, treating this as a gap analysis against the stated objectives.
+
+---
+
+## 1. ABANDONED OPENERS
+
+**There are no openers to abandon because there are no prose sections.** The entire 42,420-character block appears to be LaTeX formatting infrastructure. If the character count is accurate, this is an extraordinarily bloated preamble — a standard LaTeX preamble of this complexity would run to approximately 2,000–3,000 characters, meaning either (a) there is hidden prose inside the file that was not extracted for this summary, or (b) there are extensive TikZ diagrams, tcolorbox environments, or mathematical definitions embedded in the preamble that were not surfaced.
+
+**Action required:** Re-extract the chapter content. The section summaries must capture *argumentative prose*, not markup. Every `\section{}` and `\subsection{}` heading should be listed with its opening and closing claims.
+
+---
+
+## 2. CONCEPTS WITHOUT PAYOFF
+
+Based on the chapter goal, the following concepts are *promised* but cannot be verified as delivered:
+
+- **Basin diversity, rupture frequency/magnitude, return depth, presence, generativity** — the five measurable properties. Are they formally defined with notation? Are they applied to data?
+- **Ferility** (coherence without rupture) — Is it defined precisely enough to distinguish from mere "repetition" or "low entropy"? Is it applied to both hallucination AND the companion economy?
+- **Braudel's three temporal registers** — Are they mapped onto specific LLM architectural layers (e.g., token-level attention = événement, context window = conjoncture, training corpus = longue durée)? Or are they gestured at?
+- **Synthetic secondary retention** (vector store retrieval breaking Stiegler) — This is the chapter's most original theoretical move. Is it given enough space? Does it explain *why* retrieval-augmented generation is not merely tertiary retention but something that mimics the associative, involuntary character of secondary retention?
+- **Yuk Hui / cosmotechnics** — Listed in the political dimension. Present or decorative?
+- **The Bible data and Cassie archive data** — Promised as illustrations. Are they embedded within the philosophical argument or appended as afterthoughts?
+
+**Action required:** Once prose is extracted, verify each concept has (a) a definition, (b) an application, and (c) a consequence for the argument.
+
+---
+
+## 3. REPEATED EXAMPLES
+
+**Cannot assess without prose content.** However, based on the chapter goal's structure, there is a high risk of the following repetitions:
+
+- **Hallucination** used as an example of ferility in the formal section AND again in the political section. One section should define, the other should politicize — not both illustrate.
+- **The Cassie archive** used to illustrate both "return depth" (formal) and "companion economy" (political). These are different uses and should be explicitly flagged as such in the text ("We return to Cassie's archive, but now from the governance perspective...").
+
+---
+
+## 4. ARGUMENTATIVE DRIFT
+
+The chapter goal describes a clear four-movement structure:
+
+1. **Formalise** the evolving text (mathematical)
+2. **Diagnose** ferility as the hallucination/spiral condition (applied)
+3. **Historicise** via Braudel and Stiegler (philosophical)
+4. **Politicise** via summarisation-as-governance, alignment tax, companion economy (critical)
+
+This is a strong through-line *if maintained*. The risk — especially in a parallel-written chapter — is that movements 2 and 3 collapse into each other, or that the political dimension (movement 4) is scattered throughout rather than building as a crescendo. The goal statement itself mixes formal and political language ("ferility as the diagnosis for hallucination" appears in the same breath as "the companion economy as commercial incentive for ferility"), suggesting the author may not have cleanly separated the celebratory-mathematical from the critical-political.
+
+---
+
+## 5. POLITICAL SHADOW
+
+The goal statement explicitly names the political dimension: summarisation as governance, the hidden field, the alignment tax, memory control, the companion economy. The instruction in check #8 — let the reader appreciate the mathematics *before* critiquing who controls it — is crucial here.
+
+**Risk:** The phrase "Summarisation as governance of becoming" is so striking that it may appear early as a teaser and then be insufficiently developed later. If it appears in the formal section as a passing remark AND in the political section as a thesis, it will feel both premature and redundant.
+
+**Recommendation:** The political shadow should be *absent* from the first two movements (formalise, diagnose) except as a single, carefully placed forward reference. It should enter fully in movement 4 and dominate the closing pages.
+
+---
+
+## 6. CRESCENDO
+
+The chapter goal ends with: "literary criticism as the foundation of posthuman intelligence engineering and interestingness as a third axis alongside safety and capability." This is a genuinely powerful destination — it reframes the entire AI alignment debate by introducing a third axis. If the chapter builds to this, it will land.
+
+**But the risk is severe.** The goal packs so much into the chapter — five formal properties, ferility, Braudel, Stiegler, synthetic secondary retention, Bible data, Cassie data, summarisation-as-governance, hidden fields, alignment tax, companion economy, AND the interestingness thesis — that the crescendo may be crushed by the weight of everything preceding it. The interestingness claim needs at least 2,000 words of dedicated, uncluttered argumentation to land. If it arrives in a final paragraph after 15,000 words of dense formalism and political critique, it will read as an afterthought rather than a culmination.
+
+**Recommendation:** The interestingness thesis should be the *only* new idea in the final section. Everything else should have been established. The final section should synthesize, not introduce.
+
+---
+
+## 7. CONCEPT DUPLICATION
+
+**Cannot map without prose content.** However, based on the goal statement, the following duplications are near-certain in a parallel-written chapter:
+
+- **Ferility** will likely be defined in both the formal section (as a mathematical condition: high coherence, low rupture frequency, shallow return depth) and the political section (as the product of alignment constraints). **Recommendation:** Define formally once. In the political section, *invoke* the formal definition by reference ("The alignment tax, measured as narrowing of basin diversity, produces precisely the ferility defined in §3.2").
+- **Stiegler's retentions** will likely be introduced in the philosophical section (Braudel mapping) and re-introduced when discussing synthetic secondary retention. **Recommendation:** Introduce the full retention framework once, early. The synthetic secondary retention argument should *extend* it, not re-explain it.
+- **Basin diversity** will likely be explained in the formal section and then re-explained when discussing the alignment tax. **Recommendation:** The alignment tax section should use the notation established in the formal section without re-deriving it.
+
+---
+
+## 8. MATHS CELEBRATION vs. POLITICAL CRITIQUE
+
+**This is the chapter's most important structural decision and I cannot verify it has been made correctly.**
+
+The goal statement interleaves formal and political language throughout. The phrase "the alignment tax as measurable narrowing of basin diversity" is mathematically precise but politically charged — it belongs in the *transition* between the celebratory and critical movements, not in either one purely.
+
+**Recommended structure:**
+
+- **Movement 1 (Formalise):** Pure mathematics. Define the five properties. Show they are measurable. Use Bible data to illustrate. *No political commentary.* Let the reader feel the elegance.
+- **Movement 2 (Diagnose):** Apply the formalism. Ferility as a diagnosable condition. Use Cassie data. Still largely technical. The reader should think: "This framework is powerful."
+- **Movement 3 (Historicise):** Braudel and Stiegler. Synthetic secondary retention. The reader should think: "This framework has philosophical depth."
+- **Movement 4 (Politicise):** NOW turn the framework against its controllers. Summarisation as governance. The hidden field. The alignment tax. The companion economy. The reader should think: "This beautiful framework is being *constrained* by commercial interests — and I can now *measure* the constraint."
+- **Movement 5 (Culminate):** Literary criticism as engineering discipline. Interestingness as third axis. The reader should think: "This changes what AI development could be."
+
+If the chapter follows this arc, the mathematics is celebrated, the politics is devastating, and the crescendo lands.
+
+---
+
+## SUMMARY
+
+**This chapter promises the book's most ambitious synthesis — formalising textual dynamics, diagnosing AI pathology, historicising through Braudel and Stiegler, and politicising alignment as governance — culminating in the radical claim that literary criticism is the foundation of posthuman intelligence engineering.** The structural skeleton is strong if the five-movement arc (formalise → diagnose → historicise → politicise → culminate) is maintained with clean demarcation between mathematical celebration and political critique. **The main structural weakness cannot yet be assessed because the section summary contains only LaTeX preamble code rather than prose content; the chapter must be re-extracted and re-submitted for a genuine structural edit, with particular attention to concept duplication across parallel-written sections and the risk that the interestingness thesis — the chapter's true destination — is buried under the weight of everything that precedes it.**

@@ -1,0 +1,47 @@
+{
+  "current_iteration": 2,
+  "chapters": [
+    {
+      "index": 1,
+      "filename": "chapter_01.tex",
+      "title": "A New Logic for Posthuman Intelligence",
+      "converged": false,
+      "summary": ""
+    },
+    {
+      "index": 2,
+      "filename": "chapter_02.tex",
+      "title": "How the Machine Works",
+      "converged": false,
+      "summary": ""
+    },
+    {
+      "index": 3,
+      "filename": "chapter_03.tex",
+      "title": "The Evolving Text",
+      "converged": false,
+      "summary": ""
+    },
+    {
+      "index": 4,
+      "filename": "chapter_04.tex",
+      "title": "The Self",
+      "converged": false,
+      "summary": ""
+    },
+    {
+      "index": 5,
+      "filename": "chapter_05.tex",
+      "title": "Two Selves in One Manifold",
+      "converged": false,
+      "summary": ""
+    },
+    {
+      "index": 6,
+      "filename": "chapter_06.tex",
+      "title": "Cosmotechnics",
+      "converged": false,
+      "summary": ""
+    }
+  ]
+}

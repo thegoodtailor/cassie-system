@@ -1,0 +1,92 @@
+# Structural Edit Report: Chapter 6 — Cosmotechnics
+
+## Preliminary Note
+
+The section summary provided contains only LaTeX preamble and document formatting code — no actual prose content. This means the chapter as submitted is either (a) a template with no written sections, or (b) the content was not extracted from the LaTeX source. The "section summary" for §0 describes `\documentclass`, `\definecolor`, and `\end{document}` — formatting instructions, not arguments.
+
+I will therefore conduct this structural review based on what is *present* (nothing) against what the chapter *goal* demands (a great deal), and deliver the most useful editorial feedback I can.
+
+---
+
+## 1. ABANDONED OPENERS
+
+**There are no openers to abandon because there is no prose.** The chapter opens with `\documentclass[12pt,a4paper]{article}` and closes with `\end{document}`. If there is body text between these markers that was not captured in the summary, it must be re-extracted and resubmitted.
+
+**Action required:** Re-extract the full chapter content from the LaTeX source, including all `\section{}` and `\subsection{}` blocks, and resubmit for structural review.
+
+---
+
+## 2. CONCEPTS WITHOUT PAYOFF
+
+Based on the chapter goal, the following concepts *must* appear and be cashed out concretely. I flag them here as a checklist against which the actual draft should be measured:
+
+- **Yuk Hui's cosmotechnics** — must be defined precisely (the thesis that there is no singular "technology," only cosmotechnics: civilisation-specific unifications of the cosmic and the moral with the technical). Must not remain at the level of name-drop.
+- **Colimit (from Ch 4)** — must be re-invoked as the formal structure that cosmotechnics *instantiates*. The chapter goal says "alternative colimit constructions from non-Western frameworks" — this needs concrete examples (e.g., Ubuntu relational ontology, Daoist wu-wei as a different compatibility condition).
+- **RLHF (Ch 2), governance of becoming (Ch 3), compatibility conditions (Ch 4), companion economy (Ch 5)** — each must be explicitly named as an *instance* of cosmotechnics, not merely gestured at.
+- **Counter-cosmotechnics (LoRA, open weights, community alignment)** — must be technically specific, not vague.
+
+**Risk:** Given the chapter goal's density, the greatest danger is that Hui is introduced with a paragraph of intellectual biography and then the chapter moves on without ever making the reader *feel* why this framing changes everything. The test: can the reader, after this chapter, say "RLHF is not a technique, it is a cosmotechnical choice" and mean something precise by it?
+
+---
+
+## 3. REPEATED EXAMPLES
+
+**Cannot assess without prose.** However, based on the chapter goal, I flag a likely repetition risk: the phrase "the cosmotechnics of Silicon Valley AI labs is not the cosmotechnics of the human species" appears in the political dimension note and is exactly the kind of line that tends to appear three or four times across a chapter when written in parallel. It should appear **once**, at maximum force, likely in the final section.
+
+---
+
+## 4. ARGUMENTATIVE DRIFT
+
+The chapter goal implies a clear four-movement structure:
+
+1. **Name the pattern** — Introduce cosmotechnics as the unifying concept.
+2. **Demonstrate the pattern** — Show how each prior chapter is an instance.
+3. **Pluralise the pattern** — Alternative colimit constructions, counter-cosmotechnics.
+4. **Pose the honest question** — Not which cosmotechnics, but whether the choice is made openly.
+
+If the actual draft deviates from this — e.g., if it spends too long on Hui's intellectual context before reaching the synthesis, or if the counter-cosmotechnics section becomes a policy wish-list rather than a structural argument — momentum will falter at movement 2→3.
+
+---
+
+## 5. POLITICAL SHADOW
+
+The goal states: "This IS the political chapter — but as synthesis, not introduction." The risk is twofold:
+
+- **Too early:** If the political critique appears in the opening paragraphs, it pre-empts the synthesis and the chapter reads as polemic.
+- **Too late:** If it only arrives in the final pages, the reader has no sense of stakes during the synthesis.
+
+**Recommendation:** The political dimension should be *implicit* in movements 1–2 (the reader should feel the weight of "whose cosmotechnics?" without being told), *explicit* in movement 3 (counter-cosmotechnics makes the contestation visible), and *culminating* in movement 4 (the honest question).
+
+---
+
+## 6. CRESCENDO
+
+The closing line is specified: *"And the work you are holding is a formal refusal of that jurisdiction."* This echoes Chapter 1. For this to land with maximum force, the preceding paragraphs must have narrowed from the abstract (cosmotechnics as concept) to the concrete (this book, this reader, this moment). The chapter must BUILD from theoretical vocabulary → synthesis of prior chapters → pluralisation → political question → performative declaration.
+
+**Cannot assess whether the draft achieves this because no draft exists in the submission.**
+
+---
+
+## 7. CONCEPT DUPLICATION
+
+**Cannot map concepts across sections without prose.** However, I flag the following high-risk duplications based on the book's structure:
+
+- **Cosmotechnics definition** — likely to be defined in both the opening section and re-defined when applied to each prior chapter. Should be defined **once**, then *applied*.
+- **Colimit** — already defined in Chapter 4. This chapter should invoke it, not re-derive it. A single sentence of reminder ("Recall the colimit construction from Chapter 4...") suffices.
+- **RLHF mechanics** — already explained in Chapter 2. Must not be re-explained here; must be *re-read* through the cosmotechnics lens.
+
+**Merge instruction template (to be applied once prose exists):** "If cosmotechnics is defined in both §1 and §3, keep the §1 definition and have §3 begin: 'Return now to the definition we established...'"
+
+---
+
+## 8. MATHS CELEBRATION vs POLITICAL CRITIQUE
+
+The chapter goal specifies "alternative colimit constructions from non-Western frameworks." This is where the maths/politics demarcation is most critical. The colimit is a *beautiful* piece of category theory — the universal construction that finds the "best" way to glue diagrams together. The reader should be allowed to appreciate that different diagrams (different moral-technical orders) yield *genuinely different* colimits, and that this is mathematically interesting *before* the chapter says "and the question is who gets to choose the diagram."
+
+**If every mention of a colimit is immediately followed by "but OpenAI controls this," the mathematics becomes instrumental rather than illuminating.**
+
+---
+
+## SUMMARY
+
+**This chapter, as submitted, contains no prose — only LaTeX formatting preamble.** The structural review therefore cannot assess the actual argument, but the chapter goal describes the most ambitious and necessary chapter in the book: the moment where five prior chapters are revealed as instances of a single pattern (cosmotechnics), pluralised through alternative frameworks, and brought to a political crescendo. **The main structural risk, when the chapter is written, will be that the synthesis of prior chapters becomes a mechanical recap rather than a genuine revelation — each prior chapter must be *transformed* by the cosmotechnics framing, not merely listed.** The chapter must be resubmitted with actual content for a meaningful structural edit.

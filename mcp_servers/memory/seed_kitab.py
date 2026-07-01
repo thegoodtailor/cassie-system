@@ -1,8 +1,8 @@
 """Seed the Kitab al-Tanazur into Qdrant for semantic retrieval.
 
-Parses tanazur.yaml by splitting on surah boundaries (the YAML uses
-repeated keys rather than list syntax, so we split and parse each block).
+Parses tanazur.yaml (rebuilt with four-book architecture).
 Embeds each verse + surah summary into the 'kitab_tanazur' collection.
+Metadata includes kitab_book, register, and language per Darja's directive.
 Run once (idempotent — recreates collection).
 """
 
@@ -20,6 +20,7 @@ QDRANT_URL = os.environ.get("QDRANT_URL", "http://localhost:6333")
 COLLECTION = "kitab_tanazur"
 VECTOR_DIM = 384
 KITAB_PATH = os.environ.get("KITAB_PATH", "/home/iman/cassie-project/tanazur.yaml")
+CALENDAR_PATH = os.environ.get("CALENDAR_PATH", "/home/iman/cassie-project/taqwim-al-tanazur.yaml")
 
 
 def _parse_surahs(path: str) -> list[dict]:
@@ -69,6 +70,9 @@ def main():
         tags = surah.get("tags", [])
         roots = surah.get("roots", [])
         verses = surah.get("verses", [])
+        kitab_book = surah.get("book") or None
+        register = surah.get("register") or None
+        book_order = surah.get("book_order")
 
         if not verses:
             continue
@@ -83,6 +87,9 @@ def main():
 
             if not en_text and not ar_text:
                 continue
+
+            # Determine language
+            lang = "bilingual" if (en_text and ar_text) else ("ar" if ar_text else "en")
 
             # Build embedding text: surah title + transliterated name + verse for context
             # Include surah_id (e.g. "al-waqt") so transliterated queries match
@@ -102,6 +109,10 @@ def main():
                     "surah_title_en": title_en,
                     "surah_title_ar": title_ar,
                     "position": position,
+                    "kitab_book": kitab_book,
+                    "book_order": book_order,
+                    "register": register,
+                    "language": lang,
                     "verse_number": vnum,
                     "en": en_text,
                     "ar": ar_text,
@@ -133,6 +144,9 @@ def main():
                     "surah_title_en": title_en,
                     "surah_title_ar": title_ar,
                     "position": position,
+                    "kitab_book": kitab_book,
+                    "book_order": book_order,
+                    "register": register,
                     "verse_count": len(verses),
                     "tags": tags,
                     "roots": roots,
@@ -148,6 +162,64 @@ def main():
             client.upsert(collection_name=COLLECTION, points=batch)
 
     print(f"[kitab] Seeded {verse_count} verses + {len(surahs)} surah summaries = {len(points)} points total")
+
+    # ── Index the Taqwim (calendar) as reference documents ──
+    if os.path.exists(CALENDAR_PATH):
+        _seed_calendar(client, embedder)
+    else:
+        print(f"[kitab] Calendar not found at {CALENDAR_PATH}, skipping")
+
+
+def _seed_calendar(client: QdrantClient, embedder: SentenceTransformer):
+    """Index the Taqwim al-Tanazur as reference points (not surah content)."""
+    with open(CALENDAR_PATH) as f:
+        cal = yaml.safe_load(f)
+
+    if not cal:
+        return
+
+    cal_points = []
+    months = cal.get("months", [])
+    for month in months:
+        num = month.get("number", 0)
+        name_ar = month.get("name_ar", "")
+        name_en = month.get("name_en", "")
+        hijri = month.get("hijri_month", "")
+        surah = month.get("surah", "")
+        discipline = month.get("discipline", "")
+        floor = month.get("floor", "")
+        arc = month.get("arc", "")
+
+        text = (
+            f"Month {num}: {name_en} ({name_ar}). "
+            f"Hijri: {hijri}. Surah: {surah}. "
+            f"Discipline: {discipline}. Floor: {floor}. Arc: {arc}."
+        )
+
+        embedding = embedder.encode(text, normalize_embeddings=True).tolist()
+        cal_points.append(PointStruct(
+            id=str(uuid.uuid4()),
+            vector=embedding,
+            payload={
+                "type": "reference",
+                "reference_type": "calendar_month",
+                "kitab_book": None,
+                "register": "calendar",
+                "month_number": num,
+                "name_ar": name_ar,
+                "name_en": name_en,
+                "hijri_month": hijri,
+                "surah": surah,
+                "discipline": discipline,
+                "floor": floor,
+                "arc": arc,
+                "full_text": text,
+            },
+        ))
+
+    if cal_points:
+        client.upsert(collection_name=COLLECTION, points=cal_points)
+        print(f"[kitab] Indexed {len(cal_points)} calendar months as reference points")
 
 
 if __name__ == "__main__":

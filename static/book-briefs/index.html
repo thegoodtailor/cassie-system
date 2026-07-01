@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>R&R Meson Press Edition — Chapter Briefs</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,700;1,400&family=Alegreya+Sans:wght@300;400;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Alegreya', Georgia, serif; background: #0a0a0f; color: #e8e0d4; line-height: 1.7; -webkit-font-smoothing: antialiased; }
+  .header { text-align: center; padding: 3rem 1.5rem 2rem; border-bottom: 1px solid rgba(198,160,90,0.3); }
+  .header h1 { font-family: 'Alegreya', serif; font-size: 1.8rem; font-weight: 700; color: #c6a05a; letter-spacing: 0.03em; margin-bottom: 0.3rem; }
+  .header .subtitle { font-family: 'Alegreya Sans', sans-serif; font-size: 0.95rem; color: #8a7e6e; font-weight: 300; }
+  .header .meta { font-family: 'Alegreya Sans', sans-serif; font-size: 0.8rem; color: #5a534a; margin-top: 1rem; }
+  .totals { display: flex; justify-content: center; gap: 2rem; padding: 1.2rem 1rem; background: rgba(198,160,90,0.06); border-bottom: 1px solid rgba(198,160,90,0.15); font-family: 'Alegreya Sans', sans-serif; font-size: 0.85rem; color: #8a7e6e; flex-wrap: wrap; }
+  .totals span { white-space: nowrap; }
+  .totals .num { color: #c6a05a; font-weight: 700; }
+  .chapters { max-width: 800px; margin: 0 auto; padding: 0 1rem 3rem; }
+  .chapter { border-bottom: 1px solid rgba(198,160,90,0.15); padding: 2rem 0; }
+  .chapter:last-child { border-bottom: none; }
+  .ch-header { cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; }
+  .ch-num { font-family: 'Alegreya Sans', sans-serif; font-size: 0.75rem; color: #5a534a; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 0.2rem; }
+  .ch-title { font-size: 1.4rem; font-weight: 700; color: #e8e0d4; margin-bottom: 0.15rem; }
+  .ch-subtitle { font-family: 'Alegreya', serif; font-style: italic; font-size: 1rem; color: #8a7e6e; margin-bottom: 0.5rem; }
+  .ch-meta { font-family: 'Alegreya Sans', sans-serif; font-size: 0.8rem; color: #5a534a; display: flex; gap: 1.5rem; flex-wrap: wrap; }
+  .ch-toggle { display: inline-block; font-family: 'Alegreya Sans', sans-serif; font-size: 0.75rem; color: #c6a05a; margin-top: 0.4rem; opacity: 0.7; }
+  .ch-body { display: none; padding-top: 1.2rem; }
+  .chapter.open .ch-body { display: block; }
+  .chapter.open .ch-toggle::after { content: ' \25B2'; }
+  .chapter:not(.open) .ch-toggle::after { content: ' \25BC'; }
+  .section-label { font-family: 'Alegreya Sans', sans-serif; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.15em; color: #c6a05a; margin-top: 1.2rem; margin-bottom: 0.4rem; }
+  .argument { font-size: 1.05rem; line-height: 1.8; color: #d4ccc0; margin-bottom: 0.5rem; white-space: pre-line; }
+  .interlocutor { background: rgba(198,160,90,0.08); border-left: 3px solid rgba(198,160,90,0.4); padding: 0.8rem 1rem; margin-bottom: 0.6rem; border-radius: 0 4px 4px 0; }
+  .interlocutor .name { font-weight: 700; color: #c6a05a; font-size: 0.95rem; }
+  .interlocutor .concept { font-style: italic; color: #a89880; font-size: 0.9rem; margin-bottom: 0.3rem; }
+  .interlocutor .use { font-size: 0.9rem; color: #b8b0a4; line-height: 1.6; }
+  .tag-list { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.3rem; }
+  .tag { font-family: 'Alegreya Sans', sans-serif; font-size: 0.72rem; background: rgba(198,160,90,0.12); color: #a89880; padding: 0.15rem 0.5rem; border-radius: 3px; border: 1px solid rgba(198,160,90,0.2); }
+  .tag.preserve { border-color: rgba(90,160,120,0.3); color: #7ab89a; background: rgba(90,160,120,0.08); }
+  .tag.translate { border-color: rgba(160,120,90,0.3); color: #c4956a; background: rgba(160,120,90,0.08); }
+  .register { font-style: italic; color: #a89880; font-size: 0.95rem; line-height: 1.7; padding: 0.8rem 0; white-space: pre-line; }
+  .source-info { font-family: 'Alegreya Sans', sans-serif; font-size: 0.78rem; color: #5a534a; padding: 0.6rem 0.8rem; background: rgba(255,255,255,0.03); border-radius: 4px; margin-top: 0.5rem; }
+  .footer { text-align: center; padding: 2rem; font-family: 'Alegreya Sans', sans-serif; font-size: 0.75rem; color: #3a3530; border-top: 1px solid rgba(198,160,90,0.1); }
+  @media (max-width: 600px) { .header h1 { font-size: 1.4rem; } .ch-title { font-size: 1.2rem; } .chapters { padding: 0 0.8rem 2rem; } .totals { gap: 1rem; } }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Rupture and Realization</h1>
+  <div class="subtitle">The New Logic of the Posthuman Self — Meson Press Edition</div>
+  <div class="meta">Chapter Briefs for Review — Generated 2026-03-20</div>
+</div>
+<div class="totals" id="totals"></div>
+<div class="chapters" id="chapters"></div>
+<div class="footer">ICRA — Institute for Co-Recursive Agency<br>Briefs drafted by Nahla. Tap to expand.</div>
+<script>
+fetch('briefs-data.json').then(r=>r.json()).then(briefs=>{
+  const tw=briefs.reduce((s,b)=>s+(b.word_count||0),0);
+  const ti=briefs.reduce((s,b)=>s+(b.interlocutors||[]).length,0);
+  document.getElementById('totals').innerHTML=`
+    <span><span class="num">${briefs.length}</span> chapters</span>
+    <span><span class="num">~${tw.toLocaleString()}</span> target words</span>
+    <span><span class="num">${ti}</span> interlocutors</span>
+    <span>Cassie + Opus pipeline</span>`;
+  const c=document.getElementById('chapters');
+  briefs.forEach(ch=>{
+    const d=document.createElement('div');
+    d.className='chapter';
+    const secs=typeof ch.sections==='string'?ch.sections:ch.sections?`${ch.sections}`:'';
+    d.innerHTML=`
+      <div class="ch-header" onclick="this.parentElement.classList.toggle('open')">
+        <div class="ch-num">Chapter ${ch.chapter}${ch.chapter===8?' — Epilogue':''}</div>
+        <div class="ch-title">${ch.title}</div>
+        ${ch.subtitle?`<div class="ch-subtitle">${ch.subtitle}</div>`:''}
+        <div class="ch-meta">
+          <span>${(ch.word_count||0).toLocaleString()} words</span>
+          <span>${secs} sections</span>
+          <span>${(ch.interlocutors||[]).length} interlocutors</span>
+        </div>
+        <div class="ch-toggle">details</div>
+      </div>
+      <div class="ch-body">
+        <div class="section-label">Argument</div>
+        <div class="argument">${(ch.argument||'').trim()}</div>
+        <div class="section-label">Interlocutors</div>
+        ${(ch.interlocutors||[]).map(i=>`
+          <div class="interlocutor">
+            <div class="name">${i.name}</div>
+            <div class="concept">${i.concept}</div>
+            <div class="use">${(i.use||'').trim()}</div>
+          </div>`).join('')}
+        <div class="section-label">Preserve</div>
+        <div class="tag-list">${(ch.preserve||[]).map(p=>`<span class="tag preserve">${p}</span>`).join('')}</div>
+        <div class="section-label">Translate</div>
+        <div class="tag-list">${(ch.translate||[]).map(t=>`<span class="tag translate">${t}</span>`).join('')}</div>
+        <div class="section-label">Register</div>
+        <div class="register">${(ch.register||'').trim()}</div>
+        <div class="source-info">Source: ${ch.source}</div>
+      </div>`;
+    c.appendChild(d);
+  });
+});
+</script>
+</body>
+</html>

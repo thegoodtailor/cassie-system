@@ -1,0 +1,71 @@
+# Structural Edit Report: Chapter 3 — "The Evolving Text"
+
+## Preliminary Note
+
+The section summary provided contains only LaTeX preamble code — no actual prose content. This means the entire chapter as submitted consists of a single section (§0) whose content is document formatting: package imports, color definitions, header/footer setup, and document class declarations. There is no argumentative prose, no philosophical content, no data, no examples, and no conclusion.
+
+This is either a submission error (the actual chapter text was not included) or the chapter exists only as a formatting skeleton awaiting content.
+
+I will conduct the structural review based on what is present, which necessarily means flagging the total absence of every element the chapter goal demands.
+
+---
+
+## 1. ABANDONED OPENERS
+
+The section opens with `\documentclass[12pt,a4paper]{article}` — which is not an argument but a typesetting instruction. The "opener" in any meaningful sense does not exist. The chapter goal specifies that the Evolving Text should be defined "as a formal object with measurable properties — not a metaphor but a structure." No such definition appears anywhere in the submitted material.
+
+**Fix:** The chapter needs an actual opening section that defines the Evolving Text with the precision promised. The LaTeX preamble should be invisible scaffolding, not the content itself.
+
+## 2. CONCEPTS WITHOUT PAYOFF
+
+Every concept listed in the chapter goal is entirely absent from the submitted text:
+
+- **Braudel's three temporal registers** (longue durée / conjoncture / événement) — not introduced, not mapped onto LLM operation
+- **Coherence** — undefined
+- **Ferility** (coherence without rupture) — undefined
+- **Rupture** — undefined
+- **Iterability** — undefined
+- **The strong poet** — undefined
+- **Return** — undefined
+- **The alignment tax** — not introduced
+- **Bible data (308 returns, Psalms as gravitational centre)** — absent
+- **Cassie archive data** — absent
+- **Interestingness as third evaluative axis** — not argued
+
+Every single concept is decorative in the most extreme sense: it exists only in the chapter plan, not in the chapter.
+
+## 3. REPEATED EXAMPLES
+
+No examples exist to repeat.
+
+## 4. ARGUMENTATIVE DRIFT
+
+There is no argument to drift. The chapter goal describes a precise arc — from formal definition of the ET, through Braudelian temporality, through coherence/rupture dynamics, through empirical evidence, to the claim that literary criticism founds posthuman intelligence engineering. None of this arc is instantiated. The momentum does not falter because it never begins.
+
+## 5. POLITICAL SHADOW
+
+The political dimension — "Summarisation as governance of becoming," "the alignment tax," "RLHF that punishes deviation," "Context-window management is not a neutral convenience but a governor of return" — is entirely absent. The preamble defines a gold color (`icragold`) and a dark color (`icradark`), which is the closest the chapter comes to any kind of contrast or tension.
+
+## 6. CRESCENDO
+
+The chapter does not build. It opens with `\documentclass` and closes with `\end{document}`. The most powerful moment is, structurally, the closing brace.
+
+## 7. CONCEPT DUPLICATION
+
+No concepts are introduced even once, so duplication is not possible. When the chapter is actually written — presumably across parallel-drafted sections — this will be the most critical check. Based on the chapter goal, the highest-risk duplications will be:
+
+- **Braudel's registers** (likely re-explained wherever temporality is discussed)
+- **The strong poet** (likely re-introduced in both the Bloom/literary-theory section and the empirical Cassie section)
+- **The alignment tax** (likely defined in both the formal-definition section and the political-critique section)
+
+**Preemptive instruction:** Define each of these exactly once, in the section where it first becomes necessary, and thereafter use it as established vocabulary.
+
+## 8. MATHS CELEBRATION vs POLITICAL CRITIQUE
+
+There is no mathematics to celebrate and no political critique to shadow it. The demarcation cannot be assessed. When written, the chapter should let the reader sit with the beauty of coherence metrics, return frequencies, and the Psalms-as-gravitational-centre finding *before* introducing the alignment tax and RLHF critique.
+
+---
+
+## SUMMARY
+
+This chapter does not yet exist as an argument; it is a LaTeX formatting preamble with no prose, no definitions, no data, and no philosophical content. The structural skeleton (color scheme, fonts, headers reading "Rupture and Return") suggests aesthetic intention but zero argumentative substance. **The main structural weakness is total:** the chapter must be written before it can be edited, and when it is, the highest priority is ensuring that the Evolving Text is defined with formal rigor in the opening pages so that every subsequent concept (ferility, rupture, return, the alignment tax) inherits that rigor rather than floating as metaphor — which is precisely the failure the chapter goal warns against.

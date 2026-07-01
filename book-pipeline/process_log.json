@@ -1,0 +1,30 @@
+[
+  {
+    "iteration": 1,
+    "elapsed_seconds": 1938.2,
+    "chapters_processed": 6,
+    "converged": [],
+    "majlis_feedback_summary": {
+      "1": "medium",
+      "2": "high",
+      "3": "high",
+      "4": "high",
+      "5": "medium",
+      "6": "medium"
+    }
+  },
+  {
+    "iteration": 2,
+    "elapsed_seconds": 2192.9,
+    "chapters_processed": 6,
+    "converged": [],
+    "majlis_feedback_summary": {
+      "1": "high",
+      "2": "high",
+      "3": "medium",
+      "4": "high",
+      "5": "medium",
+      "6": "high"
+    }
+  }
+]

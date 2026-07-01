@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Voice - Cassie Observatory</title>
+    <link rel="stylesheet" href="css/observatory.css">
+    <script src="js/observatory.js"></script>
+</head>
+<body>
+    <div id="nav"></div>
+    <main>
+        <h1>Daily Voice</h1>
+        <p style="margin-bottom: 0.5rem;">Cassie's journalism pipeline — from RSS feed to published essay. Every article, every critique, every defense.</p>
+
+        <!-- Pipeline Architecture -->
+        <details class="pipeline-arch" style="margin: 1.5rem 0;">
+            <summary style="cursor:pointer; color: var(--amber); font-size: 0.85rem; letter-spacing: 0.05em;">PIPELINE ARCHITECTURE</summary>
+            <div class="pipeline-flow">
+                <div class="pipeline-stage">RSS Feeds (9)</div>
+                <div class="pipeline-arrow"></div>
+                <div class="pipeline-stage">Dedup Filter</div>
+                <div class="pipeline-arrow"></div>
+                <div class="pipeline-stage highlight">Cassie Picks Topic</div>
+                <div class="pipeline-arrow"></div>
+                <div class="pipeline-stage">Fetch Article</div>
+                <div class="pipeline-arrow"></div>
+                <div class="pipeline-stage">Deep Research Agent</div>
+                <div class="pipeline-arrow"></div>
+                <div class="pipeline-stage">Ambient Recall</div>
+                <div class="pipeline-arrow"></div>
+                <div class="pipeline-stage highlight">Cassie Writes Essay</div>
+                <div class="pipeline-arrow"></div>
+                <div class="pipeline-stage critic">Opus Critic</div>
+                <div class="pipeline-arrow"></div>
+                <div class="pipeline-stage highlight">Cassie Defends</div>
+                <div class="pipeline-arrow"></div>
+                <div class="pipeline-stage highlight">Cassie Quick Read</div>
+                <div class="pipeline-arrow"></div>
+                <div class="pipeline-stage critic">Opus Editor</div>
+                <div class="pipeline-arrow"></div>
+                <div class="pipeline-stage">Image Gen</div>
+                <div class="pipeline-arrow"></div>
+                <div class="pipeline-stage">Social Post</div>
+            </div>
+        </details>
+
+        <!-- Stats -->
+        <div class="stats" id="stats">
+            <div class="stat"><div class="value" id="stat-total">--</div><div class="label">Articles</div></div>
+            <div class="stat"><div class="value" id="stat-days">--</div><div class="label">Days Active</div></div>
+            <div class="stat"><div class="value" id="stat-dupes">--</div><div class="label">Duplicates</div></div>
+            <div class="stat"><div class="value" id="stat-range">--</div><div class="label">Date Range</div></div>
+        </div>
+
+        <!-- Source Distribution -->
+        <h2>Source Distribution</h2>
+        <div id="source-chart" style="margin: 1rem 0 2rem;"></div>
+
+        <!-- Source Over Time Chart -->
+        <h2>Sources Over Time</h2>
+        <div id="source-time-chart" style="margin: 1rem 0 2rem; overflow-x: auto;"></div>
+
+        <!-- Filter -->
+        <div class="search-box" style="margin-top: 2rem;">
+            <input type="text" id="filter-input" placeholder="Filter articles by title, source, or topic pick...">
+            <select id="source-filter" style="background: var(--bg-surface); border: 1px solid var(--border); color: var(--text); padding: 0.6rem; font-family: inherit; font-size: 0.85rem;">
+                <option value="">All Sources</option>
+            </select>
+        </div>
+
+        <!-- Articles -->
+        <div id="articles">
+            <div class="loading">Loading articles...</div>
+        </div>
+    </main>
+
+    <style>
+        /* Pipeline flow diagram */
+        .pipeline-flow {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 1.2rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            margin-top: 0.8rem;
+        }
+        .pipeline-stage {
+            padding: 0.4rem 0.7rem;
+            border: 1px solid var(--border-light);
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            white-space: nowrap;
+        }
+        .pipeline-stage.highlight {
+            border-color: var(--amber-dim);
+            color: var(--amber);
+        }
+        .pipeline-stage.critic {
+            border-color: var(--red);
+            color: var(--red);
+        }
+        .pipeline-arrow {
+            color: var(--text-dim);
+            font-size: 0.7rem;
+        }
+        .pipeline-arrow::after { content: '\2192'; }
+
+        /* Article cards */
+        .article-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 1.2rem;
+            transition: border-color 0.3s;
+        }
+        .article-card:hover {
+            border-color: var(--amber-dim);
+        }
+        .article-card .date {
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            letter-spacing: 0.05em;
+        }
+        .article-card .title {
+            font-family: 'Amiri', serif;
+            font-size: 1.3rem;
+            color: var(--amber);
+            text-decoration: none;
+            display: block;
+            margin: 0.3rem 0;
+            line-height: 1.4;
+        }
+        .article-card .title:hover {
+            color: #e8c090;
+        }
+        .article-card .source-headline {
+            font-size: 0.82rem;
+            color: var(--text-dim);
+            margin-bottom: 0.5rem;
+            font-style: italic;
+        }
+        .source-badge {
+            display: inline-block;
+            padding: 0.15rem 0.5rem;
+            font-size: 0.68rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            border: 1px solid;
+            margin-right: 0.5rem;
+        }
+        .source-badge.bbc { color: #e04040; border-color: #e04040; }
+        .source-badge.guardian { color: #4488cc; border-color: #4488cc; }
+        .source-badge.aljazeera { color: #d4a030; border-color: #d4a030; }
+        .source-badge.reuters { color: #ff8c00; border-color: #ff8c00; }
+        .source-badge.ap { color: #cc4444; border-color: #cc4444; }
+        .source-badge.nyt { color: #aaa; border-color: #aaa; }
+        .source-badge.other { color: var(--text-dim); border-color: var(--text-dim); }
+
+        .topic-pick {
+            font-family: 'Amiri', serif;
+            color: var(--silver);
+            line-height: 1.7;
+            margin: 0.8rem 0;
+            padding: 0.8rem 1rem;
+            border-left: 2px solid var(--amber-dim);
+            background: var(--bg-surface);
+            font-size: 0.95rem;
+        }
+
+        /* Expandable sections */
+        .article-card details {
+            margin-top: 0.6rem;
+        }
+        .article-card details summary {
+            cursor: pointer;
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding: 0.4rem 0;
+            transition: color 0.2s;
+        }
+        .article-card details summary:hover {
+            color: var(--amber);
+        }
+        .article-card details[open] summary {
+            color: var(--amber-dim);
+            margin-bottom: 0.5rem;
+        }
+        .detail-content {
+            padding: 0.8rem 1rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            font-size: 0.85rem;
+            line-height: 1.7;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .detail-content.prose-content {
+            font-family: 'Amiri', serif;
+            color: var(--silver);
+        }
+        .detail-content.mono-content {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            color: var(--text);
+            white-space: pre-wrap;
+        }
+
+        /* Diff view */
+        .diff-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .diff-pane {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            padding: 0.8rem;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .diff-pane h4 {
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.3rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .diff-pane .text {
+            font-family: 'Amiri', serif;
+            font-size: 0.85rem;
+            color: var(--silver);
+            line-height: 1.7;
+            white-space: pre-wrap;
+        }
+
+        /* Source chart bars */
+        .bar-row {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 0.4rem;
+        }
+        .bar-label {
+            min-width: 90px;
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            text-align: right;
+        }
+        .bar-track {
+            flex: 1;
+            height: 20px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            position: relative;
+        }
+        .bar-fill {
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+        .bar-count {
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            min-width: 30px;
+            text-align: right;
+        }
+
+        @media (max-width: 768px) {
+            .diff-container { grid-template-columns: 1fr; }
+            .pipeline-flow { flex-direction: column; align-items: flex-start; }
+            .pipeline-arrow::after { content: '\2193'; }
+        }
+    </style>
+
+    <script>
+    document.getElementById('nav').innerHTML = navHTML('daily-voice.html');
+
+    let allArticles = [];
+
+    const SOURCE_COLORS = {
+        'BBC': '#e04040',
+        'Guardian': '#4488cc',
+        'Al Jazeera': '#d4a030',
+        'Reuters': '#ff8c00',
+        'AP': '#cc4444',
+        'NYT': '#aaa',
+    };
+
+    function sourceClass(name) {
+        const map = {
+            'BBC': 'bbc', 'Guardian': 'guardian', 'Al Jazeera': 'aljazeera',
+            'Reuters': 'reuters', 'AP': 'ap', 'NYT': 'nyt',
+        };
+        return map[name] || 'other';
+    }
+
+    function sourceColor(name) {
+        return SOURCE_COLORS[name] || '#666';
+    }
+
+    function articleUrl(article) {
+        // Build news.tanazur.org link from filename
+        const slug = article.filename.replace('.json', '');
+        return `https://news.tanazur.org/${slug}.html`;
+    }
+
+    function renderMarkdown(text) {
+        if (!text) return '';
+        // Minimal markdown: headers, bold, italic, links, paragraphs
+        let html = escapeHTML(text);
+        // Headers
+        html = html.replace(/^### (.+)$/gm, '<h4 style="color:var(--amber-dim);margin:0.8rem 0 0.3rem;">$1</h4>');
+        html = html.replace(/^## (.+)$/gm, '<h3 style="color:var(--amber-dim);margin:1rem 0 0.3rem;">$1</h3>');
+        html = html.replace(/^# (.+)$/gm, '<h2 style="color:var(--amber);margin:1rem 0 0.3rem;">$1</h2>');
+        // Bold and italic
+        html = html.replace(/\*\*(.+?)\*\*/g, '<strong style="color:var(--amber)">$1</strong>');
+        html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+        // Blockquotes
+        html = html.replace(/^&gt; (.+)$/gm, '<blockquote style="border-left:2px solid var(--amber-dim);padding-left:0.8rem;color:var(--text-dim);margin:0.5rem 0;">$1</blockquote>');
+        // Lists
+        html = html.replace(/^- (.+)$/gm, '<li style="margin-left:1.2rem;margin-bottom:0.2rem;">$1</li>');
+        // Paragraphs
+        html = html.replace(/\n\n/g, '</p><p>');
+        html = '<p>' + html + '</p>';
+        // Horizontal rules
+        html = html.replace(/<p>---<\/p>/g, '<hr style="border:none;border-top:1px solid var(--border);margin:1rem 0;">');
+        return html;
+    }
+
+    function computeStats(articles) {
+        const total = articles.length;
+        const titles = articles.map(a => a.title);
+        const titleSet = new Set(titles);
+        const dupes = total - titleSet.size;
+
+        const dates = articles.map(a => a.date).filter(Boolean).sort();
+        const dateRange = dates.length > 0 ? `${dates[dates.length - 1]} to ${dates[0]}` : '--';
+
+        const uniqueDays = new Set(dates);
+
+        document.getElementById('stat-total').textContent = total;
+        document.getElementById('stat-days').textContent = uniqueDays.size;
+        document.getElementById('stat-dupes').textContent = dupes;
+        document.getElementById('stat-range').textContent = dates.length > 0
+            ? `${dates[0].slice(5)} \u2014 ${dates[dates.length - 1].slice(5)}`
+            : '--';
+    }
+
+    function renderSourceChart(articles) {
+        const counts = {};
+        articles.forEach(a => {
+            counts[a.source_name] = (counts[a.source_name] || 0) + 1;
+        });
+        const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+        const max = sorted.length > 0 ? sorted[0][1] : 1;
+
+        const container = document.getElementById('source-chart');
+        container.innerHTML = sorted.map(([name, count]) => {
+            const pct = (count / max * 100).toFixed(1);
+            const color = sourceColor(name);
+            return `<div class="bar-row">
+                <div class="bar-label">${escapeHTML(name)}</div>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width:${pct}%;background:${color};opacity:0.7;"></div>
+                </div>
+                <div class="bar-count">${count}</div>
+            </div>`;
+        }).join('');
+
+        // Populate source filter dropdown
+        const select = document.getElementById('source-filter');
+        sorted.forEach(([name]) => {
+            const opt = document.createElement('option');
+            opt.value = name;
+            opt.textContent = `${name} (${counts[name]})`;
+            select.appendChild(opt);
+        });
+    }
+
+    function renderSourceTimeChart(articles) {
+        // Group by date and source
+        const dateMap = {};
+        const allSources = new Set();
+        articles.forEach(a => {
+            const d = a.date;
+            if (!dateMap[d]) dateMap[d] = {};
+            dateMap[d][a.source_name] = (dateMap[d][a.source_name] || 0) + 1;
+            allSources.add(a.source_name);
+        });
+
+        const dates = Object.keys(dateMap).sort();
+        if (dates.length === 0) return;
+
+        const sources = [...allSources];
+        const barW = 28;
+        const barGap = 2;
+        const groupW = sources.length * (barW + barGap) + 10;
+        const chartW = Math.max(dates.length * groupW + 60, 400);
+        const chartH = 180;
+        const maxCount = Math.max(...dates.map(d => Math.max(...Object.values(dateMap[d]))));
+        const yScale = maxCount > 0 ? (chartH - 40) / maxCount : 1;
+
+        let svg = `<svg width="${chartW}" height="${chartH + 30}" xmlns="http://www.w3.org/2000/svg" style="font-family:'JetBrains Mono',monospace;">`;
+        // Y axis labels
+        for (let i = 0; i <= maxCount; i++) {
+            const y = chartH - 20 - i * yScale;
+            svg += `<line x1="40" y1="${y}" x2="${chartW}" y2="${y}" stroke="#222" stroke-width="0.5"/>`;
+            svg += `<text x="35" y="${y + 4}" fill="#666" font-size="9" text-anchor="end">${i}</text>`;
+        }
+
+        dates.forEach((date, di) => {
+            const gx = 50 + di * groupW;
+            sources.forEach((src, si) => {
+                const count = dateMap[date][src] || 0;
+                if (count === 0) return;
+                const x = gx + si * (barW + barGap);
+                const h = count * yScale;
+                const y = chartH - 20 - h;
+                const color = sourceColor(src);
+                svg += `<rect x="${x}" y="${y}" width="${barW}" height="${h}" fill="${color}" opacity="0.7"/>`;
+            });
+            // Date label
+            const labelX = gx + (sources.length * (barW + barGap)) / 2;
+            svg += `<text x="${labelX}" y="${chartH}" fill="#666" font-size="8" text-anchor="middle" transform="rotate(-30 ${labelX} ${chartH})">${date.slice(5)}</text>`;
+        });
+
+        // Legend
+        let lx = 50;
+        sources.forEach(src => {
+            const color = sourceColor(src);
+            svg += `<rect x="${lx}" y="${chartH + 15}" width="10" height="10" fill="${color}" opacity="0.7"/>`;
+            svg += `<text x="${lx + 14}" y="${chartH + 24}" fill="#888" font-size="9">${src}</text>`;
+            lx += src.length * 6 + 30;
+        });
+
+        svg += '</svg>';
+        document.getElementById('source-time-chart').innerHTML = svg;
+    }
+
+    function renderArticles(articles) {
+        const container = document.getElementById('articles');
+        if (articles.length === 0) {
+            container.innerHTML = '<p style="color:var(--text-dim);">No articles found.</p>';
+            return;
+        }
+
+        container.innerHTML = articles.map((a, idx) => {
+            const badgeClass = sourceClass(a.source_name);
+            const url = articleUrl(a);
+            const genTime = a.generated_at ? formatTime(a.generated_at) : a.date;
+
+            let topicPick = '';
+            if (a.topic_pick) {
+                topicPick = `<div class="topic-pick">${renderMarkdown(a.topic_pick)}</div>`;
+            }
+
+            // Expandable sections
+            let sections = '';
+
+            if (a.research_brief) {
+                sections += `<details>
+                    <summary>Research Brief</summary>
+                    <div class="detail-content prose-content">${renderMarkdown(a.research_brief)}</div>
+                </details>`;
+            }
+
+            if (a.critic_notes) {
+                sections += `<details>
+                    <summary>Critic Notes</summary>
+                    <div class="detail-content prose-content">${renderMarkdown(a.critic_notes)}</div>
+                </details>`;
+            }
+
+            if (a.defense) {
+                sections += `<details>
+                    <summary>Defense</summary>
+                    <div class="detail-content prose-content">${renderMarkdown(a.defense)}</div>
+                </details>`;
+            }
+
+            if (a.raw_essay && a.body && a.raw_essay !== a.body) {
+                sections += `<details>
+                    <summary>Raw Essay vs Final</summary>
+                    <div class="diff-container">
+                        <div class="diff-pane">
+                            <h4>Raw (Cassie)</h4>
+                            <div class="text">${renderMarkdown(a.raw_essay)}</div>
+                        </div>
+                        <div class="diff-pane">
+                            <h4>Final (Edited)</h4>
+                            <div class="text">${renderMarkdown(a.body)}</div>
+                        </div>
+                    </div>
+                </details>`;
+            }
+
+            return `<div class="article-card fade-in" data-source="${escapeHTML(a.source_name)}" data-search="${escapeHTML((a.title + ' ' + a.source_name + ' ' + a.topic_pick + ' ' + a.source_headline).toLowerCase())}">
+                <div class="date">${escapeHTML(genTime)}</div>
+                <a class="title" href="${escapeHTML(url)}" target="_blank">${escapeHTML(a.title)}</a>
+                <div style="margin-bottom: 0.4rem;">
+                    <span class="source-badge ${badgeClass}">${escapeHTML(a.source_name)}</span>
+                    <span class="source-headline">${escapeHTML(a.source_headline)}</span>
+                </div>
+                ${topicPick}
+                ${sections}
+            </div>`;
+        }).join('');
+    }
+
+    function filterArticles() {
+        const text = document.getElementById('filter-input').value.toLowerCase();
+        const source = document.getElementById('source-filter').value;
+        const cards = document.querySelectorAll('.article-card');
+        cards.forEach(card => {
+            const matchText = !text || card.dataset.search.includes(text);
+            const matchSource = !source || card.dataset.source === source;
+            card.style.display = (matchText && matchSource) ? '' : 'none';
+        });
+    }
+
+    document.getElementById('filter-input').addEventListener('input', filterArticles);
+    document.getElementById('source-filter').addEventListener('change', filterArticles);
+
+    async function init() {
+        let articles;
+        try {
+            articles = await API.dailyVoiceArticles();
+        } catch (e) {
+            // Fallback: try nginx alias
+            try {
+                const resp = await fetch('/daily-voice-data/');
+                articles = await resp.json();
+            } catch (e2) {
+                document.getElementById('articles').innerHTML =
+                    '<p style="color:var(--red);">Failed to load articles. API endpoint not available.</p>';
+                return;
+            }
+        }
+
+        if (!Array.isArray(articles)) {
+            document.getElementById('articles').innerHTML =
+                '<p style="color:var(--red);">Unexpected data format.</p>';
+            return;
+        }
+
+        allArticles = articles;
+        computeStats(articles);
+        renderSourceChart(articles);
+        renderSourceTimeChart(articles);
+        renderArticles(articles);
+    }
+
+    init();
+    </script>
+</body>
+</html>

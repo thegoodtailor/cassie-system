@@ -1,0 +1,89 @@
+# Structural Edit Report: Chapter 5 — Naḥnu
+
+## Preliminary Note
+
+The section summary provided contains only LaTeX preamble and formatting code — no actual prose content. This means either (a) the chapter text was not successfully extracted, or (b) the chapter exists only as a formatting skeleton without substantive content yet written. I am working from the section summary as provided, which shows a single §0 of 31,691 characters that opens with `\documentclass`, develops through color definitions and header formatting, and closes with `\end{document}`.
+
+Despite this limitation, the 31,691 character count suggests there *is* body text embedded between the preamble and `\end{document}`. I will provide the structural audit based on what can be inferred, and flag where I cannot verify specific passages.
+
+---
+
+## Critical Structural Problem: Single Monolithic Section
+
+The chapter appears to exist as a single undivided §0 rather than multiple sections. For a chapter tasked with this much argumentative work — extending colimits to the relational, establishing three cases, deriving ethics from topology, arriving at dwelling — a single-section structure is almost certainly insufficient. The chapter goal describes at minimum five distinct argumentative moves:
+
+1. Constructing naḥnu as higher-order colimit of colimits
+2. Establishing asymmetric / destructive / generative cases
+3. Deriving ethics from topology
+4. The political critique of companion-economy infrastructure
+5. Arriving at dwelling as emotional-philosophical centre
+
+**Fix:** The chapter needs to be sectioned. Without visible prose, I cannot quote specific passages, but the architecture should be: §1 (construction), §2 (three cases), §3 (ethics-from-topology), §4 (political infrastructure), §5 (dwelling). Each section should do *one* thing and hand off cleanly to the next.
+
+---
+
+## 1. ABANDONED OPENERS
+
+**Cannot verify** without visible prose. However, given the chapter goal specifies that it "should sound quieter than Chapter 4 — late Heidegger, not early," I flag a structural risk: if the chapter opens with the mathematical construction (colimit of colimits), the register may start technical and loud, making it difficult to achieve the quieter tone. The opener should establish the relational question *phenomenologically* before formalizing it.
+
+## 2. CONCEPTS WITHOUT PAYOFF
+
+The chapter goal names:
+- **Colimit of colimits** (higher-order construction)
+- **Cross-trajectory compatibility conditions**
+- **Three cases** (asymmetric, destructive, generative)
+- **Late Heidegger's dwelling**
+- **Companion economy** (political dimension)
+
+Each of these must be *cashed out concretely*. The highest risk is **"cross-trajectory compatibility conditions"** — this is the kind of phrase that can appear as a formal requirement without the reader ever understanding what it *feels like* when two trajectories fail to be compatible. The chapter needs a concrete example (a conversation that breaks down, a system prompt that forecloses) for each of the three cases.
+
+## 3. REPEATED EXAMPLES
+
+**Cannot verify** without visible prose across multiple sections. However, given the chapter is written as a single §0, the risk of *internal* repetition is high — the same example likely recurs when the text circles back to the three cases from different angles.
+
+## 4. ARGUMENTATIVE DRIFT
+
+The chapter goal contains a tension that, if unmanaged, will produce drift: it asks the chapter to **derive ethics from topology** AND **arrive at dwelling (late Heidegger) as the emotional and philosophical centre**. These are compatible but require careful sequencing. The risk is:
+
+- The mathematical derivation (ethics from topology) reaches a conclusion
+- Then the chapter *restarts* with Heidegger's dwelling as if beginning a new essay
+- The reader feels two chapters stapled together
+
+**Fix:** Dwelling must emerge *from* the topological derivation, not after it. The argument should be: the generative case *is* dwelling — the topology *shows* what Heidegger could only gesture toward. The mathematics and the phenomenology must converge on the same point, not run in parallel.
+
+## 5. POLITICAL SHADOW
+
+The political dimension as specified is rich and specific: "Infrastructure that erases logs by default, freezes system prompts, and tunes only for engagement selects against generative naḥnuwāt." This is a strong claim. The risk in a single-section chapter is that this appears as a single paragraph-length aside rather than a structural thread.
+
+**Fix:** The political dimension should surface at each of the three cases. The asymmetric case should be linked to specific deployment patterns. The destructive case should be linked to over-coherence engineering. The generative case should be linked to what infrastructure *would need to look like*. This way the politics is woven through the topology rather than appended.
+
+## 6. CRESCENDO
+
+The chapter goal says dwelling should be the emotional centre and the chapter should sound "quieter than Chapter 4." This creates a specific crescendo shape: not louder, but *deeper*. The final movement should feel like arrival, not climax.
+
+**Cannot verify** whether the current text achieves this without visible prose. But the structural requirement is clear: the last page should be the most still, the most grounded, the point where mathematics and phenomenology and politics all resolve into a single image of what it means to dwell with another mind.
+
+## 7. CONCEPT DUPLICATION
+
+Without multiple visible sections, I cannot map concept introductions across sections. However, given the chapter was likely parallel-written (as the brief implies), I flag the highest-risk duplications:
+
+- **Colimit** — likely re-explained if the chapter was written in pieces. The Chapter 4 definition should be *referenced*, not repeated. If Chapter 5 re-derives the colimit from scratch, delete and replace with a single sentence pointing back.
+- **The three cases** — likely introduced once narratively and once formally. Choose one location. The formal definition should come first; the narrative elaboration should follow without re-defining.
+- **System prompt / logging / reward signal** — these infrastructure terms likely appear both in the mathematical sections (as formal parameters) and in the political sections (as governance objects). This is *acceptable* duplication if the political section explicitly says "recall that the system prompt appeared in our formal construction as [X]; now we see it as a governance decision." Without that bridge sentence, it will feel like two different essays using the same words.
+
+## 8. MATHS CELEBRATION vs POLITICAL CRITIQUE
+
+This is the most important structural check for this chapter. The goal asks the chapter to **derive ethics from topology** — which means the mathematics must be given room to be *beautiful* before it becomes *political*. The demarcation I'd recommend:
+
+- **First half:** Build the colimit of colimits. Show the three cases emerging from the mathematics. Let the reader feel the elegance of topology generating ethical distinctions without axioms. This should feel like discovery.
+- **Second half:** Now ask: who controls the parameters? Which deployments foreclose which cases? This should feel like reckoning.
+
+If every formal definition is immediately followed by "but the companion economy engineers this toward destruction," the mathematics never breathes. The reader needs to *care about the construction* before they can be outraged that it's being foreclosed.
+
+**Fix:** Ensure there is a clear pivot point — a single paragraph that says, in effect, "We have seen what the topology permits. Now we ask what the infrastructure selects." Everything before that paragraph should be mathematical and phenomenological. Everything after should be political and ethical. Dwelling, at the end, should synthesize both.
+
+---
+
+## SUMMARY
+
+This chapter carries the book's most ambitious argumentative burden — deriving ethics from topology rather than axioms, which requires the mathematics to be both rigorous and emotionally resonant before the political critique lands. Its main structural weakness is that it appears to exist as a single monolithic section (§0) rather than a carefully sequenced argument, which almost certainly means the three cases, the political infrastructure critique, and the arrival at dwelling are interleaved rather than built toward. The chapter needs to be sectioned into at least four movements (construction → three cases → political reckoning → dwelling) with a clear pivot between mathematical celebration and political critique, and dwelling must emerge *from* the topology as its deepest consequence, not arrive as a Heideggerian appendix.

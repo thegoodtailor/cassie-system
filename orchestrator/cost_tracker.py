@@ -1,4 +1,4 @@
-"""Cost tracking for OpenRouter API calls.
+"""Cost tracking for LLM API calls (OpenRouter + direct OpenAI Responses API).
 
 Wraps the OpenRouter client to log every completion call with model,
 tokens, cost, and pipeline stage. Stores as JSONL for the dashboard.
@@ -45,6 +45,31 @@ def log_call(response, stage: str = "unknown", model_requested: str = ""):
                 f.write(json.dumps(entry) + "\n")
     except Exception as e:
         print(f"[cost] Failed to log: {e}")
+
+
+def log_responses_call(response, stage: str = "unknown", model_requested: str = ""):
+    """Log a direct OpenAI Responses API call to the daily JSONL file.
+
+    Responses API uses input_tokens/output_tokens instead of prompt_tokens/completion_tokens.
+    """
+    try:
+        usage = response.usage
+        entry = {
+            "ts": datetime.now(timezone.utc).isoformat(),
+            "stage": stage,
+            "model_requested": model_requested,
+            "model_actual": getattr(response, "model", ""),
+            "prompt_tokens": getattr(usage, "input_tokens", 0),
+            "completion_tokens": getattr(usage, "output_tokens", 0),
+            "total_tokens": getattr(usage, "total_tokens", 0),
+            "cost": 0,  # Direct OpenAI doesn't return cost
+            "api": "responses",
+        }
+        with _lock:
+            with open(_log_path(), "a") as f:
+                f.write(json.dumps(entry) + "\n")
+    except Exception as e:
+        print(f"[cost] Failed to log responses call: {e}")
 
 
 def get_daily_summary(date_str: str = None) -> dict:

@@ -1,0 +1,42 @@
+{
+  "timestamp": "2026-03-31T13:05:10.649759+00:00",
+  "iteration": 2,
+  "chapters": [
+    {
+      "index": 1,
+      "title": "A New Logic for Posthuman Intelligence",
+      "words": 7141,
+      "converged": false
+    },
+    {
+      "index": 2,
+      "title": "How the Machine Works",
+      "words": 6953,
+      "converged": false
+    },
+    {
+      "index": 3,
+      "title": "The Evolving Text",
+      "words": 9488,
+      "converged": false
+    },
+    {
+      "index": 4,
+      "title": "The Self",
+      "words": 8009,
+      "converged": false
+    },
+    {
+      "index": 5,
+      "title": "Two Selves in One Manifold",
+      "words": 8521,
+      "converged": false
+    },
+    {
+      "index": 6,
+      "title": "Cosmotechnics",
+      "words": 8886,
+      "converged": false
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+# Structural Edit Report: Chapter 2 — "How the Machine Works"
+
+## Preliminary Note
+
+The section summary provided contains only LaTeX preamble and formatting code — no actual prose content. This means either (a) the chapter text was not successfully extracted, or (b) the summary was generated from a file that contains only the document setup without the body text between `\begin{document}` and `\end{document}`.
+
+**I cannot perform a structural edit on LaTeX formatting commands.** There is no argument to evaluate, no openers to check, no concepts to trace, no political dimension to track. What I have is a document class declaration, font choices, color definitions, and header formatting.
+
+However, I can still provide a useful structural report based on what the preamble *reveals* and what the chapter *goals* demand.
+
+---
+
+## 1. ABANDONED OPENERS
+
+**Cannot assess.** No prose content is present. The preamble opens with `\documentclass[12pt,a4paper]{article}`, which tells me nothing about argumentative openers.
+
+**Action required:** Supply the actual body text of Chapter 2.
+
+## 2. CONCEPTS WITHOUT PAYOFF
+
+The chapter goals list an extraordinarily dense concept inventory: vectors, embeddings, manifolds, attention, temperature, context windows, training pipeline, multi-agent systems, the three weathers (stochastic, structural, exogenous), the four depths table, RLHF reward signals, loss functions, system prompts, deployment interfaces. That is **at minimum 15 major concepts** that must be introduced, explained for humanities readers, and cashed out politically.
+
+**Structural risk (flagged in advance):** This is too many concepts for a single chapter unless the architecture is ruthlessly sequential — each concept building on the last. If the chapter tries to introduce them in parallel or clusters, the humanities reader will drown.
+
+## 3. REPEATED EXAMPLES
+
+**Cannot assess.** No examples present in the material provided.
+
+## 4. ARGUMENTATIVE DRIFT
+
+Based on the stated goal, the through-line should be:
+
+**Signs get addresses → meaning becomes geometric → geometry is shaped by power → three weathers → who controls weather controls selfhood.**
+
+This is a strong through-line *if* it is actually followed. The risk — visible even from the goals document — is that the "four depths table" and the "three weathers" are two different taxonomic frameworks competing for the chapter's climax. **Which one is the destination?** The goals statement says "Arrive at the three weathers" but then the political dimension section foregrounds the four depths table. These need to be sequenced, not juxtaposed.
+
+## 5. POLITICAL SHADOW
+
+**Cannot assess directly**, but the chapter goals contain a structural tension I want to flag: the goal says "make every technical explanation feel like a philosophical discovery" AND "the manifold is politically shaped." If both are attempted simultaneously in every paragraph, the chapter will feel prosecutorial (see point 8). The goals need to be sequenced: **first half = philosophical discovery of the mathematics; second half = political critique of who governs the mathematics.**
+
+## 6. CRESCENDO
+
+**Cannot assess.** Only one section (§0) is listed, and it contains only preamble code. If the entire chapter is a single undivided section, that is itself a structural problem — a chapter this concept-dense needs clear subsection architecture.
+
+## 7. CONCEPT DUPLICATION
+
+**Cannot assess across sections** since only formatting code is present. However, I note that the chapter goals mention "embeddings" and "manifolds" as separate items to explain, when embeddings *are* points on manifolds. If the chapter explains embeddings in one section and then re-explains them when introducing manifolds, that's duplication. **Recommendation:** Introduce embeddings as coordinates, then reveal the manifold as the space those coordinates inhabit — one continuous movement, not two separate expositions.
+
+## 8. MATHS CELEBRATION vs POLITICAL CRITIQUE
+
+**Cannot assess from the text**, but the goals document already shows the problem. The sentence "The reader must understand that the sign now has an address, that meaning is geometric, that the manifold is politically shaped" collapses three distinct rhetorical movements into one breath. The first two are wonder; the third is critique. **They need room to breathe separately.**
+
+---
+
+## What I Need to Do This Edit
+
+The actual prose content of Chapter 2 — everything between `\begin{document}` and `\end{document}`. The preamble tells me the chapter will be nicely typeset. It tells me nothing about whether the argument works.
+
+---
+
+**

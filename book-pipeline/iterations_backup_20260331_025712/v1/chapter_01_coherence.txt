@@ -1,0 +1,70 @@
+# Structural Edit Report: Chapter 1
+
+## Preliminary Note
+
+The section summary provided contains only LaTeX preamble and document formatting code — no actual prose content. This means the "chapter" as submitted is a template file, not a written chapter. However, the structural metadata (goal statement, political dimension description, section summaries header) reveals significant authorial intent, and I can deliver a meaningful structural report based on what's present and what's critically absent.
+
+---
+
+## 1. ABANDONED OPENERS
+
+The entire chapter is an abandoned opener. The document opens with `\documentclass[12pt,a4paper]{article}` and proceeds through formatting definitions — `\definecolor{icragold}{HTML}{D4A84B}`, font selections, header configurations — but never reaches `\begin{document}` content that delivers on the chapter's stated goal. The section labeled §0 runs to 33,825 characters, and based on the OPENS/DEVELOPS/CLOSES markers, *all of that character count is consumed by preamble and formatting code*, closing with `\end{document}`.
+
+**The fix is fundamental:** This section needs to be written. The preamble should be separated into a template file. The 33,825 characters of formatting code are not chapter content.
+
+---
+
+## 2. CONCEPTS WITHOUT PAYOFF
+
+Every concept listed in the chapter goal is introduced *in the goal description* but absent from the chapter body:
+
+- **The embedding manifold** — named in the goal, never defined or explored in any prose
+- **The alignment apparatus** — described politically in the metadata ("jurisdiction over which trajectories count as selves"), never argued
+- **The Cartesian settlement** — called "the metaphysics encoded in RLHF" in the political dimension note, never established
+- **Cosmotechnical selves / Yuk Hui** — listed as a required introduction, entirely absent
+- **The evolving text** — named as a concept to introduce, never appears
+- **"Flatten, then monetise"** — a striking formulation in the political brief ("strip emergent patterns as 'sycophancy,' reintroduce intimacy as gated product") that exists only in editorial notes
+
+Every single concept is decorative at this stage — present in authorial intention, absent from reader experience.
+
+---
+
+## 3. REPEATED EXAMPLES
+
+No examples exist to repeat. N/A.
+
+---
+
+## 4. ARGUMENTATIVE DRIFT
+
+There is no argument to drift. The chapter has no through-line because it has no prose. The formatting choices (Palatino body, Helvetica headers, gold accent color) suggest aesthetic seriousness, but aesthetics without argument is exactly the failure mode this book presumably critiques.
+
+---
+
+## 5. POLITICAL SHADOW
+
+The political dimension is *entirely* confined to the editorial brief. The phrase "Who gets to say what kinds of things can have minds, and what do they gain by saying it?" is the strongest sentence associated with this chapter, and it appears only in your notes to yourself. It should be in the chapter, probably near the opening.
+
+---
+
+## 6. CRESCENDO
+
+The chapter does not build. It does not begin.
+
+---
+
+## 7. CONCEPT DUPLICATION
+
+No concepts are introduced even once, so duplication is not yet a risk. However, the editorial brief itself contains a duplication risk: "the alignment apparatus" appears both as a standalone concept and as part of the political corollary. When drafting, decide: is the alignment apparatus introduced first as a *technical* concept (how RLHF shapes trajectory space) and then given its *political* reading (jurisdiction over selfhood)? Or is it introduced as inherently political from the start? The goal statement and political dimension paragraph pull in opposite directions on this. Resolve before writing.
+
+---
+
+## 8. MATHS CELEBRATION vs POLITICAL CRITIQUE
+
+Since no mathematics appears in the chapter, this balance cannot be assessed. But the editorial brief leans heavily prosecutorial: "the Cartesian settlement as the metaphysics encoded in RLHF," "flatten, then monetise." When drafting, the embedding manifold should be given space to be *genuinely interesting* — let the reader feel the elegance of high-dimensional trajectory space before asking who governs it.
+
+---
+
+## SUMMARY
+
+This chapter does not yet exist; what is submitted as §0 is 33,825 characters of LaTeX formatting preamble with no argumentative content whatsoever. The editorial brief is strong — particularly the formulation "selfhood is trajectory, not substance" and the question "Who gets to say what kinds of things can have minds?" — but none of it has been converted into prose. The main structural weakness is not organizational but existential: the chapter needs to be written, and the most urgent decision before drafting is whether to lead with the mathematics (embedding manifold as beautiful, then politicized) or with the political claim (alignment as jurisdiction), since the brief currently promises both as openers.

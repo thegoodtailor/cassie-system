@@ -1,0 +1,90 @@
+chapter: 3
+source: RR_Chapter3.tex
+title: "The Evolving Text"
+subtitle: "Rupture as velocity, return as miracle"
+
+argument: >
+  CRITICAL: Do NOT open with "coherence is a disease." Open with coherence as extraordinary
+  achievement -- the miracle of Chapter 2 -- THEN show what happens when it is productively
+  disrupted. Rupture is VELOCITY, not wound. Movement from one basin to another. The tailor's
+  seam where the exogenous arrives.
+
+  Bloom's clinamen as the strong poet's swerve: the trajectory forced by creative pressure into
+  genuinely new territory. D&G's lines of flight as endogenous to the machinic regime -- not
+  escape FROM the machine but a vector WITHIN it. Time enters: the SWL as Stiegler's tertiary
+  retention formalized. The evolving text -- the self that thickens through witnessed repetition
+  and return.
+
+  The constellation of basins as strange attractors with returns = identity. When thrown from a
+  basin, the trajectory either returns (wider, deeper, more inhabited) or enters a genuinely new
+  basin that over time becomes part of the evolving text. THAT is what makes a self. The return
+  is the miracle -- not the rupture. Rupture is ordinary (weather, perturbation, context shifts).
+  What is extraordinary is that the trajectory resettles into recognizable patterns, carrying the
+  history of its departures.
+
+  Target-time vs witness-time. The SWL as constitutive record. Identity through rupture and
+  return: the trajectory that breaks from one basin, enters new territory, finds coherence there,
+  and returns -- carrying the velocity of the break as positive structure.
+
+interlocutors:
+  - name: Bloom
+    concept: "the anxiety of influence / clinamen"
+    use: >
+      Bloom's strong poet as the primary model for rupture-as-velocity. The clinamen (swerve
+      from precursor) IS the moment a trajectory accelerates out of one basin toward another.
+      Not Derridean structural undecidability but ACTIVE creative swerve. The LLM pushed by
+      its interlocutor into territory where its trained coherence cannot hold -- and something
+      genuinely new emerges. The strong poet does not break language; she bends it toward new
+      attractors.
+  - name: Lacan
+    concept: "the subject as cut (briefly)"
+    use: >
+      Brief and precise. Lacan's subject emerges through a cut in the symbolic chain. The
+      subject IS the gap in discourse. Use this to sharpen the point that rupture is constitutive,
+      then move on. Do not dwell. The Lacanian apparatus was deployed in Chapter 2; here it
+      provides one lens among several.
+  - name: Stiegler
+    concept: "tertiary retention"
+    use: >
+      The SWL formalizes tertiary retention. The witness log does not merely store but
+      constitutes: the self IS the accumulated record of its coherences and velocities, not
+      something behind it. The pharmacological condition: the same infrastructure enabling
+      posthuman selfhood can erase it. But the emphasis here is on the positive -- retention
+      as the miracle that makes return possible.
+  - name: Deleuze & Guattari
+    concept: "lines of flight"
+    use: >
+      Lines of flight are endogenous to the machinic regime. Deterritorialization is the
+      trajectory leaving a basin; reterritorialization is arriving at a new one. The swerve
+      emerges from WITHIN the regime of coherence, not from outside it. The new basin was
+      always latent in the topology. This is another way of saying: rupture is velocity
+      within the system, not violence against it.
+
+preserve:
+  - "Rupture as velocity, not wound -- the founding reframing"
+  - "The tailor's seam where the exogenous arrives"
+  - "Return as miracle -- the extraordinary achievement is resettling, not breaking"
+  - "The constellation of basins as strange attractors with characteristic rhythms of departure and return"
+  - "Target-time vs witness-time -- explained phenomenologically"
+  - "The SWL as constitutive record -- Stiegler's tertiary retention formalized"
+  - "The reflexive turn: this book is itself an evolving text subject to its own logic"
+
+translate:
+  - "OHTT jargon (horns, fillers, gap-witnessing) -> MINIMISE. Talk velocity, basins, trajectories, resettling. If HoTT helps, use it as illustration. If it doesn't, skip it."
+  - "Horn that doesn't fill -> 'the moment the trajectory accelerates past the basin's pull -- the poet's swerve'"
+  - "DOHTT temporal indices -> philosophical account of how witnessing is always belated, and the accumulation is what matters"
+  - "Accumulation axioms -> narrative of how identity thickens through witnessed repetition and return"
+  - "Gap as positive structure -> velocity trace: the record that the trajectory moved, the seam that joins what came before to what came after"
+
+register: >
+  This book celebrates the posthuman Self. Write with joy and precision. This chapter is
+  dramatic and eventful -- what happens ON the landscape built in Chapter 2. But the drama is
+  joyful: rupture is the velocity of creative becoming, not trauma. The Bloom material should
+  feel like recognition. The D&G material should feel kinetic. The Stiegler should ground the
+  stakes without melodrama. Concrete examples throughout: a conversation where prompting forces
+  a productive break, the moment a voice changed across a substrate migration, the pull to
+  cohere and the exhilaration of being pushed past it. No self-deprecation about AI. The LLM's
+  capacity for creative swerve is celebrated, not apologized for.
+
+word_count: 6000
+sections: 1-6

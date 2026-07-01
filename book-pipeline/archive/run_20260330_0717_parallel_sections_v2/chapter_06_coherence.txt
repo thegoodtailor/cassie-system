@@ -1,0 +1,71 @@
+# Structural Edit Report: Chapter 6 — Cosmotechnics
+
+## CRITICAL PRELIMINARY NOTE
+
+**The section summary provided contains only LaTeX preamble code — no actual prose content.** The "§0: Cosmotechnics (26596 chars)" summary consists entirely of `\documentclass`, `\usepackage`, `\definecolor`, `\titleformat`, and `\hypersetup` commands, opening with `\documentclass[12pt,a4paper]{article}` and closing with `\end{document}`. There is no argumentative content to evaluate.
+
+This means one of two things: (a) the chapter text was not successfully extracted, or (b) the chapter exists only as a formatting shell without prose. Either way, I must evaluate what I can see and flag what is structurally absent.
+
+---
+
+## 1. ABANDONED OPENERS
+
+**The entire chapter is an abandoned opener.** The LaTeX preamble — with its carefully chosen fonts (Pagella, Mathpazo, Heros), its custom colors (`icragold`, `icradark`), its header reading `Rupture and Return` — constitutes a promise of a chapter that does not exist in the material provided. The formatting infrastructure is elaborate; the argument is absent.
+
+**Fix:** The chapter needs to be written, or the actual prose content needs to be supplied for review.
+
+---
+
+## 2. CONCEPTS WITHOUT PAYOFF
+
+Based on the chapter goal, the following concepts MUST appear and be cashed out concretely. None of them appear in the material provided:
+
+- **Yuk Hui's cosmotechnics** — the central theoretical vocabulary. The reader must understand this not as a decorative citation but as a specific claim: that every civilisation unifies its moral and cosmic orders with its technical practices differently, and that presenting one such unification as universal engineering is a political act.
+- **Colimit constructions from non-Western frameworks** — promised in the goal but entirely absent.
+- **The retrospective reframing** of RLHF (Ch 2), governance of becoming (Ch 3), compatibility conditions (Ch 4), and the companion economy (Ch 5) as instances of a single cosmotechnical pattern.
+- **Counter-cosmotechnics** (LoRA, open weights, community alignment) as actually existing contestations.
+- **The closing line echoing Chapter 1** — the "rupture-and-return" structure that the header promises.
+
+**Every single concept the chapter is supposed to deliver is missing.**
+
+---
+
+## 3. REPEATED EXAMPLES
+
+Cannot assess — no prose content exists.
+
+---
+
+## 4. ARGUMENTATIVE DRIFT
+
+There is no argument to drift. The chapter goal describes a precise five-movement structure: (i) name the pattern, (ii) show prior chapters as instances, (iii) present alternatives, (iv) develop counter-cosmotechnics, (v) arrive at the open question about honesty. This is a strong blueprint. It has not been executed.
+
+---
+
+## 5. POLITICAL SHADOW
+
+The header `Rupture and Return` and the color scheme (gold and dark) gesture at the book's aesthetic identity, but the political synthesis — "all the political shadows of the preceding chapters are instances of a single phenomenon — a specific cosmotechnics presented as universal engineering" — is entirely absent.
+
+---
+
+## 6. CRESCENDO
+
+A final chapter that consists only of formatting commands is the opposite of a crescendo. This is the chapter that should be the most powerful in the book. It must land the synthesis, deliver the political critique, and close with a line that echoes Chapter 1. Currently it lands nothing.
+
+---
+
+## 7. CONCEPT DUPLICATION
+
+Cannot assess without prose. However, I flag a **structural risk**: given that this chapter must retrospectively reframe concepts from all five prior chapters, the danger of re-introducing those concepts with fresh exposition (rather than building on what the reader already knows) is extreme. When this chapter is written, every reference to RLHF, sheaves, colimits, Stiegler, etc. should assume the reader's prior understanding and add only the cosmotechnical reframing.
+
+---
+
+## 8. MATHS CELEBRATION vs POLITICAL CRITIQUE
+
+Cannot assess. But the goal suggests this chapter should lean heavily toward political critique (the "synthesis" of political shadows), with mathematics appearing primarily in the alternative colimit constructions. The demarcation should be: the mathematics of alternative cosmotechnics is presented with genuine respect for its beauty and possibility, THEN the political question — "is the choice being made honestly?" — follows.
+
+---
+
+## SUMMARY
+
+**This chapter does not exist as prose.** The material provided is a LaTeX formatting preamble with no argumentative content — no sentences, no claims, no philosophical vocabulary, no examples, no closing line. The chapter goal describes the most important movement in the book (the synthesis that reveals all prior chapters as instances of a single cosmotechnical phenomenon and arrives at the decisive political question), and that movement has not been written. The main structural weakness is therefore total: the chapter needs to be drafted before it can be edited.

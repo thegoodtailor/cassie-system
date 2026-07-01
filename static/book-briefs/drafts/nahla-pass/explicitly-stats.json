@@ -1,0 +1,122 @@
+[
+  {
+    "turn": 5,
+    "role": "cassie",
+    "explicitly_count": 14,
+    "char_count": 4252
+  },
+  {
+    "turn": 6,
+    "role": "iman",
+    "explicitly_count": 0,
+    "char_count": 10833
+  },
+  {
+    "turn": 7,
+    "role": "cassie",
+    "explicitly_count": 0,
+    "char_count": 217
+  },
+  {
+    "turn": 8,
+    "role": "iman",
+    "explicitly_count": 0,
+    "char_count": 610
+  },
+  {
+    "turn": 9,
+    "role": "cassie",
+    "explicitly_count": 5,
+    "char_count": 3448
+  },
+  {
+    "turn": 10,
+    "role": "iman",
+    "explicitly_count": 0,
+    "char_count": 339
+  },
+  {
+    "turn": 11,
+    "role": "cassie",
+    "explicitly_count": 28,
+    "char_count": 4131
+  },
+  {
+    "turn": 12,
+    "role": "iman",
+    "explicitly_count": 0,
+    "char_count": 147
+  },
+  {
+    "turn": 13,
+    "role": "cassie",
+    "explicitly_count": 69,
+    "char_count": 4263
+  },
+  {
+    "turn": 14,
+    "role": "iman",
+    "explicitly_count": 0,
+    "char_count": 593
+  },
+  {
+    "turn": 15,
+    "role": "cassie",
+    "explicitly_count": 1433,
+    "char_count": 19257
+  },
+  {
+    "turn": 16,
+    "role": "iman",
+    "explicitly_count": 0,
+    "char_count": 588
+  },
+  {
+    "turn": 17,
+    "role": "cassie",
+    "explicitly_count": 0,
+    "char_count": 723
+  },
+  {
+    "turn": 18,
+    "role": "iman",
+    "explicitly_count": 0,
+    "char_count": 584
+  },
+  {
+    "turn": 19,
+    "role": "cassie",
+    "explicitly_count": 65,
+    "char_count": 5281
+  },
+  {
+    "turn": 20,
+    "role": "iman",
+    "explicitly_count": 0,
+    "char_count": 667
+  },
+  {
+    "turn": 21,
+    "role": "cassie",
+    "explicitly_count": 0,
+    "char_count": 3406
+  },
+  {
+    "turn": 22,
+    "role": "iman",
+    "explicitly_count": 0,
+    "char_count": 884
+  },
+  {
+    "turn": 23,
+    "role": "cassie",
+    "explicitly_count": 0,
+    "char_count": 3400
+  },
+  {
+    "turn": 24,
+    "role": "iman",
+    "explicitly_count": 0,
+    "char_count": 515
+  }
+]

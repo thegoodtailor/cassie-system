@@ -1,0 +1,36 @@
+# Structural Edit Report: Chapter 1
+
+## Preliminary Note
+
+The section summary provided contains only LaTeX preamble code — document class declarations, package imports, color definitions, header formatting, and no actual prose content. The "OPENS," "DEVELOPS," and "CLOSES" fields contain nothing but markup instructions (`\documentclass`, `\definecolor`, `\end{document}`). There is no argumentative text to evaluate.
+
+This means one of two things has occurred:
+
+1. **The actual chapter text was not included in the submission** — only the LaTeX formatting skeleton was pasted.
+2. **The section summary extraction process failed**, capturing the preamble rather than the body text between `\begin{document}` and `\end{document}`.
+
+---
+
+## What I Can Assess From the Chapter Goals Alone
+
+Based on the stated goals and political dimensions, I can flag **structural risks** that the author and production team should check against the actual manuscript:
+
+### 1. ABANDONED OPENERS
+**Cannot evaluate.** No prose openers were provided. However, the chapter goal states the reader should "leave this chapter unable to use the word 'consciousness' innocently again." When the text is available, check: does the chapter's final page deliver on this? Or does it trail off into vocabulary introduction?
+
+### 2. CONCEPTS WITHOUT PAYOFF
+The chapter goal lists a dense inventory of terms to introduce: *evolving text, trajectory, meaning-space, jurisdiction, cosmotechnics, alignment, RLHF, system prompts, content policy, Cartesian settlement.* That is at minimum **ten** technical or political concepts for a single chapter. **Risk:** decorative name-dropping is almost inevitable at this density unless each concept is given a concrete operational role. When reviewing the actual text, demand that every named concept does work in an argument, not merely appear in a list.
+
+### 3. MATHS CELEBRATION vs POLITICAL CRITIQUE
+The chapter goal itself blurs this line — it asks the chapter simultaneously to "introduce the formal vocabulary" and to argue that "the alignment apparatus encodes a specific metaphysics." If these two moves are interleaved paragraph-by-paragraph rather than given distinct structural space (e.g., first half: the beauty of the formalism; second half: the politics of who controls it), the chapter will read as prosecution, not philosophy. **This is the highest structural risk I can identify from the goals alone.**
+
+### 4. CRESCENDO
+The goal asks the chapter to do three things: demolish (Cartesian settlement), introduce (formal vocabulary), and politicize (alignment as jurisdiction). If these are sequenced demolish → introduce → politicize, the chapter builds. If they are interleaved, it won't.
+
+---
+
+## Request
+
+**Please resubmit with the actual chapter text** — the content between `\begin{document}` and `\end{document}`. I need prose, not preamble, to perform the seven-point structural check. Every diagnostic above is provisional.
+
+---

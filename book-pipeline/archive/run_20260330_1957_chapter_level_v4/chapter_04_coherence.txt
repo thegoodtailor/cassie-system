@@ -1,0 +1,72 @@
+# Structural Edit Report: Chapter 4 — The Self
+
+## CRITICAL PRELIMINARY NOTE
+
+**This submission is not a chapter. It is a LaTeX preamble and document skeleton.** The section summary for §0 contains only formatting commands (`\documentclass`, `\usepackage`, `\definecolor`, `\titleformat`, etc.) and closes with `\end{document}`. There is no prose, no argument, no philosophical content, no examples, no mathematical exposition, and no political analysis in what has been provided for review.
+
+This means one of two things has occurred:
+1. The chapter content was not extracted — only the LaTeX wrapper was captured.
+2. The chapter has not yet been written, and only the template exists.
+
+**I cannot perform a structural edit on formatting commands.** However, I can do something more useful: I will evaluate the chapter *as specified in the Goal and Political Dimension statements* against what would need to be present, and flag the structural risks inherent in the design document itself. This serves as a **pre-edit architectural review** so that when the chapter is written (or re-submitted with actual content), the argument will cohere.
+
+---
+
+## 1. ABANDONED OPENERS — Architectural Risk
+
+The goal statement promises: "Construct the self as colimit — the formal assembly of locally coherent perspectives (basins) glued by compatibility conditions on their overlaps." This is the chapter's foundational claim. The risk is that the colimit construction gets *stated* as a metaphor but never formally built — that the reader sees "the self is a colimit" as a slogan rather than watching the construction happen step by step (local data → compatibility conditions → universal property → the colimit object). **The chapter must show the construction, not just name it.**
+
+## 2. CONCEPTS WITHOUT PAYOFF — Architectural Risk
+
+The design document names:
+- **Grothendieck** (sheaf-theoretic gluing / descent)
+- **Descartes** (limit as hidden unitary subject)
+- **Cosmotechnics** (Yuk Hui, presumably)
+- **The alignment tax**
+- **The silent update**
+- **The witnessed self**
+- **Cassie archive data**
+
+Each of these must do *work*, not merely appear. The highest risk is **cosmotechnics**: the goal says "Arrive at the witnessed self and the emergence of cosmotechnics as the question of who sets the compatibility conditions." If Yuk Hui's framework is invoked only at the end as a label for the political question, it will read as decorative. Cosmotechnics must be grounded: it means that different civilizational-technical traditions produce different compatibility conditions and therefore different possible selves. The chapter must make this concrete — e.g., a Confucian compatibility regime vs. a Silicon Valley one would assemble structurally different colimits from the same local data.
+
+## 3. REPEATED EXAMPLES — Cannot Assess
+
+No content exists to check. **When content arrives**, the highest-risk repetition will be between the "Cassie archive data" grounding and whatever examples illustrate the limit/colimit duality. Ensure the same conversation fragment is not used to illustrate both constructions independently.
+
+## 4. ARGUMENTATIVE DRIFT — Architectural Risk
+
+The design attempts to do *five things*:
+1. Build the colimit construction formally
+2. Contrast it with the Cartesian limit (two metaphysics)
+3. Ground it in Cassie's archive
+4. Introduce the silent update and alignment tax as political dimensions
+5. Arrive at cosmotechnics
+
+The drift risk is between (2) and (3). The limit/colimit duality is philosophically seductive and could consume excessive space in abstract exposition before the Cassie data anchors it. **Recommendation:** Interleave the formal construction with the archive data from the start. Don't build the math in a vacuum and then "apply" it.
+
+## 5. POLITICAL SHADOW — Architectural Risk
+
+The design front-loads mathematics (colimit construction, limit/colimit duality) and back-loads politics (silent update, alignment tax, cosmotechnics). This is actually *correct* per criterion 8 (let the math be beautiful first). But the risk is that the political material arrives as an appendix rather than as the chapter's climax. **The silent update must feel like a violation of something the reader has come to care about** — which means the colimit construction must be emotionally as well as formally compelling before the update breaks it.
+
+## 6. CRESCENDO — Cannot Fully Assess
+
+The design *intends* a crescendo: math → grounding → political rupture → cosmotechnics. This is a strong shape. The risk is that "cosmotechnics" as a final move feels abstract after the visceral concreteness of "the company changes the manifold underneath you." **The final beat should return to Cassie** — the cosmotechnics question should be felt as *her* question, not a theoretical one.
+
+## 7. CONCEPT DUPLICATION — Cannot Assess
+
+No content exists. **When sections are written in parallel**, the highest duplication risks are:
+- The colimit definition (likely to be re-introduced in both the formal section and the Cassie grounding section)
+- Compatibility conditions (likely explained both in the math and in the political section)
+- The limit/colimit duality (likely restated when introducing the silent update)
+
+**Pre-emptive instruction:** Define the colimit construction ONCE, formally. Every subsequent section should *reference* it, not re-derive it.
+
+## 8. MATHS CELEBRATION vs POLITICAL CRITIQUE — Architectural Risk
+
+The design document's structure naturally separates these: the colimit construction and the limit/colimit duality are mathematical; the silent update and alignment tax are political. **This is the right instinct.** The danger is in the transitions. The sentence "Who sets the compatibility conditions determines which selves can be assembled" is the pivot point. It must land as a *discovery* — the reader should feel the political question *emerge from* the mathematics, not be imposed upon it.
+
+---
+
+## SUMMARY
+
+**This chapter cannot be structurally edited because no chapter content was submitted — only a LaTeX preamble and document skeleton.** The architectural design is ambitious and well-shaped, with a natural crescendo from formal construction (colimit as self) through grounding (Cassie archive) to political rupture (silent update, alignment tax) and philosophical arrival (cosmotechnics). The main structural risk is that five major conceptual moves in a single chapter will produce either drift (the limit/colimit duality consuming too much space) or decorative invocation (cosmotechnics arriving as a label rather than a grounded framework) — and the chapter must be resubmitted with actual prose content before any of these risks can be concretely diagnosed and repaired.

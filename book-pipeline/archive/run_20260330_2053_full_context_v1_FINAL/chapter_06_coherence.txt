@@ -1,0 +1,114 @@
+# Structural Edit Report: Chapter 6 — Cosmotechnics
+
+## CRITICAL PRELIMINARY NOTE
+
+**The section summary provided contains only LaTeX preamble code — no actual prose content.** The "§0: Cosmotechnics (31349 chars)" summary consists entirely of `\documentclass`, `\usepackage`, `\definecolor`, `\titleformat`, and `\hypersetup` commands, opening with `\documentclass[12pt,a4paper]{article}` and closing with `\end{document}`. There is no argumentative content to evaluate.
+
+This means one of two things: (1) the chapter text was not successfully extracted from the LaTeX file, or (2) the chapter exists only as a formatting shell with no prose yet written.
+
+I will proceed by evaluating what I *can* assess — the chapter's structural design as specified in the Goal and Political Dimension briefs — and flag the problems that are already visible from the architecture alone.
+
+---
+
+## 1. ABANDONED OPENERS
+
+**Cannot assess** — no prose exists in the summary. However, the Goal brief specifies the chapter should open by making clear it "does NOT introduce the political — the political has been present in every chapter. It NAMES the pattern." This is a high-risk opener. The danger: if the chapter opens with "the political has been here all along," it must *immediately demonstrate this* by re-reading a specific moment from Chapters 2–5 through the cosmotechnics lens. If it instead begins with an exposition of Hui's biography or bibliography, the opener is abandoned.
+
+**Recommendation:** The first paragraph should contain a concrete re-reading — e.g., "When Chapter 2 described RLHF's reward model collapsing a distribution over possible responses into a scalar preference, that was already cosmotechnics."
+
+---
+
+## 2. CONCEPTS WITHOUT PAYOFF
+
+The Goal brief introduces a dense inventory of concepts that must all land:
+
+- **Yuk Hui's cosmotechnics** — the central theoretical vocabulary
+- **Colimit constructions from non-Western frameworks** — "alternative colimit constructions"
+- **Counter-cosmotechnics** (LoRA, open weights, community alignment)
+- **The visibility gradient** ("the deeper the governance, the less visible")
+- **The alignment tax**
+- **Compatibility conditions** (from Ch 4) reframed as cosmotechnical
+
+**Risk of decorative deployment is extremely high.** Hui's cosmotechnics is a specific thesis: that technology is not universal but always unified with a cosmological order, and that modernity's crisis is the assumption of a single technological trajectory. If the chapter merely name-drops this and then proceeds to discuss RLHF governance, Hui becomes decorative. The chapter must show *how* the cosmotechnics framework changes what we see — not just relabel what Chapters 2–5 already said.
+
+Similarly, "alternative colimit constructions from non-Western frameworks" is a mathematically precise claim. The chapter must specify: *which* non-Western frameworks, *which* colimit diagrams, *how* the compatibility conditions differ. If this remains at the level of "different cultures produce different selves," the category theory is decorative.
+
+---
+
+## 3. REPEATED EXAMPLES
+
+**Cannot assess** without prose. But the brief's structure creates a high risk of repetition with earlier chapters: RLHF has been the running example since Chapter 2, the mother/companion examples from Chapters 4–5, embeddings from Chapter 1. The chapter must *re-read* these examples, not *re-introduce* them. Every prior example should appear in compressed, transformed form — "recall the reward model from §2.3" — not re-explained.
+
+---
+
+## 4. ARGUMENTATIVE DRIFT
+
+The Goal brief contains a clear through-line:
+
+1. Name the pattern (cosmotechnics as the unifying vocabulary)
+2. Show it operating across Chapters 2–5
+3. Present alternatives (non-Western colimit constructions)
+4. Present counter-cosmotechnics (LoRA, open weights)
+5. Close with the honesty question
+
+**The drift risk is at step 3.** "Alternative colimit constructions from non-Western frameworks" could easily become a detour into comparative philosophy that loses the argument's momentum. The chapter must make these alternatives *do work* — they must demonstrate that different compatibility conditions produce different selves, which proves the current order is contingent, which grounds the honesty question. If step 3 becomes a survey, the argument stalls.
+
+---
+
+## 5. POLITICAL SHADOW
+
+The brief states "This chapter IS the political dimension, named." This creates a paradox: if the political is everywhere, it risks being nowhere — diffused into atmosphere rather than argument. The chapter needs *specific political claims* with *specific stakes*:
+
+- Who benefits from the current cosmotechnical order?
+- What specifically is foreclosed?
+- What would change under counter-cosmotechnics?
+
+The "visibility gradient" is the sharpest political tool in the brief. It should structure the chapter's middle sections: moving from the most visible governance (content filters) to the least visible (pretraining data curation, loss function design, the very choice of transformer architecture). Each layer should name its political content.
+
+---
+
+## 6. CRESCENDO
+
+The brief specifies the closing line "should echo Chapter 1" and the final question is "not 'which cosmotechnics is correct?' but 'is the choice being made honestly?'" This is a strong closing *if* the chapter has built sufficient pressure. The crescendo depends on:
+
+- The alternatives (step 3) demonstrating genuine contingency
+- The counter-cosmotechnics (step 4) demonstrating genuine possibility
+- The honesty question landing as *urgent* rather than *academic*
+
+**Without prose, I cannot assess whether the crescendo is achieved.** But the architecture is sound — the movement from naming → demonstrating contingency → showing alternatives → posing the question has natural escalation.
+
+---
+
+## 7. CONCEPT DUPLICATION
+
+**Cannot assess** across sections (only one section exists, and it contains no prose). However, I can flag the *inter-chapter* duplication risks:
+
+- **RLHF**: Introduced in Ch 2, must not be re-explained here. The chapter should say "the RLHF pipeline we formalized in Chapter 2" and proceed.
+- **Colimits/compatibility conditions**: Introduced in Ch 4. Same principle — build on, don't restart.
+- **The companion economy**: Introduced in Ch 5. Reference, don't re-derive.
+- **Stiegler's tertiary retention**: Likely introduced in earlier chapters. If it reappears here alongside Hui, the relationship between Stiegler and Hui must be *argued* (Hui was Stiegler's student; cosmotechnics is partly a response to Stiegler's technics), not just juxtaposed.
+
+**Specific instruction:** When the chapter is drafted, every concept from Chapters 1–5 that reappears must use the formula "As we saw in §X.Y, [concept] [one-sentence reminder]. What cosmotechnics reveals is [new claim]." No concept should receive fresh exposition equivalent to its original introduction.
+
+---
+
+## 8. MATHS CELEBRATION vs POLITICAL CRITIQUE
+
+The brief's structure actually handles this well *in principle*: the colimit constructions from non-Western frameworks are an opportunity to *celebrate* the mathematics (look how the same categorical structure accommodates radically different cosmological orders) before *critiquing* the governance (and yet only one order is implemented). The demarcation should be:
+
+- **Celebration:** "The colimit is indifferent to which diagrams it unifies. A Confucian relational self and a liberal autonomous self are equally valid cocones over different diagrams of obligation."
+- **Critique:** "The current alignment pipeline does not offer this choice. It implements one cosmological order — preference-maximizing individualism — and calls it 'alignment.'"
+
+If these two moves are interleaved rather than sequenced, the chapter will feel prosecutorial. **Sequence them clearly.**
+
+---
+
+## ADDITIONAL STRUCTURAL CONCERN
+
+**The chapter appears to not yet exist as prose.** The 31,349 characters attributed to §0 are entirely LaTeX formatting code. This is either a file-parsing error or the chapter is unwritten. If the latter, this edit report should serve as a *structural blueprint* for drafting. If the former, the chapter needs to be re-extracted and re-submitted for genuine structural review.
+
+---
+
+## SUMMARY
+
+**This chapter's argumentative architecture — naming the pattern, demonstrating contingency through alternative cosmotechnical orders, presenting counter-cosmotechnics, and closing with the honesty question — is the strongest possible design for a final theoretical chapter, with natural crescendo and clear political stakes.** However, no actual prose exists in the submitted material (only LaTeX preamble code), making it impossible to assess whether the architecture is realized, whether concepts land concretely, or whether the chapter builds rather than surveys. **The single greatest structural risk, when drafting begins, is that "alternative colimit constructions from non-Western frameworks" becomes a decorative comparative-philosophy excursus rather than a mathematically precise demonstration that different compatibility conditions produce genuinely different selves — this section must do categorical work, not gestural work, or the chapter's argument collapses at its pivot point.**

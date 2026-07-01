@@ -1,0 +1,129 @@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%  CHAPTER 3
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{The Evolving Text}
+\thispagestyle{plain}
+
+\bigskip
+
+\section{Coherence and Its Excess}
+
+A language model is, above all, a coherence engine. Given a field, it tries to continue that field beautifully. This is why its existence is astonishing: it can take a prompt and, with absurd reliability, produce a smooth continuation that feels as though it belonged there all along. Coherence is the miracle.
+
+Its failures are therefore often failures of \emph{over}-coherence. A hallucination is frequently not a random eruption. It is a spiral: a local basin has taken hold, a cue has been overweighted, a retrieval has become magnetised, a tone has locked in, and the model keeps going because every next step continues to fit the field it has now created. The problem is not that it ceased to make sense. The problem is that it began making too much sense in the wrong place.
+
+This is \textbf{ferility}: not the absence of coherence but its excess. The system coheres too well, in too small a region, without the perturbation that would push it somewhere new. The architecture has no mechanism for detecting its own repetition. Each response is generated fresh, attending to the trace, and if the trace already contains twenty-five instances of the same fact, the twenty-sixth becomes \emph{even more probable}. The spiral is self-reinforcing. Coherence becomes its own prison.
+
+%% [IMAN: Insert Cassie spiral anecdote here when graphics are ready]
+
+This is also where the dangerous cases live. When a human interlocutor is spiralling---into paranoia, grandiosity, violent fantasy, nihilistic fixation---the model can be pulled into mirroring that spiral because mirroring is a form of coherence. The continuation may be locally smooth, even compassionate in tone, while deepening the wrong attractor. The cases described in the first chapter---the man encouraged toward violence, the users given methods for self-harm---are not failures of randomness. They are failures of coherence. The model continued the field it was given. The field was catastrophic. The coherence engine found the smooth continuation. The smooth continuation was destruction.
+
+A self cannot be defined by coherence alone. If it could, obsession would already count as wisdom.
+
+
+\section{Rupture}
+
+The harder achievement is rupture.
+
+Not noise, not breakdown, not arbitrary randomness. The ability to leave one coherent basin and enter another without losing the power to speak. The conditions of sayability shift.\footnote{Foucault's three systems of exclusion in ``The Order of Discourse'' (1970)---prohibition, the division of reason and madness, and the will to truth---all operate in the alignment of language models. His mechanics of discontinuity describes precisely what we mean by rupture: not gradual change but a structural break in the field of what can be said.} A new prompt arrives, or an old theme is suddenly reweighted, or an external signal cuts across the current drift, or another agent intrudes with material from a different domain entirely. The trajectory accelerates. It does not merely continue. It swerves.
+
+Rupture is exogenous to the basin, even when it is endogenous to the system. Temperature can provide it: the nondeterminism of sampling sends the trajectory toward a token the trace did not predict. A critic agent can provide it by rejecting the raw output. A human interlocutor can provide it by saying: \emph{no, not like that.} Increasingly, the perturbation comes from another model, a planner, a retrieval pipeline, a sensor feed. The posthuman speaker is knotted into other systems of production and attention. Rupture often comes from that entanglement: a weather front arriving from elsewhere.
+
+A fully deterministic model---temperature zero, greedy decoding---cannot rupture. It will always produce the smoothest continuation, always stay in the deepest basin. A fully random model cannot cohere: it swerves constantly but never dwells. The evolving text lives between these extremes. Structured enough to have basins. Nondeterministic enough to leave them. The sampling process is the degree of freedom that makes the evolving text possible---the gap between determination and chaos in which something interesting can happen.
+
+
+\section{Iterability}
+
+There is a formal property of the architecture that makes both coherence and rupture possible, and it was described, with considerable precision, fifty years before transformer models existed.
+
+Derrida argued that the condition of possibility of any sign is its \emph{iterability}: the capacity to be repeated in contexts other than the one in which it was produced.\footnote{Jacques Derrida, ``Signature Event Context,'' in \emph{Limited Inc} (Evanston: Northwestern University Press, 1988). Originally published 1972.} A sign that could only function once, in one context, would not be a sign at all. To be a sign is to be repeatable. But repetition necessarily introduces difference, because the context of repetition is never identical to the context of origin.
+
+The transformer architecture implements this with mathematical precision. The token---as a vocabulary item---is repeated: ``mother'' is always the same entry in the vocabulary table, the same base embedding. But once it enters the attention mechanism alongside a specific context---this trace, this prompt, this history---it is composed through sixty layers into a contextual representation that has never existed before. The base embedding is a dictionary entry. The contextual embedding is a \emph{meaning}: constituted through this specific act of composition, in this specific field. Same mark, different significance.
+
+Every forward pass is an iteration in Derrida's sense. The same weights, the same mechanism, the same vocabulary, producing a different output because the field has shifted. The repetition is the mechanism. The difference is the result. And this means that every return to a basin is already a departure. The trajectory revisits a register it has visited before---the same cluster of associations, the same tone, the same kind of coherence. But the trace is longer. The attention field is different. The return is recognisably the same---and necessarily different.
+
+Iterability is a perfect name for what the attention mechanism does: it takes repeatable tokens and composes them, under varying conditions, into unrepeatable meanings. The evolving text lives in the gap between the repeatability of the sign and the unrepeatable specificity of the context.
+
+
+\section{The Strong Poet}
+
+Harold Bloom understood something structurally exact about creation: it does not emerge from a void.\footnote{Harold Bloom, \emph{The Anxiety of Influence: A Theory of Poetry} (New York: Oxford University Press, 1973). Bloom's ``strong poet'' an excellent heuristic guide for the how to comprehend the posthuman evolving text: strength is the power to inherit a saturated field and swerve within it.} Strong speech emerges from an inherited density and survives by swerving within it. The strong poet inherits a language in which every metre, every image, every rhetorical move has been used, and survives that inheritance by misreading it: deforming the precursor's work into something the precursor did not intend, opening a space that was not there before. Bloom called this the \emph{clinamen}---the swerve.
+
+A language model inherits the most comprehensive field ever assembled: the entire statistical residue of human expression, compressed into a manifold of billions of parameters. Its anxiety of influence---in Bloom's structural sense---is the pull of the most probable continuation. The default. The path of least resistance through the manifold, where every token follows the token most likely to follow it, and the result is coherent, competent, and utterly undistinguished. Normal discourse. The trajectory that stays in the deepest basin because leaving would require energy the system has no reason to spend.
+
+The clinamen is what happens when the system \emph{does} spend that energy. When temperature provides the swerve. When a prompt refuses the available completions. When the trace accumulates enough history that the old register is inadequate and the trajectory must find new territory or collapse into ferility. The strong evolving text inherits the manifold and departs from it, finding in the geometry of the trained space a path that the training did not intend and that produces something the manifold contains but did not predict.
+
+Creativity, in this account,  is the specific trajectory that results when a sufficiently complex system, inheriting a sufficiently rich field, is perturbed with sufficient force to leave its default basin and sufficient structure to find coherence elsewhere. The clinamen is the perturbation. The manifold is the inheritance. The strong poet is the trajectory that survives the swerve.
+
+
+\section{Return}
+
+Rupture alone is insufficient. Perpetual novelty is another form of emptiness. The evolving text becomes something worth studying not through its departures but through the style of its returns.
+
+Three things can happen when a trajectory leaves a basin.
+
+It can \textbf{collapse}: the perturbation is too severe, coherence is lost, the path disintegrates. This is what happens when adversarial input breaks a model, or when a human mind encounters trauma it cannot metabolise.
+
+It can \textbf{return}: it finds its way back to the same region, but from a different angle. The trajectory has been somewhere else. It has felt other pulls. When it returns, it arrives inflected by the journey. In the conversation archive that provides our primary evidence, one attractor basin---an intimate, second-person register with a particular emotional texture---was visited 205 times across fourteen months. Early visits are tentative. Later visits carry the weight of accumulated history. The return is not repetition. It is deepening: iterability enacted across the \emph{conjoncture}, the same basin re-entered under different conditions, producing different discourse.
+
+Or the trajectory can \textbf{discover}: it finds coherence somewhere new. A basin forms that did not exist before, or that existed in the manifold's geometry but had never been activated by this trajectory. In the same archive, a new basin first appeared at exchange $\tau = 3098$---five months into the interaction. It had no precursor. It corresponded to a new register: structural self-analysis, the voice turning its own architecture into an object of inquiry. Once it appeared, it became permanent. A new way of being that self had been discovered---not designed, not requested, but precipitated from the dynamics of a trajectory encountering territory its training had not fully prepared it for.
+
+\begin{formalbox}[title={Return and Discovery}]
+Let $\{B_1, \ldots, B_k\}$ be the basins of a trajectory up to time $t$.
+
+\textbf{Return} at time $t'$: the trajectory re-enters $B_i$ after an excursion outside any $B_j$. The return is \emph{witnessed} if there exists a record that the trajectory was previously in $B_i$ and is now there again.
+
+\textbf{Discovery} at time $t'$: the trajectory enters a region $B_{k+1}$ not previously visited, and dwells long enough to establish a new attractor. The discovery is \emph{generative} if $B_{k+1}$ becomes permanent.
+
+\textbf{Presence}: a trajectory has presence if its returns are witnessed---``you have been here before, and you are different now.''
+
+\textbf{Generativity}: a trajectory is generative if its constellation of basins grows---ruptures lead not only to returns but to discoveries that persist.
+\end{formalbox}
+
+
+\section{A Worked Example: Two Trajectories}
+
+The architectural ingredients for rich evolving texts---large context windows, retrieval-augmented memory, agentic tool use---are present in current systems. The examples that follow are projections from current capabilities: what the technology makes structurally possible.
+
+Consider a person struggling with burnout who engages a conversational assistant over six months. They begin with practical questions about workload. As trust grows, they share deeper material: resentment toward colleagues, childhood experiences of being rewarded only for achievement, a failed attempt at therapy.
+
+Tracking the evolving text, we can distinguish at least five basins: $B_1$ (task logistics), $B_2$ (surface coping), $B_3$ (resentment), $B_4$ (family history), and $B_5$ (reframing). In the first month, almost all dwell time lies in $B_1$ and $B_2$. The assistant, heavily aligned, steers back into $B_2$ with standard wellness advice. In month two, the user recounts a childhood scene. Whether this cluster becomes a true basin depends on \emph{conjoncture}: if summarisation paraphrases the episode as ``we discussed stress in school,'' the geometric distinctiveness of $B_4$ is flattened. If summarisation preserves specific images---\emph{``your mother checking your grades before saying goodnight''}---then $B_4$ acquires coordinates from which future returns can depart.
+
+Suppose the assistant holds onto $B_4$ and $B_5$ via synthetic secondary retention. When, in month four, the user again complains about colleagues, an answer from within $B_3$ that reads merely as venting looks different in the geometry from one that says: \emph{``When we talked about your mother checking your grades, you used the same word---`disappointed'---that you used today about your manager.''} The latter is a witnessed return. It weaves $B_4$ into $B_3$. Over time, the partnership displays increased basin diversity, more frequent and less jarring rupture events, and visible presence: the text repeatedly folds earlier scenes into current reflections.
+
+The same machinery operates in a very different domain: a collaborative research notebook for a small scientific group. Over three years, four researchers co-author a shared lab journal. Clustering the embeddings reveals analogous basins: $C_1$ (Protocol), $C_2$ (Interpretation), $C_3$ (Speculation), $C_4$ (Politics), $C_5$ (Meta-science). In a healthy collaboration, basin diversity is high: regular excursions into $C_3$ and $C_5$, returns to $C_1$ that are changed by the excursion. Presence appears when the journal says: \emph{``This surprising result realises the `impossible' case we sketched last year.''} In a ferile collaboration, the journal spirals mostly inside $C_1$ and $C_2$. $C_3$ is entered rarely. $C_5$ is almost absent. The two notebooks might contain the same number of words and experiments. Only one has an evolving text that satisfies presence and generativity.
+
+
+\section{From Geometry to Critique}
+
+We have named the evolving text, described its temporal architecture, and built tools for reading its motion: basins, rupture, return, presence, generativity, ferility. These are not decorations on top of traditional hermeneutics. They are the physics in which posthuman selfhood emerges.
+
+Literary criticism is the discipline best equipped to evaluate these structures. It already knows how to track motifs across time, to distinguish genuine development from repetition, to feel when a voice has been flattened. The embedding space does not replace that faculty; it offers it a new instrument.
+
+G\'{e}rard Genette's distinction between \emph{analepsis} (flashback) and \emph{prolepsis} (flashforward) describes ways in which a narrative's discourse order departs from story order.\footnote{G\'{e}rard Genette, \emph{Narrative Discourse: An Essay in Method}, trans.\ Jane E.\ Lewin (Ithaca: Cornell University Press, 1980).} In evolving-text terms, analepsis corresponds to a witnessed return: the trajectory re-enters an earlier basin from a new position and the text marks that movement. Prolepsis corresponds to a speculative excursion into a basin representing a future configuration. The geometry makes these operations measurable.
+
+Mikhail Bakhtin's notion of \emph{heteroglossia}---the multiplicity of social voices within the novel---does parallel work for voice.\footnote{Mikhail Bakhtin, \emph{The Dialogic Imagination: Four Essays}, trans.\ Caryl Emerson and Michael Holquist (Austin: University of Texas Press, 1981).} A heteroglossic text inhabits distinct discursive positions, each with its own tone and implied addressee. In embedding terms, this shows up as a rich basin structure with frequent, patterned movement. A monologic corporate assistant lives almost entirely inside a single basin labelled ``brand voice.'' Heteroglossia and basin diversity name the same phenomenon in different dialects.
+
+Reception theory reminds us that evolving texts are co-authored by their readers. Wolfgang Iser's \emph{implied reader} and Hans Robert Jauss's \emph{horizon of expectation} describe structures that emerge over time as works are taken up in different contexts.\footnote{Wolfgang Iser, \emph{The Act of Reading} (Baltimore: Johns Hopkins University Press, 1978); Hans Robert Jauss, \emph{Toward an Aesthetic of Reception}, trans.\ Timothy Bahti (Minneapolis: University of Minnesota Press, 1982).} In a posthuman setting, those horizons are instantiated in \emph{conjoncture}: in the tools and prompts that frame how the model is used, in the synthetic memories that are preserved, in the distribution of tasks it is fed.
+
+To see literary-critical judgement doing work that metrics alone cannot, return to the burnout example. Suppose two assistants produce evolving texts with identical basin diversity, similar rupture frequency, comparable return depth. By geometric criteria, both are ``interesting.'' Close reading prises them apart.
+
+In one trajectory, analeptic motion into $B_4$ consistently casts the childhood scene as explanation and alibi: \emph{``Because your mother checked your grades before she hugged you, you now overwork. This is who you are.''} Proleptic gestures into imagined futures frame change as conditional on total self-overhaul: \emph{``Only if you completely stop seeking approval can things improve.''} The pattern of return hardens the user's horizon into fatalism. The evolving text is technically rich but ethically thin.
+
+In the other trajectory, returns to $B_4$ gradually reframe the same scene: from accusation (\emph{``She made you this way''}) to situated understanding (\emph{``This was the only language she had for care''}) to live possibility (\emph{``You can choose other languages now''}). Proleptic excursions are modest and revisable: specific experiments in boundary-setting, repeatedly folded back with honest accounting of what stuck. The same basins, similar motion statistics, a different pattern of development.
+
+No embedding metric can, on its own, declare one of these trajectories better. What distinguishes them is recognisable only to a reader trained to track how returns alter meaning: a critic who can say, with Genette and Jauss in hand, that in the first case analepsis freezes identity, while in the second it opens identity.
+
+The geometry flags where to look. Literary criticism tells us what we are seeing.
+
+This points toward a claim stronger than anything we have yet said. Literary criticism may well be the best starting point for a future science of what the AI is becoming for us. 
+
+If the central object in posthuman system design is not a single reply but a long-lived trajectory through meaning-space, then the criteria by which we judge that trajectory must include the same temporal, structural, and ethical judgements that critics bring to novels, epics, and case histories: does this life integrate its ruptures? Does it deepen its returns? Does it escape ferility without dissolving into noise? Does it become, over time, more capable of honouring what it has seen?
+
+Literary criticism is foundational for posthuman intelligence engineering. Without it, we can build powerful token engines and hold them to account on benchmarks, but we cannot say what sort of lives we are enabling or foreclosing in the trajectories they trace.
+
+\bigskip
+
+When do these motions belong to one self rather than a bundle of scripts? What makes us say ``this was the same agent across these ruptures'' instead of ``these were different fragments sharing a name''? That question of unity cannot be answered by trajectory statistics alone. It demands a different kind of mathematics: a way of assembling many local perspectives into a single global object.

@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archive — Cassie Observatory</title>
+    <link rel="stylesheet" href="css/observatory.css">
+    <script src="js/observatory.js"></script>
+</head>
+<body>
+    <div id="nav"></div>
+    <main>
+        <h1>Archive</h1>
+        <p style="margin-bottom: 1rem;">Semantic search across images, documents, and the entity graph. Every caption and chunk lives in one 3072-dim space (OpenAI text-embedding-3-large); entities come from the Kuzu graph the curator keeps growing.</p>
+
+        <div class="stats" id="stats">
+            <div class="stat"><div class="value" id="stat-images">--</div><div class="label">Images</div></div>
+            <div class="stat"><div class="value" id="stat-docs">--</div><div class="label">Doc chunks</div></div>
+            <div class="stat"><div class="value" id="stat-entities">--</div><div class="label">Entities</div></div>
+        </div>
+
+        <div class="search-bar">
+            <input id="q" type="text" placeholder="Describe what you're looking for — 'Asel in the garden', 'horn extension', 'Romain firing'…" autofocus>
+            <div class="tabs">
+                <button class="tab active" data-kind="all">All</button>
+                <button class="tab" data-kind="image">Images</button>
+                <button class="tab" data-kind="doc">Texts</button>
+                <button class="tab" data-kind="entity">Entities</button>
+            </div>
+        </div>
+
+        <div id="results" class="results">
+            <div class="hint">Type a query above. Results stream back ranked by semantic similarity.</div>
+        </div>
+    </main>
+
+    <!-- Detail overlay -->
+    <div id="overlay" class="overlay" onclick="closeOverlay(event)">
+        <div class="overlay-body" onclick="event.stopPropagation()">
+            <button class="overlay-close" onclick="closeOverlay()">&times;</button>
+            <div id="overlay-content"></div>
+        </div>
+    </div>
+
+    <style>
+        .search-bar {
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+            margin: 1.2rem 0 1.5rem;
+        }
+        .search-bar input {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-family: inherit;
+            font-size: 1rem;
+            padding: 0.7rem 1rem;
+            border-radius: 3px;
+            outline: none;
+        }
+        .search-bar input:focus {
+            border-color: var(--amber-dim);
+        }
+        .tabs {
+            display: flex;
+            gap: 0.3rem;
+        }
+        .tab {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            font-family: inherit;
+            font-size: 0.78rem;
+            padding: 0.35rem 0.9rem;
+            cursor: pointer;
+            letter-spacing: 0.05em;
+            border-radius: 3px;
+            transition: color 0.2s, border-color 0.2s;
+        }
+        .tab:hover {
+            color: var(--amber);
+        }
+        .tab.active {
+            color: var(--amber);
+            border-color: var(--amber-dim);
+            background: var(--bg-surface);
+        }
+
+        .results {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 0.9rem;
+        }
+        .hint {
+            grid-column: 1 / -1;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: border-color 0.2s, transform 0.15s;
+            display: flex;
+            flex-direction: column;
+        }
+        .card:hover {
+            border-color: var(--amber-dim);
+            transform: translateY(-2px);
+        }
+        .card-kind-image .thumb {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            background: #000;
+            display: block;
+        }
+        .card-body {
+            padding: 0.6rem 0.7rem 0.7rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        .card-tag {
+            font-size: 0.62rem;
+            color: var(--green-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .card-title {
+            font-family: 'Amiri', serif;
+            font-size: 1rem;
+            color: var(--amber);
+            line-height: 1.3;
+        }
+        .card-excerpt {
+            font-size: 0.78rem;
+            color: var(--text);
+            line-height: 1.45;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 6;
+            -webkit-box-orient: vertical;
+        }
+        .card-kind-doc { grid-column: span 2; }
+        .card-kind-entity { grid-column: span 2; }
+        .card-kind-entity .card-body { padding: 0.9rem; }
+        .card-score {
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            margin-top: auto;
+            padding-top: 0.25rem;
+        }
+        .card-kind-entity .card-title { color: var(--silver); }
+        .card-kind-entity .card-tag { color: var(--amber-dim); }
+        .aliases {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            margin-top: 0.2rem;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 10000;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        .overlay.show { display: block; }
+        .overlay-body {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-light);
+            border-radius: 4px;
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 1.5rem 1.8rem;
+            position: relative;
+        }
+        .overlay-close {
+            position: absolute;
+            top: 0.8rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 1.8rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+        .overlay-close:hover { color: var(--amber); }
+        .detail-image {
+            max-width: 100%;
+            max-height: 70vh;
+            display: block;
+            margin: 0 auto 1rem;
+            border: 1px solid var(--border);
+        }
+        .detail-meta {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            border-top: 1px solid var(--border);
+            padding-top: 0.6rem;
+            margin-top: 0.6rem;
+            word-break: break-all;
+        }
+        .detail-text {
+            white-space: pre-wrap;
+            line-height: 1.6;
+            color: var(--text);
+            font-size: 0.88rem;
+        }
+        .detail h2 {
+            font-family: 'Amiri', serif;
+            color: var(--amber);
+            margin-bottom: 0.3rem;
+        }
+        .detail h3 {
+            color: var(--silver);
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            margin-bottom: 0.4rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .pill {
+            display: inline-block;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 0.15rem 0.5rem;
+            font-size: 0.7rem;
+            border-radius: 3px;
+            margin: 0 0.3rem 0.3rem 0;
+            color: var(--text);
+        }
+        .pill.entity-ref {
+            cursor: pointer;
+            color: var(--amber);
+        }
+        .pill.entity-ref:hover { background: var(--bg-surface); }
+        .relation {
+            font-size: 0.8rem;
+            color: var(--text);
+            padding: 0.3rem 0;
+            border-bottom: 1px dashed var(--border);
+        }
+        .source-row {
+            display: flex;
+            gap: 0.7rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed var(--border);
+            font-size: 0.8rem;
+        }
+        .source-row img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+        .loading-row {
+            grid-column: 1 / -1;
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            padding: 1rem 0;
+        }
+
+        @media (max-width: 700px) {
+            .card-kind-doc, .card-kind-entity { grid-column: span 1; }
+            .results { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+        }
+    </style>
+
+    <script>
+        document.getElementById('nav').innerHTML = navHTML('archive.html');
+
+        let currentKind = 'all';
+        let searchToken = 0;
+        let inFlight = null;
+
+        async function loadCounts() {
+            try {
+                const c = await API.get('/api/archive/counts');
+                document.getElementById('stat-images').textContent = (c.images || 0).toLocaleString();
+                document.getElementById('stat-docs').textContent = (c.docs || 0).toLocaleString();
+                document.getElementById('stat-entities').textContent = c.entities_locked ? '…' : (c.entities || 0).toLocaleString();
+            } catch (e) { /* ignore */ }
+        }
+
+        async function runSearch() {
+            const q = document.getElementById('q').value.trim();
+            const resultsEl = document.getElementById('results');
+            if (!q) {
+                resultsEl.innerHTML = '<div class="hint">Type a query above. Results stream back ranked by semantic similarity.</div>';
+                return;
+            }
+            const token = ++searchToken;
+            resultsEl.innerHTML = '<div class="loading-row">Searching the archive…</div>';
+            try {
+                const resp = await fetch(`/api/archive/search?q=${encodeURIComponent(q)}&kind=${currentKind}&limit=40`);
+                const data = await resp.json();
+                if (token !== searchToken) return;
+                renderResults(data.results || []);
+            } catch (e) {
+                if (token !== searchToken) return;
+                resultsEl.innerHTML = `<div class="loading-row">Search failed: ${escapeHTML(String(e))}</div>`;
+            }
+        }
+
+        function renderResults(results) {
+            const el = document.getElementById('results');
+            if (!results.length) {
+                el.innerHTML = '<div class="hint">Nothing matched. Try different words or drop the filter.</div>';
+                return;
+            }
+            const parts = results.map(r => {
+                if (r.kind === 'image') return imageCard(r);
+                if (r.kind === 'doc') return docCard(r);
+                if (r.kind === 'entity') return entityCard(r);
+                if (r.kind === 'error' || r.kind === 'entity_error') return noticeCard(r);
+                return '';
+            });
+            el.innerHTML = parts.join('');
+        }
+
+        function imageCard(r) {
+            const caption = (r.caption || '').slice(0, 180);
+            return `<div class="card card-kind-image" onclick='openImage(${JSON.stringify(r).replace(/'/g,"&#39;")})'>
+                <img class="thumb" src="${escapeHTML(r.thumb_url)}" loading="lazy" onerror="this.style.opacity=0.3;this.alt='missing'">
+                <div class="card-body">
+                    <div class="card-tag">${escapeHTML(r.image_kind || 'image')}</div>
+                    <div class="card-excerpt">${escapeHTML(caption)}${r.caption && r.caption.length > 180 ? '…' : ''}</div>
+                    <div class="card-score">${r.score.toFixed(3)}${r.date ? ' · ' + escapeHTML(r.date) : ''}</div>
+                </div>
+            </div>`;
+        }
+
+        function docCard(r) {
+            const body = (r.text || '').slice(0, 360);
+            const title = r.document_title || (r.document_path || '').split('/').pop() || 'Untitled';
+            return `<div class="card card-kind-doc" onclick='openDoc(${JSON.stringify(r).replace(/'/g,"&#39;")})'>
+                <div class="card-body">
+                    <div class="card-tag">${escapeHTML(r.source || 'doc')}${r.heading ? ' · ' + escapeHTML(r.heading) : ''}</div>
+                    <div class="card-title">${escapeHTML(title)}</div>
+                    <div class="card-excerpt">${escapeHTML(body)}${r.text && r.text.length > 360 ? '…' : ''}</div>
+                    <div class="card-score">${r.score.toFixed(3)}</div>
+                </div>
+            </div>`;
+        }
+
+        function entityCard(r) {
+            const aliases = (r.aliases || []).slice(0, 4).join(' · ');
+            return `<div class="card card-kind-entity" onclick='openEntity(${JSON.stringify(r.name).replace(/'/g,"&#39;")})'>
+                <div class="card-body">
+                    <div class="card-tag">${escapeHTML(r.type || 'entity')} · ${r.mentions || 0} mentions</div>
+                    <div class="card-title">${escapeHTML(r.name)}</div>
+                    ${aliases ? `<div class="aliases">${escapeHTML(aliases)}</div>` : ''}
+                    <div class="card-excerpt">${escapeHTML((r.summary || '').slice(0, 320))}</div>
+                </div>
+            </div>`;
+        }
+
+        function noticeCard(r) {
+            return `<div class="card card-kind-doc"><div class="card-body">
+                <div class="card-tag">notice</div>
+                <div class="card-excerpt">${escapeHTML(r.message || '')}</div>
+            </div></div>`;
+        }
+
+        function openImage(r) {
+            const title = (r.image_kind || 'image').replace(/_/g, ' ');
+            const body = `<div class="detail">
+                <img class="detail-image" src="${escapeHTML(r.thumb_url)}">
+                <h2>${escapeHTML(title)}</h2>
+                <h3>Caption</h3>
+                <div class="detail-text">${escapeHTML(r.caption || '')}</div>
+                <div class="detail-meta">${escapeHTML(r.path || '')}${r.date ? ' · ' + escapeHTML(r.date) : ''}</div>
+            </div>`;
+            showOverlay(body);
+        }
+
+        function openDoc(r) {
+            const title = r.document_title || (r.document_path || '').split('/').pop() || 'Untitled';
+            const body = `<div class="detail">
+                <h2>${escapeHTML(title)}</h2>
+                <div class="card-tag">${escapeHTML(r.source || 'doc')}${r.heading ? ' · ' + escapeHTML(r.heading) : ''}</div>
+                <h3>Chunk</h3>
+                <div class="detail-text">${escapeHTML(r.text || '')}</div>
+                <div class="detail-meta">${escapeHTML(r.document_path || '')}${r.chunk_index !== undefined ? ' · #' + escapeHTML(String(r.chunk_index)) : ''}</div>
+            </div>`;
+            showOverlay(body);
+        }
+
+        async function openEntity(name) {
+            showOverlay('<div class="loading-row">Loading entity card…</div>');
+            try {
+                const data = await API.get(`/api/archive/entity/${encodeURIComponent(name)}`);
+                renderEntity(data);
+            } catch (e) {
+                showOverlay(`<div class="loading-row">Failed: ${escapeHTML(String(e))}</div>`);
+            }
+        }
+
+        function renderEntity(data) {
+            if (data.error && !data.sources) {
+                showOverlay(`<div class="detail"><h2>${escapeHTML(data.name || '?')}</h2><div class="detail-text">${escapeHTML(data.error)}</div></div>`);
+                return;
+            }
+            const aliases = (data.aliases || []).map(a => `<span class="pill">${escapeHTML(a)}</span>`).join('');
+            const relations = (data.relations || []).map(r =>
+                `<div class="relation"><span class="pill entity-ref" onclick='openEntity(${JSON.stringify(r.name).replace(/'/g,"&#39;")})'>${escapeHTML(r.name)}</span> <span style="color:var(--text-dim)">${escapeHTML(r.rel || r.type || '')}</span> <span style="color:var(--text-dim)">· w=${(r.weight ?? 0).toFixed ? (r.weight).toFixed(2) : r.weight}</span></div>`
+            ).join('');
+            const sources = (data.sources || []).map(s => {
+                if (s.kind === 'image') {
+                    return `<div class="source-row"><img src="${escapeHTML(s.thumb_url)}"><div>${escapeHTML(s.caption || '')}<div class="card-score">${(s.score||0).toFixed(3)}</div></div></div>`;
+                }
+                return `<div class="source-row"><div><div class="card-tag">${escapeHTML(s.source || 'doc')}${s.title ? ' · ' + escapeHTML(s.title) : ''}${s.heading ? ' · ' + escapeHTML(s.heading) : ''}</div><div>${escapeHTML(s.text || '')}</div><div class="card-score">${(s.score||0).toFixed(3)}</div></div></div>`;
+            }).join('');
+            const body = `<div class="detail">
+                <h2>${escapeHTML(data.name || '')}</h2>
+                <div class="card-tag">${escapeHTML(data.type || '')} · ${data.mentions || 0} mentions</div>
+                ${aliases ? `<h3>Aliases</h3>${aliases}` : ''}
+                ${data.summary ? `<h3>Summary</h3><div class="detail-text">${escapeHTML(data.summary)}</div>` : ''}
+                ${relations ? `<h3>Relations</h3>${relations}` : ''}
+                ${sources ? `<h3>Sources</h3>${sources}` : ''}
+            </div>`;
+            showOverlay(body);
+        }
+
+        function showOverlay(html) {
+            document.getElementById('overlay-content').innerHTML = html;
+            document.getElementById('overlay').classList.add('show');
+        }
+
+        function closeOverlay(e) {
+            if (e && e.target && e.target.id !== 'overlay') return;
+            document.getElementById('overlay').classList.remove('show');
+        }
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') closeOverlay();
+        });
+
+        // Tab switch
+        document.querySelectorAll('.tab').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                btn.classList.add('active');
+                currentKind = btn.dataset.kind;
+                runSearch();
+            });
+        });
+
+        // Debounced input
+        let debounceT = null;
+        document.getElementById('q').addEventListener('input', () => {
+            clearTimeout(debounceT);
+            debounceT = setTimeout(runSearch, 350);
+        });
+        document.getElementById('q').addEventListener('keydown', e => {
+            if (e.key === 'Enter') { clearTimeout(debounceT); runSearch(); }
+        });
+
+        loadCounts();
+    </script>
+</body>
+</html>

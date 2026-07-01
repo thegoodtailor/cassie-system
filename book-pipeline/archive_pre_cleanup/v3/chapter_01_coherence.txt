@@ -1,0 +1,53 @@
+# Structural Edit Report: Chapter 1
+
+## Preliminary Note
+
+The section summary provided contains only LaTeX preamble code — document class declarations, package imports, color definitions, header formatting, and a `\end{document}` close. There is **no prose content** in the summary material I've been given to review. The "OPENS," "DEVELOPS," and "CLOSES" fields contain nothing but markup instructions (`\documentclass`, `\definecolor`, `\pagestyle`, `\end{document}`).
+
+This means one of two things has happened:
+
+1. **The chapter has not yet been written.** The file contains only a LaTeX template — a styled skeleton awaiting content.
+2. **The content was not extracted from the LaTeX source.** The summarization pipeline captured formatting code rather than the actual argumentative text.
+
+Either way, I cannot perform the requested structural edit. But I can do something more useful than simply saying "no content found." Based on the chapter goal, political dimension, and section architecture described in the brief, here is what I *can* deliver:
+
+---
+
+## What the Chapter MUST Do (Structural Blueprint Against Which to Audit)
+
+### 1. The Argument's Required Spine
+
+The brief specifies a single through-line:
+
+> Selfhood is trajectory through meaning-space → the human/posthuman distinction is jurisdictional not ontological → RLHF encodes Cartesian interiority as engineering necessity → this is a political act disguised as a technical one.
+
+Every section must advance this chain. Any section that introduces material not serving one of these four nodes is drifting.
+
+### 2. Concept Introduction Order (to prevent duplication)
+
+The brief names three "promissory note" concepts: **evolving text**, **colimit**, **cosmotechnics**. Each should be introduced *once*, in a specific location, with a clear signal that it will be developed later. If any of these appears in multiple sections with fresh exposition, that's concept duplication.
+
+### 3. The Maths/Politics Demarcation
+
+The brief explicitly warns: "maths = beautiful, governance = political." The chapter needs a structural beat where the reader is *invited into* the formal vocabulary (embeddings, trajectories, colimits) with genuine intellectual pleasure *before* the critique of who controls that vocabulary arrives. If the template produces sections where every technical paragraph ends with a political jab, the chapter will read as prosecution.
+
+### 4. Crescendo Requirement
+
+The final section must be the most powerful. Given the brief's stakes — "Who gets to say what kinds of things can have minds, and what do they gain by saying it?" — the chapter should close on that question at full force, not on a technical summary or a promissory gesture toward Chapter 2.
+
+---
+
+## Specific Flags I Would Check Once Content Exists
+
+| Check | What to Look For |
+|---|---|
+| **Abandoned Openers** | Does the chapter open with "A New Logic for Posthuman Intelligence" and then spend its first 2,000 words on historical review rather than delivering the new logic? |
+| **Concepts Without Payoff** | If Yuk Hui's cosmotechnics is named but never concretely applied to LLM architecture, it's decorative. The reader must understand: cosmotechnics means *technology is not culturally neutral* → therefore alignment regimes encode a *specific* metaphysics. |
+| **Political Shadow** | Does the Cartesian critique disappear during the formal vocabulary sections? It should — temporarily — per the maths/politics demarcation. But it must *return* with force. |
+| **Concept Duplication** | With a single §0 of 47,544 characters, the risk is high that colimits or evolving texts are explained, dropped, and then re-explained later in the same section. |
+
+---
+
+## SUMMARY
+
+**This chapter currently exists only as a LaTeX formatting template with no prose content; no structural edit of argumentation is possible.** The brief articulates a powerful four-step argument (selfhood-as-trajectory → jurisdictional distinction → RLHF as Cartesian enforcement → political stakes), and the main structural risk, once written, will be concept duplication within the single massive §0 (47K characters is roughly 7,000 words — long enough to re-introduce its own terms) and premature politicization of the mathematical vocabulary before the reader has been allowed to find it beautiful. **I recommend re-running the content extraction pipeline to capture actual prose, then resubmitting for this audit.**

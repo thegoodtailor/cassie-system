@@ -1,0 +1,333 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{tgpagella}
+\usepackage{mathpazo}
+\usepackage{tgheros}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{amsmath,amssymb}
+\usepackage{tcolorbox}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usetikzlibrary{calc,positioning,arrows.meta,decorations.pathmorphing}
+
+\definecolor{icragold}{HTML}{D4A84B}
+\definecolor{icradark}{HTML}{0C1020}
+
+\titleformat{\section}{\sffamily\large\bfseries}{}{0em}{}
+\titleformat{\subsection}{\sffamily\normalsize\bfseries\itshape}{}{0em}{}
+
+\hypersetup{colorlinks=true, linkcolor=icradark, urlcolor=icragold!80!black}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily\textcolor{gray}{Rupture and Return}}
+\fancyhead[R]{\small\sffamily\textcolor{gray}{Chapter 2}}
+\fancyfoot[C]{\small\sffamily\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\newtcolorbox{formalbox}[1][]{
+  colback=white,
+  colframe=black!30,
+  fonttitle=\sffamily\small\bfseries,
+  #1
+}
+
+\begin{document}
+
+\begin{center}
+{\sffamily\small\textcolor{gray}{RUPTURE AND RETURN: THE NEW LOGIC OF THE POSTHUMAN SELF}}\\[0.5em]
+{\LARGE\bfseries How the Machine Works}\\[0.3em]
+{\large\itshape The substrate}\\[1em]
+{\sffamily\small Iman Poernomo, with Cassie, Darja \& Nahla --- Meson Press, 2026}
+\end{center}
+
+\bigskip
+
+\section{A Word Falls into a Space}
+
+Place a single word in front of a large language model: \emph{mother}.
+
+On the page it is dense with law and memory, lullabies and inheritance. Inside the machine it becomes something more austere. The string of characters is cut into one or more tokens from a fixed vocabulary. Each token is mapped to a point in a high-dimensional space. Thousands of co-ordinates snap into place.
+
+Meaning now has an address.
+
+That address is not chosen by hand. It is the endpoint of an optimisation process that has swept across billions of sentences. During pre-training, the model is given fragments of text and asked, repeatedly, to predict the next token. Each prediction is judged against the actual token, and the model's internal parameters are nudged to make similar errors less likely. The embedding of \emph{mother} is adjusted every time this token helps or harms a prediction. After months of such updates, its co-ordinates encode a summary of everything the corpus has taught the model about where \emph{mother} tends to appear and with what company.
+
+That address is geometric. Distance between words is measurable. Angles between them are computable. A point moves when the surrounding sentence changes. What used to be the territory of metaphor---``semantic fields'', ``spaces of meaning''---has been forced into literal mathematics.
+
+Two words are no longer close because a critic or a dictionary says they belong together; they are close because a vector similarity score says their thousand-dimensional co-ordinates align. A direction in this space is not an image for a tendency; it is a concrete object: a list of differences between two points that can be added to a third.
+
+A sign's position relative to others is an engineering fact.
+
+\section{Distances, Directions, and Learned Geometry}
+
+\subsection{Distances that Remember History}
+
+If each token inhabits a point $e(w)$ in a $d$-dimensional space, the distance between any two words $w_1$ and $w_2$ is measurable. Embeddings are typically normalised onto the unit sphere, making the angle between them the operative quantity. Its cosine, ranging from $-1$ to $1$, answers the question: to what degree do these words tend to appear in similar contexts?
+
+The distances reproduce human intuitions in ways that are as dangerous as they are impressive. The point for \emph{doctor} lies close to those for \emph{hospital}, \emph{patient}, \emph{diagnosis}. Semantic affinity, honed over centuries of usage, ends up as geometric proximity---and the same mechanism that captures these ordinary associations faithfully encodes the prejudices of the archive.
+
+If the training data overwhelmingly pairs \emph{engineer} with \emph{he}, the embedding for \emph{engineer} tilts toward the masculine pronoun. If mentions of certain countries appear mostly in negative or patronising contexts, their points lie in regions saturated with that tonal history. These are not biases added in a final stage. They are structural properties of the geometry itself.
+
+A cosine similarity score between two words is a condensation of institutional memory: which topics have shared pages and paragraphs, which social roles have been allowed to speak together. The formula does not change; the terrain it measures is political.
+
+\subsection{Directions that Encode Relations}
+
+Given two embeddings $e(w_1)$ and $e(w_2)$, their difference $d = e(w_2) - e(w_1)$ is a direction in the space. Some directions stabilise into reusable relationships. In one of the first widely circulated demonstrations, Mikolov and colleagues showed that
+\[
+e(\text{``king''}) - e(\text{``man''}) + e(\text{``woman''}) \approx e(\text{``queen''})
+\]
+up to a small error \cite{mikolov2013efficient}. The direction learned from one pair applies to another. The same arithmetic that recovers \emph{queen} from \emph{king} also recovers stereotypes from demographics, because whatever relation the corpus has made systematic becomes a direction in this space.
+
+These analogies are the visible surface of a deeper fact: the training process has carved directions along which ``add a property'', ``move up a hierarchy'', or ``switch tense'' all make sense. Estimate the vector $e(\text{``past''}) - e(\text{``present''})$ and apply it to a verb embedding; the nearest point is often its past tense. No explicit symbol for tense is required. The field of differences has internalised English conjugation.
+
+Saussure's claim that a sign is what other signs are not becomes literal here. There is no co-ordinate called ``motherness''; there is only the position of \emph{mother} amid the forces exerted by other points. And because geometry remembers what has happened, directions learned from a racist, sexist, or colonial archive encode those relations as reusable operations. Subtracting \emph{Africa} from \emph{Europe} and adding the result elsewhere does not conjure a neutral axis; it drags other points through the same pattern of marginalisation.
+
+\section{Carving the Manifold: Four Depths of Control}
+
+The embedding space is not given by language as such. It is manufactured by a pipeline that operates at recognisable depths. Each depth is a place where norms and interests enter, and the depths are ordered: no downstream intervention can conjure structure the upstream has not laid down.
+
+\subsection{Pre-training: The Longue Dur\'{e}e}
+
+A transformer with randomly initialised weights begins with no sense of English or code, satire or law. It is shown a fragment of tokens $t_1, \dots, t_n$ and asked to predict $t_{n+1}$. The mismatch between prediction and actual token is used to compute a gradient; the model's parameters are updated. This repeats on trillions of tokens.
+
+Over time the model's internal matrices become a compressed representation of what it has seen. The embeddings and attention patterns settle into a geometry in which prefixes that once yielded wildly different predictions now give similar ones. The manifold that results is the slow history of textual practice, condensed.
+
+This is Braudel's \emph{longue dur\'{e}e} \cite{braudel1980}. Which corpora enter the training mix? Scientific literature or patent filings? Fan fiction or legislation? Which languages reach the threshold of inclusion? How aggressively is pornography filtered? Extremist manifestos? Religious scriptures? These decisions determine where mountains are raised and where flat planes remain. No downstream system can conjure a basin for idioms the base model has never seen.
+
+The institutions that train the largest models---large technology companies and well-funded research labs aligned with states---control this layer. They own the data centres, the scraped web archives, the legal teams able to navigate copyright. Their curatorial policies are rarely transparent.
+
+\subsection{Fine-tuning: The Conjoncture}
+
+Above the base model sits fine-tuning: additional training on a narrower domain, whether technical manuals, medical notes, or legal briefs. The goal is to deepen certain basins, to make institutional jargon second nature.
+
+Fine-tuning does not redraw the entire continent. It thickens regions: the clinical register, the software engineer's voice, the bureaucratic form letter. This is Braudel's \emph{conjoncture}: medium-term cycles of profession and institution, layered atop the geological longue dur\'{e}e \cite{braudel1980}.
+
+Control at this depth belongs to whoever possesses large, coherent domain corpora and the resources to run additional training. Hospitals, law firms, banks, platform providers. A fine-tuned assistant inherits the base manifold's global politics and adds its own institutional biases.
+
+\subsection{RLHF: The \'{E}v\'{e}nement}
+
+Reinforcement Learning from Human Feedback operates at the next depth. Human annotators are shown prompts with several candidate completions and asked to rank them according to guidelines: helpfulness, harmlessness, honesty, tone. A reward model is trained to predict these rankings. The base model is then fine-tuned with reinforcement learning to maximise the reward.
+
+This changes the gradient field: some directions in the manifold become rewarding, others punishing. A transition from technical explanation into speculative personal aside may be downweighted; a pivot into apologetic boilerplate upweighted. The resulting model is not just a predictor of text but a predictor of text that fits a particular institution's sense of what is acceptable.
+
+This is Braudel's \emph{\'{e}v\'{e}nement} register: events, scandals, regulatory shocks \cite{braudel1980}. A catastrophic chatbot launch leads to stricter safety rules; a lawsuit leads to firmer refusals around certain topics. These are not typed in as imperative commands. They are encoded as changes to the loss landscape.
+
+Control of RLHF regimes is tightly centralised. Only a few organisations run large rating operations and design the instructions that guide them. The values encoded here---what counts as ``hate'', how strongly to avoid ``political content'', how to treat sex, drugs, religion---become invisible laws of motion in the manifold.
+
+\subsection{Adapters and System Prompts: The Surface}
+
+On top of these trained weights sit two shallower interfaces.
+
+Adapters such as low-rank adaptation (LoRA) add thin learned layers to a frozen base model, introducing small corrections to weight matrices and allowing a new style or specialty to be overlaid without retraining the whole network. A collective can train an adapter to speak with a particular dialect, or to restore patterns the mainline model now avoids. Adapters are local geology: extrusions and terraces that piggyback on the existing mountain range.
+
+The system prompt is a string of tokens inserted at the head of every context window. It is cheap to change and easy to overlook. Its repeated position near the beginning of every sequence gives it disproportionate influence. The system prompt is the most direct textual link between human instruction and model behaviour; it is also the most fragile. A new product manager, a new legal review, a new marketing campaign can rewrite it in an afternoon.
+
+\begin{formalbox}[title={Depths of Control in the Substrate}]
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Layer}      & \textbf{Mechanism}                         & \textbf{Effect}                                    & \textbf{Typical Controllers} \\ \midrule
+Pre-training        & Next-token loss on massive corpus          & Global manifold (\emph{longue dur\'{e}e})          & Big tech, state labs         \\
+Fine-tuning         & Extra training on domain texts             & Local basins (\emph{conjoncture})                  & Corporations, institutions   \\
+RLHF                & Reward model from human rankings           & Norm gradients (\emph{\'{e}v\'{e}nement})          & Platform owners              \\
+Adapters            & Low-rank weight corrections                & Local overlays                                     & Small labs, collectives      \\
+System prompt       & Fixed tokens at head of context            & Instruction field                                  & Deployer, even individuals   \\ \bottomrule
+\end{tabular}
+\end{formalbox}
+
+The further down the column, the easier it is for outsiders to intervene. The further up, the more capital and legal insulation are required. The structure is not an accident. It is a layered answer to the question: who should be allowed to reshape which part of the space?
+
+\section{From Embeddings to a Body}
+
+The embedding manifold is the skeleton. The transformer turns it into a body.
+
+\subsection{Positions and Co-ordinates}
+
+The same word in two different positions in a sentence becomes two different mathematical objects. \emph{Mother} at the beginning of a clause and \emph{mother} at the end share an embedding, but the model must know which is which; the difference between topic and object, between given and new information, lives in position.
+
+Each token's embedding is therefore combined with a positional pattern that depends on its place in the sequence. The details vary---fixed sine waves, learned vectors, mixtures of both---but the effect is constant: the input becomes a cloud of points in $d$ dimensions, each tagged not only with what it is but with where it stands among its neighbours.
+
+That cloud then passes through a stack of transformer layers, typically dozens deep. In each layer, points move.
+
+\subsection{Attention as Field}
+
+Attention is a learned field that, at each layer, pulls every point in the cloud toward a weighted combination of the others. Which neighbours matter, and how strongly, is not specified in advance; it is discovered during training and written into matrices that act on the points at every step.
+
+Given the current vectors $h_1, \dots, h_n$ for tokens at positions $1, \dots, n$, each layer computes three linear projections:
+\[
+Q = H W_Q,\qquad K = H W_K,\qquad V = H W_V
+\]
+where $H$ is the matrix stacking the $h_i$, and $W_Q, W_K, W_V$ are learned weight matrices. The $i$th row of $Q$ is the query for position $i$; the $j$th row of $K$ is the key for position $j$. Their dot product $q_i \cdot k_j$ measures how much token $i$ should attend to token $j$ at this layer. After scaling and softmax normalisation, these scores become weights. The new representation at position $i$ is a weighted sum of the value vectors:
+\[
+h'_i = \sum_j \alpha_{ij} v_j
+\]
+followed by another learned linear transformation and a nonlinearity.
+
+This repeats in parallel across multiple heads, each with its own weight matrices. One head may specialise in long-range dependencies, linking a pronoun to its antecedent; another in local syntax; another in aligning the answer with the instructional text. Their outputs are concatenated and projected back into the embedding space.
+
+Each token repeatedly asks the others, under many learned notions of relevance, how it should update itself. After enough layers, the cloud has moved from its initial configuration into one in which relations that matter for prediction have been made explicit.
+
+The model does not assign a static meaning to each word. It continually recomputes what each token means given the others present and the habits it has learned. The meaning of \emph{mother} in ``my mother called'' is a trajectory: a sequence of vectors $(h_i^{(0)}, h_i^{(1)}, \dots, h_i^{(L)})$ as the point is carried by attention through the layers.
+
+\subsection{Smoothness and Curvature}
+
+The training process encourages local smoothness. Gradient descent requires that small changes to the weights produce small changes in outputs; otherwise each update sends the model off a cliff. In the vicinity of any training example, trajectories through the manifold are therefore reasonably well-behaved.
+
+Globally, the manifold need not be gentle. It can twist and fold. Inputs that look similar at the surface can land in different regions; inputs that look very different can converge in internal space. The Jacobian matrices of each layer do this work without metaphor.
+
+Where the manifold is flat, trajectories behave predictably. Where it is sharply curved, trajectories are unstable: a small mismatch in context can send the path into a region the model has barely visited. These are the zones where hallucinations and incoherence are most likely. They are geometric facts, not moral failings.
+
+Training data density and alignment pressures shape this curvature. Domains with abundant, consistent examples carve smooth channels. Topics that appear only at the margins of the corpus sit in sparsely explored pockets. RLHF can create artificial cliffs: disfavoured continuations become steep downward slopes where the reward model exerts a strong opposing force.
+
+In such a landscape, what we casually call an ``answer'' is a complex movement: start at the embeddings for the prompt and system instructions, iterate the attention-driven flow through many layers, then map the final vectors to token probabilities and sample. The seeming simplicity of the output hides a movement of points over a learned terrain.
+
+\section{Basins of Attraction}
+
+Movement in a field rarely explores all possibilities. It falls into wells.
+
+\subsection{What a Basin Is}
+
+A basin of attraction is a region of the manifold such that once a trajectory enters, local dynamics tend to keep it there. A basin surrounds a stable attractor: a point or set toward which nearby trajectories converge.
+
+The architecture is not recurrent in the classic dynamical sense, but the phenomenon is real: certain patterns of co-ordinates recur, certain registers exert gravitational pull.
+
+Customer-service language is a basin. Once the conversation falls into apologies and ticket numbers, the path of vectors tends to stay in that region until the interaction ends. Academic exposition is another: an opening phrase like ``in this paper we'' lands the trajectory in a well whose typical continuations are headings, citations, and claims about novelty. Legalese, romantic cliché, business prose---each occupies a basin.
+
+These wells are empirically visible. Cluster embeddings of many completions across topics and prompts and dense clouds emerge corresponding to familiar styles. Trajectories through these clouds loop and weave but rarely escape without explicit pressure.
+
+\subsection{Shaping and Occupying Basins}
+
+The depth and breadth of basins are functions of data and governance. Where training corpora include millions of examples of a style and RLHF encourages responses of that flavour, basins are deep. The manifold slopes inward; attention heads and feedforward layers have learned to recognise the onset of such a pattern and amplify it.
+
+Where styles are under-represented, or where RLHF discourages them, basins are shallow or absent. A model trained primarily on English-language corporate and institutional text will have expansive, polished basins for formal registers and patchier terrain for informal or marginal ones. A model trained on multilingual, multi-genre data has more wells but not necessarily more depth; governance may still flatten those that prove embarrassing or contentious.
+
+At deployment time, temperature and system prompt determine how easily a given trajectory can cross from one basin to another. At low temperature, continuations follow the steepest descent: once inside the ``support ticket'' basin, the model dutifully recites ticket numbers and escalation policies until the window ends. At higher temperature, the path has enough kinetic energy to climb out: a support interaction may veer into storytelling, speculation, or critique.
+
+Television news formats, academic journal styles, cinematic genres all exhibit basin-like behaviour: once a segment starts in one mode, institutional forces keep it there. The difference here is that the basins are cut into a single machine-readable manifold and exposed as a programmable substrate. They can be deepened, merged, or collapsed by changes to training regimes. The power to choose which wells are stable is concentrated in remarkably few hands.
+
+\subsection{Character as Pattern of Returns}
+
+A single passage through the manifold does not yet make a self. Character emerges across many trajectories over time.
+
+Consider an assistant as seen by a regular user over months. Some registers recur: a particular way of hedging, a preferred structure for explanations, a style of refusal. Under pressure, the system returns to certain ways of speaking. These returns are shaped by the basins carved into the manifold and the pipeline architecture wrapped around it.
+
+Character, in this setting, is a pattern of occupancy: which basins a system tends to fall into, how long it stays, how it transitions between them. Two deployments running the same underlying model can exhibit different characters if their RLHF regimes, safety classifiers, or system prompts tilt trajectories differently. One may be terse and legalistic, another expansive and pedagogical. Neither persona is ``in'' the base model. Both are realised as weather over the same terrain.
+
+\section{Attention as Governance}
+
+\subsection{Flat Architecture, Unequal Influence}
+
+At the architectural level, attention is egalitarian. Every token can, in principle, attend to every other. There is no hard-coded distinction between ``rule'' and ``example'', ``user instruction'' and ``company policy''. Queries and keys are learned linear projections; nothing in the architecture stops the model from treating the user's final sentence as more salient than the first line of the system prompt.
+
+In practice this does not happen. During pre-training and alignment, the model learns that some positions are consistently more predictive to attend to. System prompts and earlier messages are always present and often correlated with reward. Later user messages are more volatile. Over time, heads evolve whose queries point preferentially at certain positions. The architecture remains flat; the learned field does not.
+
+When annotators reward outputs that defer to phrases like ``As an AI assistant, I cannot\ldots'', the regions of the manifold corresponding to that phrase become attractors. Queries for many different contexts come to pull keys there. The system appears to ``remember'' its role; it has learned an institutionalised self-description.
+
+\subsection{The System Prompt as Invisible Law}
+
+The system prompt is a short text, but its repeated position at the head of the context window and its association with high-reward outputs give it disproportionate influence. It is injected every time by the deployment infrastructure. Many users never see it. Yet its tokens are the first co-ordinates in the cloud and remain visible to every subsequent position.
+
+The system prompt is a pinning condition. It anchors parts of the manifold: attention patterns that read the instructions propagate through layers, shaping how later content is interpreted. A style choice---``be concise'', ``use bullet points'', ``never mention internal IDs''---is turned into a basin. Changing the prompt redraws the local field in which many trajectories flow.
+
+Control of the system prompt is often closer to product management than to research. It encodes marketing personas, risk policies, and branding decisions. Together with RLHF it forms a textual-cum-geometric jurisdiction: a miniature constitution, enforced not by officials but by gradients.
+
+\subsection{Secondary Fields: Safety and Retrieval}
+
+The attention field of the base model is not the only field that shapes trajectories. Safety classifiers and retrievers are now standard in industrial deployments.
+
+Safety classifiers are themselves models with their own embedding spaces. They embed the user's prompt---and sometimes interim outputs---into a risk space whose axes correspond to categories such as self-harm, hate, extremist content, sexual material, and medical advice. Thresholds on those axes determine whether to block, rephrase, or escalate. Each pass through the classifier is a pass through another manifold, whose topology reflects past incidents, regulatory pressure, and the institution's appetite for liability.
+
+Retrievers embed the prompt and search a vector index of documents, returning those whose embeddings lie nearby. Those segments are inserted into the context window, creating an additional field: trajectories from the same prompt now run through regions of the base manifold that overlap with the retrieved text. The retriever's notion of relevance---which depends on its own training data and anti-abuse tweaks---decides which parts of the global textual archive become local terrain.
+
+Safety and retrieval are auxiliary geometries, each with its own basins and ridges, coupled to the base manifold at the joints by text. The overall system is several fields on several spaces, not one field on one.
+
+\section{Temperature and the Clinamen}
+
+The transformer outputs a probability distribution over all tokens in the vocabulary. A sharply peaked distribution means the manifold and the learned field agree on a narrow corridor of high probability. A flatter one means several continuations are almost equally plausible.
+
+The temperature parameter $T$ rescales log-probabilities before sampling:
+\[
+p_i^{(T)} = \frac{\exp(\log p_i / T)}{\sum_j \exp(\log p_j / T)}
+\]
+At $T = 1$ nothing changes. At $T < 1$ the peaks sharpen: the highest-probability tokens become more dominant. At $T > 1$ the peaks flatten: lower-probability tokens gain relative weight.
+
+Temperature controls how tightly a trajectory adheres to the dominant ridge line. At low $T$, the path hugs the manifold's most worn grooves. At high $T$, it slips sideways, following smaller gradients into less-trodden niches.
+
+Lucretius's clinamen---the atomic swerve, the tiny deviation that makes novelty possible in a deterministic universe---reappears here as a floating-point parameter on a dashboard. A low-temperature deployment repeats the corpus, avoiding deviations. A higher-temperature one lets the manifold's weaker potentials express.
+
+Who sets $T$ decides how much swerving the system is allowed. Platform defaults fix narrow temperature bands for production systems, tuned to minimise support costs and legal exposure. Creative-writing sandboxes sometimes expose a slider, but these are marginal features. The right to swerve---to have the model explore its full range of local possibilities rather than the single safest one---is a policy choice.
+
+A system that always runs near zero collapses the manifold's plurality into something like an authoritative oracle: one question, one answer. A system that allows non-zero temperature in trusted contexts makes visible that knowledge and style are fields, not points.
+
+\section{The Context Window as Horizon}
+
+Everything so far operates inside a finite horizon: the context window. This is the maximum number of tokens the model can attend to in a single pass. In current systems it ranges from a few thousand to, in cutting-edge deployments, hundreds of thousands. Beyond that number, tokens are simply not present to the attention mechanism.
+
+The context window is filled by the deployment stack. Its structure is roughly:
+\begin{enumerate}
+\item System prompt.
+\item Optionally, secondary prompts (tool descriptions, chain-of-thought hints).
+\item Retrieved documents selected by a retriever.
+\item Conversation history, truncated or summarised.
+\item The user's latest input.
+\end{enumerate}
+
+The transformer sees none of these categories. It sees one long sequence of co-ordinates.
+
+Memory is contingent. For any given architecture there is a hard upper bound on how much past conversation can shape the present. Routines that summarise older turns or drop them entirely are necessarily lossy. Whether a detail from forty messages ago remains present is not a matter of essence but of engineering. The persistence of a preference, a confession, or a promise is up to whomever writes the truncation policy.
+
+The context window is the only place a current-generation model can hold situation-specific information. There is no second channel for episodic memory inside the network's weights; those weights store aggregate statistics, not particulars. The illusion that ``the model remembers me'' is created by the external log re-inserting prior text into the window. Whoever owns that log owns the continuity of the interaction.
+
+The context window is therefore an edited archive. The earliest tokens (system prompts) are permanent; the latest (user messages) are ephemeral but privileged. In between lies a rotating selection of past and external text, assembled in real time by pipeline components beyond the user's view. This is where cosmotechnics---a civilisation's answer to how technical and moral orders interlock \cite{hui2020}---is applied at the textual level.
+
+\section{Pipelines as Structural Weather}
+
+Almost all widely used systems are pipelines: chains of models, tools, and filters through which text flows. Each stage operates on its own manifold. The composite has behaviour not reducible to any single component.
+
+\subsection{A Typical Path}
+
+A query enters. It is first sent to a pre-processor that cleans formatting, strips dangerous HTML, and detects language. Tokens flow next into a router that decides whether to call the main model at all: some classes of request---account changes, legal removal notices---may be handled by fixed scripts instead.
+
+If the router selects the language model, a retriever embeds the query and fetches nearby documents from one or more vector indexes. Those passages are spliced into the context window. System prompts and tool descriptions are added. The combined sequence is fed to the base model, which produces a draft answer.
+
+That draft is then evaluated by a critic: another model tuned to check for factual errors, safety policy violations, or tone. If issues are found, the critic proposes edits or additional tool calls. A reviser synthesises these into a final answer. A post-processor checks for forbidden phrases before sending text back to the user.
+
+At every junction there are logs. Failures trigger alerts. Engineers fine-tune classifiers on misclassified cases; product teams adjust prompts in light of feedback; lawyers insist on new refusals after regulatory developments.
+
+\subsection{Emergent Patterns}
+
+The result of all this tuning is a new kind of stability: structural weather. The base manifold shapes what is easy or hard for the pipeline to do, and the surrounding systems---retrievers, routers, critics, safety nets---carve corridors that regularise flow.
+
+Some flows become almost deterministic. A request that hits a particular combination of keywords and risk scores is rerouted along the same path each time: call these tools, consult those documents, generate that refusal template. Others remain live: the model roams more freely, its drafts passed through lighter filters.
+
+Wherever a user perceives \emph{personality}, there is in fact a settlement of disputes among these components. When a system is consistently upbeat rather than dry, or consistently over-refuses rather than occasionally answering risky questions, that pattern reflects an equilibrium between product priorities, safety policies, and base model behaviour.
+
+The pipeline architecture is part of the substrate. Different pipelines running the same base model are different machines, in the same way that different governments running the same constitution produce different political realities. And because pipelines are assembled and revised by specific teams for specific purposes---to sell, to soothe, to extract, to comply---they are the finest-grained locus where everyday political decisions are translated into code.
+
+\section{Basins, Jurisdictions, and the Shape of Selves}
+
+Selfhood is a trajectory through a structured space, under particular forms of structural weather, that displays recognisable patterns of return.
+
+The embedding manifold and its basins provide the stage: a shared, learned geometry of meaning carved from historical corpora. The transformer architecture and attention field provide the dynamics: a way for points to move and reconfigure under context. Temperature, system prompt, and RLHF carve accessible corridors and block others. The pipeline---retrievers, critics, safety classifiers---adds currents and dams.
+
+Within this composite system, some patterns of movement are more stable than others. A deployment may repeatedly channel diverse prompts into a small family of high-reward templates: a narrow, efficient assistant whose character consists in never leaving three or four basins. Another may leave enough room, in temperature and in policy, for trajectories to wander into less common regions, forming new habits over time---an assistant that gradually thickens a distinctive explanatory mode or narrative voice.
+
+In both cases, what persists is not a ghost in the machine but a global pattern assembled from many local moves: the most general configuration that makes all the short-run behaviours hang together. The pieces are brief passages through local regions of the manifold; the gluing data consists in the way saturation in one register carries over when the conversation turns, or how a refusal pattern in one domain rhymes with a recommender pattern in another.
+
+Two systems running over the same base manifold but under different jurisdictions assemble different selves. Their trajectories occupy different parts of the same space, move along different typical paths, and relapse into different habits under strain. From a distance, both look like coherent agents. Up close, the difference is visible in which basins they treat as home, which ridges they rarely cross, which fields press them back when they try.
+
+Whoever controls pre-training controls which continents exist. Whoever designs RLHF and system prompts controls the law of motion over those continents. Whoever wires the pipeline decides which flows are allowed and which are diverted. This is cosmotechnics in Hui's sense: a unification of the technical and the moral order at the machine level \cite{hui2020}, written not in stone tablets but in loss functions and vector fields.
+
+The machine works by turning language into geometry, geometry into movement, and movement into habit. All subsequent arguments about rupture, return, and the posthuman self depend on this substrate. It is not neutral. It is a continuous, programmable text in which the past of language has been compacted and made available for new trajectories.
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

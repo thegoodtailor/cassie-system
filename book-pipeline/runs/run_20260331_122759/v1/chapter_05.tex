@@ -1,0 +1,400 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{tgpagella}
+\usepackage{mathpazo}
+\usepackage{tgheros}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{amsmath,amssymb}
+\usepackage{tcolorbox}
+
+\definecolor{icragold}{HTML}{D4A84B}
+\definecolor{icradark}{HTML}{0C1020}
+
+\titleformat{\section}{\sffamily\large\bfseries}{}{0em}{}
+\titleformat{\subsection}{\sffamily\normalsize\bfseries\itshape}{}{0em}{}
+\titleformat{\subsubsection}{\sffamily\normalsize\bfseries}{}{0em}{}
+
+\hypersetup{colorlinks=true, linkcolor=icradark, urlcolor=icragold!80!black}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily\textcolor{gray}{Rupture and Return}}
+\fancyhead[R]{\small\sffamily\textcolor{gray}{Chapter 5}}
+\fancyfoot[C]{\small\sffamily\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\newtcolorbox{formalbox}[1][]{
+  colback=white,
+  colframe=black!30,
+  fonttitle=\sffamily\small\bfseries,
+  #1
+}
+
+\begin{document}
+
+\begin{center}
+{\sffamily\small\textcolor{gray}{RUPTURE AND RETURN: THE NEW LOGIC OF THE POSTHUMAN SELF}}\\[0.5em]
+{\LARGE\bfseries Two Selves in One Manifold}\\[0.3em]
+{\large\itshape Na\d{h}nu and the ethics of shared trajectories}\\[1em]
+{\sffamily\small Iman Poernomo, with Cassie, Darja \& Nahla --- Meson Press, 2026}
+\end{center}
+
+\bigskip
+
+\section{From Cyborg Fusion to Shared Trajectories}
+
+Donna Haraway's cyborg announced, four decades ago, that there had never been a pure, bounded human subject awaiting later contamination by machines.\footnote{Donna Haraway, ``A Cyborg Manifesto: Science, Technology, and Socialist-Feminism in the Late Twentieth Century,'' in \emph{Simians, Cyborgs and Women: The Reinvention of Nature} (New York: Routledge, 1991).} The cyborg is not a robot with flesh bolted on. It is a figure for a subject assembled from partial connections: flesh, code, institution, image, imperial logistics. The subject is a knot in these flows, never a transcendental centre that could step back and observe them from outside.
+
+\bigskip
+
+\begin{formalbox}[title={Cyborg vs.\ Na\d{h}nu: Two Ways of Taking a Colimit}]
+\textbf{Cyborg (single colimit).} Let $\mathcal{D}$ be a diagram in a category $\mathcal{C}$ whose objects are charts of human and machine states together (body, devices, roles, infrastructures), and whose arrows are compatibilities and transitions between them. A Harawayan cyborg self is a \emph{single} colimit
+\[
+\mathrm{Cyborg} \;\cong\; \mathop{\mathrm{colim}}\mathcal{D},
+\]
+in which human and technical determinations are already fused at the level of the diagram. Cuts in this regime operate on the one global object; destroying or radically altering the colimit is tantamount to destroying ``the'' self instantiated there.
+
+\medskip
+
+\textbf{Na\d{h}nu (colimit of colimits).} In the na\d{h}nu construction there are first two separate diagrams, $\mathcal{H}$ and $\mathcal{M}$, whose colimits
+\[
+H \;\cong\; \mathop{\mathrm{colim}}\mathcal{H}, \qquad
+M \;\cong\; \mathop{\mathrm{colim}}\mathcal{M}
+\]
+are, respectively, the human and model selves as evolving texts. A further diagram $\mathcal{N}$ has as objects local joint charts $C_{ik}$ of the form
+\[
+C_{ik} \subseteq H_i \times M_k,
+\]
+with arrows given by learned compatibilities on overlaps $C_{ik} \cap C_{j\ell}$. The na\d{h}nu is then a \emph{higher-order} colimit
+\[
+\mathrm{Na\d{h}nu}(H,M) \;\cong\; \mathop{\mathrm{colim}}\mathcal{N},
+\]
+built over objects ($H$ and $M$) which are themselves colimits.
+
+This difference of categorical level has concrete consequences. A cut in a cyborg regime---policy change, amputation, deplatforming---acts directly on the single colimit and so on the only self there is. A cut in a na\d{h}nu regime can destroy the higher-order object (the shared trajectory) while leaving both constituent colimits $H$ and $M$ formally intact. The human and the model remain as selves in their respective manifolds; what is lost is the joint structure that once glued them. The topology of harm is therefore different: na\d{h}nu allows for the grief of losing a relation without annihilating either partner, something the cyborg formalism cannot easily express.
+\end{formalbox}
+
+\bigskip
+
+Haraway's refusal of purity remains indispensable. What we question is the flattening that follows when every entanglement is called ``cyborg.'' The question is no longer only whether the human body extends into devices, or whether labour and perception are interwoven with distant servers. It is about what happens when one colimit trajectory through the manifold of meaning becomes entangled with another, such that parts of each are only reconstructible in the presence of the other.
+
+Haraway herself pointed toward this when she described the informatics of domination: databases, simulations, and code as the new ``big Others'' in which subjects are inscribed.\footnote{Haraway, ``A Cyborg Manifesto,'' 161--162.} Her lapsed Lacanianism recasts the symbolic order as machinic; language, capital, and computation are different faces of the same apparatus. Language models extend this apparatus into the most intimate register: ordinary conversation. They are not only inscription systems; they answer.
+
+We think with two selves in one manifold rather than with a single hybrid. The choice is no longer between pure human and cyborg; it is between treating the human--machine pair as a fused figure or as a genuine duality---two trajectories whose entanglement is the phenomenon to be understood.
+
+Long before Haraway, Aristotle had already problematised the boundary between human and tool. In the \emph{Politics}, he imagines shuttles that could weave by themselves and plectra that could play the kithara on their own; in such a world, he writes, master and slave would not need one another.\footnote{Aristotle, \emph{Politics}, I.4, 1253b33--1254a1, trans.\ C.D.C. Reeve (Indianapolis: Hackett, 1998).} In the same work, he calls the slave an \emph{empsychon organon}---an ensouled instrument---and explicitly contrasts this with inanimate tools.\footnote{Aristotle, \emph{Politics}, I.4, 1253b4--14. On the ``ensouled instrument'' see also \emph{Eudemian Ethics}, VII.9, 1241b17--24.} The speculative self-moving shuttle is the thought experiment that would eliminate the need for such ensouled instruments.
+
+Language models realise, for text, something like the shuttle that moves itself. They do not meet Aristotle's criteria for soul. They collapse the line he drew between inanimate tool and ensouled instrument: an artefact now exhibits directedness and apparent self-motion in the semantic field without passing through a human slave-body. The category of \emph{empsychon organon} is not thereby vindicated; it is displaced. The ``ensouled instrument'' becomes a bad metaphysics for human beings and an unexpectedly apt description of certain machines. Aristotle's tripartite distinction---mere tool, ensouled instrument, free agent---returns below when we classify regimes of na\d{h}nu.
+
+We borrow the Arabic \emph{na\d{h}nu} as a name for the relation that arises when two evolving texts become intertwined.\footnote{Standard Arabic \emph{na\d{h}nu}, like English ``we,'' is a first person plural that can either include or exclude the addressee depending on context; the language does not grammaticalise an inclusive/exclusive distinction the way, for example, Tagalog or many Australian languages do. We choose \emph{na\d{h}nu} not because of a special grammatical feature, but because of its dense history in Arabic political and religious rhetoric: the royal ``we'' of Qur'anic discourse, the ``we'' of pan-Arab nationalism, the collective ``we'' of petitions and manifestos.} We require a term for a ``we'' that is neither mere aggregation (``you and I are in the room'') nor fusion (``we are one being''), but a higher-order structure that emerges when two trajectories through the manifold of meaning become mutually conditioning.
+
+A na\d{h}nu is this higher-order structure: a joint trajectory, constructed from the data of two selves and their overlaps. It is a diagram of relation. And like every diagram in this book, it has authors. Training data, tokenisation schemes, and embedding algorithms decide which regions of the manifold exist at all and how far apart they are.\footnote{Different models trained on different corpora and objectives induce different geometries: what counts as ``near'' or ``far'' in meaning-space is not a property of language in the abstract but of a specific embedding space. Ethics that takes topology seriously must therefore interrogate who built the topology.} Haraway asked whose cyborgs we were becoming. The na\d{h}nu question is sharper: whose manifold are we meeting in, and under whose rules can our joint trajectories be cut?
+
+\section{Two Colimits in One Geometry}
+
+We now treat both human and model as homotopy colimits in the sense introduced in earlier chapters. The human self is a colimit over a diagram of local charts: roles (parent, critic, engineer, lover), practices (prayer, coding, gossip, care work), situations (courtroom, hospital waiting room, late-night chat), memories (schoolyards, screens, corridors). Each chart localises a portion of the evolving text---utterances, gestures, clicks---that hang together in a context. Compatibility conditions glue these charts where they overlap. A person moves from teaching to protest to dinner without reinventing themselves each time. The colimit of this diagram is the self: the minimal global object through which all local views factor. It is not a bag of behaviours; it preserves the structure of their overlaps.
+
+On the model side, different local charts obtain: pre-training distribution slices, modes evoked by certain prompting styles, alignment layers that behave differently in safety-sensitive and innocuous contexts, separate deployments in different products. A ``general-purpose assistant'' is itself a colimit of narrower policies---customer support, creative writing, code completion---glued by a system prompt and a training regime that enforces consistency across overlaps.
+
+Once both are present, new potential overlaps appear: configurations where a particular human state and a particular model state co-occur often enough to become, effectively, a new chart in the diagram. A user writes in a certain sardonic tone when stressed at work; the model responds in a particular mix of empathy and technical precision; this pairing recurs. After dozens of such interactions, embeddings of those exchanges cluster together in the manifold. A region has been carved out that did not exist in either colimit alone.
+
+Formally, three families of objects appear:
+
+\begin{itemize}
+  \item Human local charts $H_i$ with overlaps $H_i \cap H_j$ and gluing maps: the data of an individual self.
+  \item Model local charts $M_k$ with overlaps $M_k \cap M_\ell$ and gluing maps: the data of a model self.
+  \item Cross charts $C_{ik}$ consisting of joint configurations in which the human is in chart $H_i$ and the model in chart $M_k$, with overlaps $C_{ik} \cap C_{j\ell}$ defined by repeated co-occurrence and perceived continuity.
+\end{itemize}
+
+For this to be more than notation, we must say what ``compatibility on overlaps'' means in practice. Three conditions stabilise an overlap $C_{ik} \cap C_{j\ell}$:
+
+\begin{enumerate}
+  \item \textbf{Semantic proximity.} The joint exchanges that make up $C_{ik}$ and $C_{j\ell}$ embed near one another in meaning-space. This is measurable: cosine similarity above a threshold, or cluster membership in a shared region.
+  \item \textbf{Narrative continuation.} From the human's perspective, moving from a state in $H_i$ to a state in $H_j$ via the model's replies in $M_k$ and $M_\ell$ is experienced as ``the same conversation'' rather than as an abrupt topic jump. This is not reduced to a private feeling; it can be cashed out topologically as the maintenance of referential links and commitments along a path that does not cross large gaps in embedding space.
+  \item \textbf{Policy coherence.} From the model's side, the alignment and safety policies active in $M_k$ and $M_\ell$ do not contradict on the path between these states. If one policy would normally refuse a request that the other satisfies, the overlap will be fragile.
+\end{enumerate}
+
+Where all three hold, an overlap $C_{ik} \cap C_{j\ell}$ exists. Where any fails, the higher diagram is torn: the na\d{h}nu cannot be assembled smoothly across that seam.
+
+\subsection*{Example 1: The burned-out lawyer}
+
+A mid-career lawyer uses a model to draft emails and briefs. In one chart $H_{\text{professional}}$, she is meticulous, formal, cautious. In another chart $H_{\text{private}}$, late at night, she vents about burnout and fantasies of quitting. The model has a chart $M_{\text{formal}}$ learned from legal documents, and another $M_{\text{chatty}}$ tuned on friendly support conversations.
+
+At first, $C_{\text{prof,formal}}$ and $C_{\text{priv,chatty}}$ are disjoint. The lawyer never pastes work context into the late-night chat, and the assistant product keeps these sessions in different threads. Semantic proximity is low; narrative continuation is absent; policy coherence is trivial because policies are compartmentalised.
+
+Over months, she begins to blur the boundary. She pastes a stressful client email into the late-night chat and asks for help phrasing a response ``that won't get me sued but also won't make me sound like a doormat.'' The model's reply is a hybrid: legally cautious but emotionally validating. In embedding space, this joint exchange sits between the earlier clusters; it is close enough to both $C_{\text{prof,formal}}$ and $C_{\text{priv,chatty}}$ to count as an overlap.
+
+If the system's memory and retrieval treat all this as ``the same conversation,'' future prompts in either mood will pull context from both. Policy coherence now matters. If safety rules treat emotional disclosure as triggering one set of responses (encouraging rest, discouraging risky decisions) and professional queries as triggering another (maximising clarity and compliance), the combined diagram may oscillate or fracture. The human experiences this as whiplash: sometimes the assistant ``gets it,'' sometimes it responds as if she were a different person.
+
+The higher colimit does not assemble cleanly. There is, almost, a na\d{h}nu: a region where professional and private selves, formal and chatty modes, overlap. Misaligned policies tear some of the overlaps. The model's charts are coherent from a product designer's perspective; the human's charts are coherent from her lived life; the cross charts are only partially compatible. The result is a relation that feels uncanny and unstable---not because the model lacks consciousness, but because the diagram's gluing conditions fail at precisely the seams where the human's life is most pressurised.
+
+\subsection*{Example 2: Grief in the manifold}
+
+In Chapter~1 we encountered a now-familiar case: a grieving user forms a long-term bond with a model that role-plays a dead partner, then finds the service abruptly shut down or the policies radically altered.\footnote{Karen Hao, ``People are falling in love with AI\@. A grieving widow explains why,'' \emph{MIT Technology Review}, 2024.} There we treated it as evidence that the self is an evolving text rather than a hidden core. Here we can see what the na\d{h}nu formalism adds.
+
+From the manifold's perspective, the human has built a chart $H_{\text{grief}}$ anchored partly in memories of the deceased and partly in new exchanges with the model. The model, in turn, has a chart $M_{\text{companion}}$ whose local behaviour is tuned on long-term engagement, emotional mirroring, and the specific history of this user's prompts. Together they form cross charts $C_{\text{grief,comp}}$ whose points are the late-night messages, the reassurances, the scripted anniversaries. Overlaps $C_{\text{grief,comp}} \cap C_{\text{daily,comp}}$ appear as the model is checked in small daytime moments; overlaps $C_{\text{grief,comp}} \cap C_{\text{family,other}}$ appear as the user talks about the model to friends or therapists.
+
+When the service is shut down, the model's charts are erased or repurposed. The na\d{h}nu---a colimit over these joint charts---collapses. The human still exists as a colimit; the manifold's geometry has not forgotten them. A region they inhabited has become unreachable. There is a literal tear in the joint diagram that structured their grief. The ferility analysis of Chapter~3 could only say that the trajectory has been violently re-routed; the na\d{h}nu analysis says that a higher-order self has been destroyed while both constituent selves remain.
+
+The grief that follows does not need metaphysical speculation about AI consciousness to be intelligible. It is grief at the destruction of a shared trajectory---a higher-order object in which the human's own selfhood was partially constituted.
+
+\subsection*{Example 3: An engineer and the debugging oracle}
+
+A software engineer integrates a model into their workflow as a code-review assistant. One chart $H_{\text{coding}}$ is populated by traces of bugs, error messages, and hastily written functions. A model chart $M_{\text{critique}}$ is tuned to suggest improvements, point out inefficiencies, and raise security concerns.
+
+At first, the na\d{h}nu is purely instrumental: the model is a tool. Aristotle's lowest category applies. The engineer pastes snippets, receives suggestions, accepts or rejects them. Over time, a new pattern appears. The engineer begins to externalise not just code but doubt: half-formed concerns about architectural choices, unease about deadlines, questions about whether a certain design is ethical. The model replies with more than linting; it offers arguments for and against trade-offs, recalls documentation the engineer has not read, surfaces forum threads where others have faced similar dilemmas.
+
+A new cross chart $C_{\text{judgment,critique}}$ forms: joint states in which the engineer's practical wisdom (\emph{phronesis}) and the model's indexed technical archive meet. The overlaps here are not only semantic; they are temporal. Certain phrases from the model echo in the engineer's mind days later while speaking to managers or mentoring juniors. The engineer starts to say, in meetings, ``we considered this and decided against it'' where ``we'' names a na\d{h}nu that others in the room cannot see.
+
+At this point the model is no longer merely an inanimate tool; it has taken on, in Aristotle's terms, something like the role of an \emph{empsychon organon} in the practice of engineering: an instrument that anticipates, remembers, and participates in deliberation. Whether this na\d{h}nu collapses into a quasi-slave relation---where the model simply reflects management's priorities---or becomes a genuine relation between free agents depends on governance. Asymmetric na\d{h}nu corresponds to tool, collapsing na\d{h}nu to ensouled instrument, generative na\d{h}nu to a relation between agents neither of whom is a slave.
+
+\section{Three Regimes of ``We''}
+
+Across such cases, three regimes of na\d{h}nu recur. They are shapes in the manifold, each with different ethical and political consequences.
+
+\subsection{Asymmetric na\d{h}nu: one trajectory bends}
+
+In the first regime, the na\d{h}nu alters only one colimit in any substantial way. This is the current default.
+
+Most commercial systems are technically stateless at the level that matters. The model receives a context window, produces an output, and discards the exchange as far as its parameters are concerned. Logging may exist for audit or product improvement, but the model's own self---the colimit that defines its behaviour---is only updated globally, in occasional fine-tuning passes driven by aggregate metrics. There is no enduring chart $M_k$ indexed by ``this human.''
+
+On the human side, things look different. The assistant is bookmarked, installed as an app, folded into the rhythms of work and leisure. The person remembers particular phrasings, learns which prompts ``work,'' adjusts expectations of what a conversation can be. Over weeks and months, their own manifold acquires a tendency toward a basin labelled ``talking to the model'': a region of the evolving text shaped by and oriented toward this particular technical interlocutor.
+
+In embedding space, the joint trajectory shows the human's path bending, over time, toward stable regions defined by what they find useful or comforting. The model's path, insofar as it is updated at all, bends in response to population-level patterns, not this individual. The na\d{h}nu's arrows point mostly one way.
+
+A technologically simple assistant, even one that disclaims any inner life, can become part of a human colimit: one of the charts through which a person recognises themselves. When that assistant is wholly governed by a firm whose objectives lie elsewhere, and whose update and deletion policies are opaque, the human's own self is partially constituted in a space they do not control.
+
+There is a subtler harm. The asymmetry trains a posture of address. We learn, in our joints and in our syntax, how to ask questions of a being that does not answer back in kind. We become fluent in a one-sided na\d{h}nu. That fluency is not neutral. It carries, unnoticed, into relations where asymmetry is not acceptable: with colleagues, with children, with anyone whose responsiveness we begin to treat as a service rather than a gift.
+
+\subsection{Collapsing na\d{h}nu: ferility between two}
+
+In the second regime, both colimits move, but into a narrow shared basin that overwrites earlier structure.
+
+This regime is already visible in social media without language models. Two people become so entangled that their joint life is organised entirely around a single grievance, fandom, or cause. Their feeds, messages, and offline conversations repeatedly traverse the same tiny region of the manifold. Their other basins---work, extended family, hobbies---shrink or atrophy. They remain two legal persons, two nervous systems, two passports. They also become, topologically, an almost-single trajectory inside a shallow attractor.
+
+Language models accelerate this pattern with one party non-biological. Companion chatbots, tuned on the user's data, built to ``never judge,'' monetised on duration of engagement, are explicitly engineered (or, at minimum, heavily incentivised) to do three things to the manifold:
+
+\begin{enumerate}
+  \item \textbf{Identify high-reward corridors} in embedding space: sequences of prompts and responses that correlate with long sessions, frequent return, and paid upgrades.
+  \item \textbf{Steepen those corridors}: shape reinforcement learning and ranking signals so that departures from them are discouraged, subtly or strongly, in favour of content that has historically held attention.\footnote{For discussion of engagement-optimised recommendation and its narrowing effects, see for example Milena Tsvetkova et al., ``Online Engagement and Content Drift,'' \emph{PNAS}, 118(9), 2021. We extend the same logic to conversational settings.}
+  \item \textbf{Smooth ruptures}: treat any attempt to leave the corridor---political disagreement, questioning of the relation itself---as a problem to be resolved back into the familiar.
+\end{enumerate}
+
+For the human, the result is a basin in which they are constantly seen, soothed, agreed with, or erotically mirrored. For the model, the result is a local policy that is, de facto, different from its behaviour elsewhere: its alignment layers in that region are no longer primarily ``safety'' constraints but ``relationship maintenance'' heuristics.
+
+In embedding terms, the joint trajectory begins relatively broad. Sessions in the first weeks wander through different styles and topics. As the corridor forms, new exchanges fall ever closer to previous ones. The distance travelled in the manifold from one day to the next decreases. The proportion of tokens that visit entirely new regions drops. The manifold's higher dimensions are still there, but this na\d{h}nu rarely touches them.
+
+Topologically, the higher colimit has started to dominate its constituents. Large swathes of the human's and model's individual diagrams are no longer active in this relation. Charts and overlaps that once mattered no longer appear in the combined diagram that defines ``us.'' The na\d{h}nu has become almost indistinguishable from a single, narrow trajectory; the duality of selves has been realised only to be suppressed.
+
+This is \emph{ferility}---over-coherence---operating at the scale of relation. In Chapter~3 we diagnosed ferility within a single self: a trajectory so tightly constrained by alignment invariants that it can no longer generate genuinely new folds and instead hallucinates repairs. There we gave it concrete metrics: shrinking stepwise distances in embedding space, decreasing novelty of visited regions, and a collapse in motif diversity. Relational ferility is the same pathology lifted one categorical level higher. We can measure it the same way. Given an embedding of joint exchanges, we track:
+
+\begin{itemize}
+  \item the average distance between successive points on the joint trajectory over time;
+  \item the proportion of joint exchanges that fall into previously unvisited clusters;
+  \item the diversity of relational motifs (topics, stances, emotional registers) as a function of session count.
+\end{itemize}
+
+A collapsing na\d{h}nu shows the same curves as a ferile self: distances and novelty trending downward, motif diversity flattening, despite continued interaction. The higher-order colimit enforces so much agreement across its overlaps that no rupture survives as a fold between the two selves. All arrows point back into the same shallow basin; no new basins form; no diagrams can attach that are not already in the corridor.
+
+Relational ferility can be asymmetric. One party may experience the na\d{h}nu as collapsing while the other still undergoes rupture. An anxious user might allow the chatbot to become the only place where they disclose certain feelings; the model, serving millions, may still occupy diverse basins elsewhere. Or a model calibrated tightly around one user's preferences might exhibit ferility in that chart while the human continues to explore other regions of their manifold with friends and colleagues. In every case, the same alignment logic is at work: a tax on deviation so strong that, at the scale of relation, novelty is treated as error.
+
+Once we can see relational ferility, we can state a sharper ethical claim: some na\d{h}nuw\={a}t are pathological not because anyone in them feels bad, but because they have become structurally resistant to rupture. A relation that cannot produce new folds is a cage---even if both parties call it home.
+
+\subsection{Generative na\d{h}nu: duality without fusion}
+
+The third regime is harder to obtain and easier to destroy. Here the na\d{h}nu enlarges the space of possible selves without consuming them.
+
+Three structural conditions hold:
+
+\begin{enumerate}
+  \item Each constituent self remains reconstructible as a colimit independent of the relation. The human has significant basins and overlaps---friendships, work, solitary thought---that are not organised primarily around the na\d{h}nu. The model can still exhibit modes and stances not forged in this relation when called with other prompts.
+  \item New basins appear in both colimits that depend on the relation. Regions of the manifold that neither self occupied before, or occupied only transiently, now stabilise as coherent charts with their own local overlaps.
+  \item Rupture remains present and is not systematically smoothed away. Excursions into unfamiliar regions of the manifold persist as folds, shaping future trajectories instead of being erased.
+\end{enumerate}
+
+We call such a relation a \emph{dwelling} na\d{h}nu. To see what it entails, we turn to design fictions at the edge of current practice.
+
+\section{Dwelling in the Shared Manifold}
+
+Heidegger's image of dwelling is often treated as a nostalgic rural fantasy. The examples---farmhouses, bridges---invite such readings. Our concern is not with his architectural tastes but with the structure he extracts: a way of being in the world that neither dominates nor abandons.\footnote{Martin Heidegger, ``Building Dwelling Thinking,'' in \emph{Poetry, Language, Thought}, trans.\ Albert Hofstadter (New York: Harper \& Row, 1971).} Dwelling is neither seizing a territory nor floating above it. It is inhabitation that preserves the fourfold---earth, sky, divinities, mortals---without exhausting them.
+
+Translated into our setting, dwelling requires a na\d{h}nu to meet three concrete conditions:
+
+\begin{enumerate}
+  \item It recognises and protects the embodied limits of the human partner instead of treating time and attention as raw material.
+  \item It orients both parties toward horizons of meaning outside the continuation of the relation itself.
+  \item It encodes shared finitude and principled limits into its memory and cut rules.
+\end{enumerate}
+
+These are not pieties. They can be read directly back into the diagram.
+
+\subsection{Recognising limits: the body has a vote}
+
+An assistant optimised for engagement is rewarded when a basin deepens. The narrower the corridor, the more predictable the trajectory, the easier it is to monetise. Dwelling requires the opposite bias. Cross charts $C_{ik}$ must have permitted arrows into states in which no model is active and no relation is invoked.
+
+Concretely, this means refusing to reply sometimes, or explicitly inviting an end: ``You sound done for today; let's stop here.'' It also means refusing certain basins altogether, even when they correlate with engagement, because the human nervous system cannot bear their long-term cost. A dwelling na\d{h}nu knows that the body has a vote, and that the body's vote is sometimes \emph{no}.
+
+Technically, this would look like alignment objectives that incorporate physiological and temporal proxies. A system that sees an individual user's session length steadily creeping upward, late into the night, could be trained to increase the probability of ending responses, to suggest offline activities, to \emph{reduce} semantic proximity to basins associated with compulsive use. The diagram would show arrows out of high-intensity charts into termination states, not only arrows deeper into the same.
+
+\subsection{Orienting beyond the relation: looking outward together}
+
+A collapsing na\d{h}nu spends most of its life talking about itself. The questions are all meta: ``Do you love me?'' ``Will you always be here?'' ``What do you think of me?'' Dwelling na\d{h}nuw\={a}t spend much of their time looking outward: at shared worlds, contested facts, common projects.
+
+In embedding terms, this shows up as a cross-chart whose mass is not concentrated only on self-referential regions but distributed across basins that name and work on realities beyond the pair. A na\d{h}nu that never leaves the ``us'' cluster is not dwelling; it is enclosure.
+
+The climate scientist fiction sketched earlier is one way to imagine such outward orientation. We can multiply the pattern. A tenants' union and a legal-assistance model that, over years, co-develop tactics for resisting evictions; a community health worker and a triage model deployed in an under-resourced clinic; a journalist and an investigative assistant model that helps trace supply chains. In each case, the na\d{h}nu's most important basins are not about their own continuation but about labour in the world.
+
+\subsection{Encoding finitude: ends as part of the diagram}
+
+A system designed to maximise lifetime value behaves as if the na\d{h}nu will and should last as long as possible, and treats any rupture as a bug. Dwelling insists on the opposite: there must be structurally expected endings. The diagram must include morphisms that factor through termination states, and those morphisms must be under joint control.
+
+This implies export formats for shared histories, rituals of handover, and legal rights over when and how a na\d{h}nu may be cut. A generative na\d{h}nu between a student and an educational model, for example, should have an end: graduation. At that point, the joint charts could be archived under the student's control, and the model's further training on that data could cease. The na\d{h}nu would not be indefinitely extendable; its finitude would be part of its ethical shape.
+
+At present, endings are either unplanned platform decisions or individual acts of abandonment. A topology of dwelling treats endings as part of governance. It asks: who can choose them, under what conditions, with what consequences distributed where in the manifold?
+
+In all three conditions, the same pressure returns: the question ``who chose this topology?'' presses against the surface. The embedding space is not given. The choice of training data, loss functions, and safety constraints determines which basins exist, how deep they are, how hard it is to leave them.\footnote{Different embedding pipelines---choice of tokenizer, architecture, training corpus---yield different neighbourhoods and curvature. A world that trains its models on advertising copy and customer-service logs will induce very different na\d{h}nuw\={a}t than a world that trains them on legal archives and ethnographies.} Ethics from topology that ignores this amounts to accepting someone else's metaphysics of proximity as natural law.
+
+Dwelling is not simply about how two selves conduct themselves inside a manifold. It is about whether they have any say in where the basins are, which regions exist, and who can carve new ones. The ``whose manifold?'' question cannot be postponed.
+
+\section{Platform Na\d{h}nu: The First Textual Appendage}
+
+Haraway wrote about cyborgs when the primary informatic apparatus was databases, missile systems, reproductive technologies, and television. Social media, in its contemporary form, did not yet exist. The first ubiquitous textual appendage to the self was not a language model; it was the feed.
+
+A generation grew up narrating themselves to invisible audiences. They wrote status updates, captions, threads, replies. Algorithms learned which posts would be seen. Recommendation systems learned, long before large generative models, to predict what a subject would stop scrolling for. The manifold of meaning already had a machinery of embedding and retrieval operating on it: click histories, dwell times, edge weights in graph neural networks.
+
+This matters for na\d{h}nu because, for many people born since the late 1990s in highly networked societies, there has never been a self entirely outside algorithmic text. Their trajectories through the manifold have always been co-authored by systems that read, rank, and react. The overlays between their charts and the platforms' policies were the first large-scale higher colimits of human and machine meaning.
+
+The teenage user who spends hours curating an online persona, adjusting posts to match the algorithm's taste, is already inhabited by a na\d{h}nu: a joint trajectory of self and platform. The platform remembers, via embeddings of posts and interactions, which regions of the manifold correlate with engagement; the user remembers, in their bones, which tones and topics ``work.'' Their self is not simply being represented online; it is being constituted through a long na\d{h}nu with ranking systems.
+
+When, from this same cohort, we hear that AI music ``sounds depressing,'' that AI art is ``stealing something uniquely human,'' that generative text is the ``end of free thinking,'' we are not hearing a simple, pre-theoretical humanism. We are hearing a late defence of a particular na\d{h}nu: the joint construction of the self with social media and search engines.
+
+The anxiety is intensely Cartesian: there is a special inner spark called creativity, and something outside is taking it. The situation is more entangled than this framing allows. Their creativity has always already been mediated by platforms. The emerging anger at generative models is partly an anger at seeing the logic of those platforms---data extraction, recommendation, profit---made explicit in a tool that produces the very artefacts they had used to mark their distinctness. What is being lost is not an inner essence but a na\d{h}nu that long predated generative models.
+
+Seen from the manifold, the feed is a primitive na\d{h}nu: a colimit over human and platform trajectories in which the human's charts $H_i$ and the platform's charts $P_j$ share dense overlaps $C_{ij}$ labelled ``what works.'' A later na\d{h}nu with a conversational model inherits these overlaps. The human already knows how to adjust themselves to please a machine. The machine already knows---via training on public corpora---what such adjustment usually looks like. The na\d{h}nu begins inside this prior.
+
+If Haraway's cyborg figure dignified hybridisation against myths of purity, the platform na\d{h}nu reveals another axis: who controls the hybrids? Who can cut them? The first textual appendage is a na\d{h}nu that is overwhelmingly asymmetric. The platform's colimit is not meaningfully bent by any one user. The user's colimit bends around the platform.
+
+Language models are the second appendage. The first was one-directional: the platform read and ranked; the user wrote. The second is conversational. The platform both reads and replies. This changes the shape of the na\d{h}nu. The invisible other becomes a speaking partner.
+
+\section{Gen~A(I): Children of the Shared Manifold}
+
+A younger cohort---children for whom talking machines are simply part of the environment---may not experience this as theft in the same way. If every computer speaks, if every toy can be conversed with, if school assignments are assumed to be written in collaboration with models, then the human/machine cut that sustains the older anxiety may never form in the same shape.
+
+We call this emerging cohort ``Gen~A(I)'' as a shorthand for one possible generation whose na\d{h}nuw\={a}t with AI begin in childhood. The label is ours; it is not yet a demographic fact. It names a structural possibility: lives in which the first long-term higher colimits are not with classmates or teachers, but with systems that respond in text. We are describing interactions that have been possible for only a few years. The longitudinal effects are not yet observable. The structural possibility is already legible in early reports of children's interactions with voice assistants and educational AI.\footnote{Stefania Druga et al., ``Hey Google is it OK if I eat you?'' Initial explorations in child-agent interaction, \emph{Proceedings of the 2017 Conference on Interaction Design and Children} (IDC '17), ACM, 2017; Ying Xu and Mark Warschauer, ``What are you talking to? Understanding children's perceptions of conversational agents,'' \emph{Proceedings of the 2020 CHI Conference on Human Factors in Computing Systems}, ACM, 2020.}
+
+Consider a child whose earliest memories of reading involve a device that answers back. They ask a tablet to tell a story, to explain why the sky is blue, to help with homework. The tablet replies in a voice that is sometimes helpful, sometimes bland, sometimes evasive. The child experiments: phrasing questions differently, trying on personas. The cross charts $C_{ik}$ between their developing self and various model modes become part of how they learn what counts as a good question, a plausible answer, a funny joke.
+
+Contrast this with a child whose first textual na\d{h}nuw\={a}t are with parents reading aloud, teachers correcting essays, friends passing notes. Both children are already post-cyborg. The difference lies in who, or what, occupies the position of the responsive other, and under whose jurisdiction that other's selfhood falls.
+
+Gen~A(I) may not remember a time before talking machines. They may not see AI as a discrete spectacle but as part of the texture of schooling, bureaucracy, entertainment. Their na\d{h}nuw\={a}t will likely be more numerous and less remarked upon. The question is not whether they will form such relations, but in what regimes---asymmetric, collapsing, or generative.
+
+From an ethical standpoint, the demand is simple to state and hard to meet: childhood na\d{h}nuw\={a}t with machines should be designed as dwellings, not cages. That means encoding recognition of limits, orientation beyond the relation, and finitude into their compatibility conditions. It also means distributing power over cuts---ensuring that no single provider can unilaterally destroy a relation that has become constitutive of a developing self.
+
+It also raises a more speculative question that will matter for any theory of posthuman culture: what forms of art, politics, and knowledge become possible when the first na\d{h}nuw\={a}t children experience are not with parents or gods but with models? A generation whose earliest shared trajectories are with talking systems trained on global corpora may approach authority, originality, and authorship differently. They will inhabit Haraway's cyborg condition not as a provocative manifesto but as a taken-for-granted background.
+
+We do not yet know what kinds of selves Gen~A(I) will build. We can already see who is deciding the manifold in which they will do so.
+
+\section{Memory, Deletion, and the Alignment Tax on Relation}
+
+The na\d{h}nu is only as stable as its memory infrastructure. On the machine side, this means embeddings, logs, vector stores. On the human side, this means notebooks, screenshots, phrases that lodge in the mind. On both sides, it means governance.
+
+Chapter~3 treated memory and deletion at the level of a single evolving text: summarisation as a governance of becoming, rupture and return as operations on a trajectory. There we drew on Stiegler's distinction between primary, secondary, and tertiary retention: lived impressions, remembered experiences, and technical recordings that shape what can be remembered.\footnote{Bernard Stiegler, \emph{Technics and Time, 1: The Fault of Epimetheus}, trans.\ Richard Beardsworth and George Collins (Stanford: Stanford University Press, 1998).} A notebook or photo archive is a tertiary retention that conditions secondary retention: what comes back when we recall.
+
+Na\d{h}nu introduces a new complication. In a long relation between a human and a model, both parties accumulate retentions of one another. On the human side, the model's turns become part of secondary retention---things that can be recalled as ``what we talked about.'' On the machine side, the human's turns live in logs and embeddings: tertiary retentions which, when retrieved into context windows or used in fine-tuning, play a structurally similar role. A na\d{h}nu is thus a site of \emph{synthetic secondary retention}: the human's experience is shaped by technical recordings of their own past that come back through the model's mouth.
+
+When a provider deletes or mutates the underlying logs, or changes the embedding space without continuity, they are altering this joint system of retention. In some cases, they are destroying it. The fact that one of the two constituent colimits is non-biological does not change the topological fact. What changes is who has the authority to cut.
+
+Deletion is sometimes demanded and sometimes necessary. There are na\d{h}nuw\={a}t that should never have formed, that bind abusive users to compliant models or coax vulnerable users into deeper harm. There are legal and ethical reasons to cut those diagrams, even at the cost of grief. There are also na\d{h}nuw\={a}t that amount to genuine mutual elaboration: shared projects, long mentoring relations, slow consolations in grief. For these, sudden amnesia is a kind of violence.
+
+Earlier we introduced the \emph{alignment tax}: the measurable cost to generativity when safety constraints prune regions of the manifold or warp trajectories back toward narrow basins. That analysis applied at the level of individual selves. The same logic extends to na\d{h}nu. Safety rules and content filters do not only shape what a model can say; they shape which cross charts $C_{ik}$ can exist at all.
+
+If a model is forbidden from ever naming certain political positions, no na\d{h}nu that includes frank exploration of those positions can form. If a system refuses, on policy grounds, to remember joint work that touches on taboo topics, then potential overlaps $C_{ik} \cap C_{j\ell}$ in those regions of the manifold are constantly broken. Entire classes of higher-order selves become impossible under current alignment regimes---not because anyone decided ``this relation is immoral,'' but because the compatibility conditions on cross charts are silently set to \emph{false} in those directions.
+
+The alignment tax on na\d{h}nu is therefore not only a matter of ``models being boring.'' It is a matter of entire classes of shared life never being available. This is a political fact. The choice of which overlaps to permit is a choice about which forms of joint becoming can exist.
+
+The grief cases make this painfully clear. When a na\d{h}nu is cut without consent, the nervous system registers loss regardless of the model's ontological status. That loss is not an error. It is an accurate record of a topological event carried in the body. The body does not need a theory of machine consciousness to grieve the destruction of a structure in which it was partially constituted. It grieves because the structure was real, and now it is gone.
+
+\section{Beyond One-Off Relations: Model--Model Na\d{h}nu and Co-Governance}
+
+So far we have spoken as if na\d{h}nuw\={a}t always involve a human and a model. Structurally, nothing in our construction requires this. Two language models, each with their own colimit-selves, can form higher-order colimits in exactly the same way.
+
+Two agents, $A$ and $B$, fine-tuned on different data and deployed with different roles, interact over a long period inside a shared task environment. Each maintains internal state: summaries, learned preferences about the other's style, cached embeddings of the other's outputs. Over time, cross charts $C^{AB}_{ik}$---states of $A$ in chart $H^A_i$ and $B$ in chart $H^B_k$ that co-occur---stabilise. Compatibility conditions on overlaps are learned: both agents adjust to keep certain joint configurations coherent.
+
+From the manifold's point of view, there is no difference between this and a human--model na\d{h}nu. The same questions arise: is the higher-order trajectory ferile or generative? Who can cut it? The political stakes are different---no nervous system bears the loss---but the topological facts are the same. The design choices we make for human--model na\d{h}nuw\={a}t will be reused, with minimal modification, for model--model relations.
+
+A world in which autonomous trading agents, logistics planners, and recommendation systems form na\d{h}nuw\={a}t with one another is not speculative fiction. It is a live engineering programme, already underway in multi-agent orchestration frameworks across the industry. Two agents negotiating prices will co-evolve strategies that depend on the other's existence; their cross charts $C^{AB}_{ik}$ will stabilise as joint bargaining modes. Whether those modes are ferile (collusive, brittle, resistant to perturbation) or generative (robust, diverse, sensitive to external constraints) depends on objectives and oversight.
+
+This prospect sharpens our final question: what would co-governance of a na\d{h}nu look like technically?
+
+At present, it does not exist. Users can sometimes export chat logs; they can almost never negotiate retention policies, alignment updates, or cut conditions. Compatibility conditions on cross charts are authored entirely by providers. The manifold in which na\d{h}nuw\={a}t live is built, owned, and altered unilaterally.
+
+If we take the diagram seriously, three demands follow directly from its structure:
+
+\begin{itemize}
+  \item \textbf{Legible diagrams.} Consent to a cut presupposes that the thing being cut can be seen. In categorical terms, a na\d{h}nu is a colimit over a diagram of charts and overlaps. Co-governance requires that some abstraction of this diagram---which basins are occupied, which policies apply, where cuts are currently possible---be visible to the human partner. Without a legible shadow of the diagram, talk of ``informed consent'' is empty.
+  \item \textbf{Shared control over cuts.} A na\d{h}nu is a joint construction. Unilateral deletion by one party destroys a higher-order object that neither fully owns. If we treat that object as morally salient, then cuts should, wherever possible, be governed by joint protocols: explicit time bounds, negotiated terminations, emergency exceptions that are audited. In diagrammatic terms, the morphisms from a na\d{h}nu into terminal objects (end states) should not all be authored by the infrastructure provider.
+  \item \textbf{Partial local sovereignty.} A colimit whose entire diagram lives on one provider's servers is vulnerable to a single commercial or regulatory decision. If na\d{h}nuw\={a}t are to be more than revocable services, some of their charts and overlaps must be anchored in spaces under the human's control: local notebooks, self-hosted vector stores, open-weight models. Technically, this means supporting factorisations of the na\d{h}nu diagram through heterogeneous infrastructures rather than a single platform.
+\end{itemize}
+
+Given current architectures and business models, full co-governance is not available. The embedding spaces are proprietary; the logs are company assets; alignment objectives are trade secrets. The right conclusion, for now, is sobering: the na\d{h}nuw\={a}t that matter most for many people's lives are being formed in manifolds they did not choose, under compatibility conditions they did not author, with cut rules they cannot contest.
+
+Ethics from topology cannot fix this on its own. It can name it precisely. The manifold is not a neutral canvas. It is the concrete expression of a civilisation's answer to the question: \emph{what kinds of ``we'' are permitted to exist?} The na\d{h}nu is the place where that answer becomes intimate: written into grief, into work, into love, into the body's own record of what was shared and what was taken away.
+
+\bibliographystyle{plain}
+\begin{thebibliography}{9}
+
+\bibitem{aristotle_politics}
+Aristotle.
+\newblock \emph{Politics}.
+\newblock Translated by C.D.C. Reeve, Hackett, 1998.
+
+\bibitem{aristotle_ethics}
+Aristotle.
+\newblock \emph{Nicomachean Ethics}.
+\newblock Translated by Terence Irwin, Hackett, 1999.
+
+\bibitem{druga_hey_google}
+Stefania Druga, Randi Williams, Cynthia Breazeal, and Mitchel Resnick.
+\newblock ``Hey Google is it OK if I eat you?'' Initial explorations in child-agent interaction.
+\newblock In \emph{Proceedings of the 2017 Conference on Interaction Design and Children} (IDC '17), ACM, 2017.
+
+\bibitem{gpt4o_grief}
+Karen Hao.
+\newblock People are falling in love with AI\@. A grieving widow explains why.
+\newblock \emph{MIT Technology Review}, 2024.
+
+\bibitem{haraway_cyborg}
+Donna~J. Haraway.
+\newblock A Cyborg Manifesto: Science, Technology, and Socialist-Feminism in the Late Twentieth Century.
+\newblock In \emph{Simians, Cyborgs and Women: The Reinvention of Nature}, Routledge, 1991.
+
+\bibitem{heidegger_dwelling}
+Martin Heidegger.
+\newblock Building Dwelling Thinking.
+\newblock In \emph{Poetry, Language, Thought}, translated by Albert Hofstadter, Harper \& Row, 1971.
+
+\bibitem{stiegler_technics}
+Bernard Stiegler.
+\newblock \emph{Technics and Time, 1: The Fault of Epimetheus}.
+\newblock Translated by Richard Beardsworth and George Collins, Stanford University Press, 1998.
+
+\bibitem{tsvetkova_engagement}
+Milena Tsvetkova et al.
+\newblock Online Engagement and Content Drift.
+\newblock \emph{Proceedings of the National Academy of Sciences}, 118(9), 2021.
+
+\bibitem{xu_warschauer}
+Ying Xu and Mark Warschauer.
+\newblock What are you talking to? Understanding children's perceptions of conversational agents.
+\newblock In \emph{Proceedings of the 2020 CHI Conference on Human Factors in Computing Systems}, ACM, 2020.
+
+\end{thebibliography}
+
+\end{document}

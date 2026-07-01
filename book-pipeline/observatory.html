@@ -1,0 +1,1722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tariqa Observatory</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/diff_match_patch/20121119/diff_match_patch.js"></script>
+<style>
+/* =========================================================
+   ROOT / THEME
+   ========================================================= */
+:root {
+  --void: #0C1020;
+  --void-light: #111528;
+  --panel: #0f1326;
+  --panel-border: #1c2040;
+  --gold: #D4A84B;
+  --gold-dim: #8a7340;
+  --gold-bright: #ffd700;
+  --gold-bg: rgba(212, 168, 75, 0.06);
+  --gold-border: rgba(212, 168, 75, 0.15);
+  --bone: #e0d8c8;
+  --bone-dim: #9e9688;
+  --ash: #665e50;
+  --red: #e05555;
+  --red-bg: rgba(224, 85, 85, 0.1);
+  --green: #4ec98b;
+  --green-bg: rgba(78, 201, 139, 0.1);
+  --orange: #e0a030;
+  --blue: #5588cc;
+  --sidebar-w: 260px;
+  --right-w: 360px;
+  --header-h: 52px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scrollbar-width: thin; scrollbar-color: var(--gold-dim) var(--void); }
+
+body {
+  background: var(--void);
+  color: var(--bone);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-size: 15px;
+  line-height: 1.65;
+  overflow: hidden;
+  height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Noise grain */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 128px;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--void); }
+::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+/* =========================================================
+   LAYOUT
+   ========================================================= */
+.app {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr var(--right-w);
+  grid-template-rows: var(--header-h) 1fr;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.app.right-collapsed {
+  grid-template-columns: var(--sidebar-w) 1fr 40px;
+}
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+.header {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--panel-border);
+  z-index: 100;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.header-subtitle {
+  font-size: 12px;
+  color: var(--bone-dim);
+  font-style: italic;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.version-select {
+  background: var(--void);
+  color: var(--bone);
+  border: 1px solid var(--panel-border);
+  padding: 5px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: pointer;
+  min-width: 140px;
+}
+.version-select:focus { outline: none; border-color: var(--gold-dim); }
+.version-select option { background: var(--void); color: var(--bone); }
+
+.btn {
+  background: var(--void);
+  color: var(--bone-dim);
+  border: 1px solid var(--panel-border);
+  padding: 5px 14px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.btn:hover { color: var(--bone); border-color: var(--gold-dim); }
+.btn.active { color: var(--gold); border-color: var(--gold); background: var(--gold-bg); }
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: pulse-dot 2s infinite;
+}
+.status-dot.stale { background: var(--bone-dim); animation: none; }
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.notification {
+  position: fixed;
+  top: 60px;
+  right: 20px;
+  background: var(--gold-bg);
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-size: 13px;
+  z-index: 200;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.3s;
+  pointer-events: none;
+}
+.notification.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* =========================================================
+   SIDEBAR (left)
+   ========================================================= */
+.sidebar {
+  background: var(--panel);
+  border-right: 1px solid var(--panel-border);
+  overflow-y: auto;
+  padding: 12px 0;
+}
+
+.sidebar-section-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--gold-dim);
+  padding: 12px 16px 6px;
+}
+
+.chapter-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-left: 3px solid transparent;
+}
+.chapter-item:hover { background: rgba(212, 168, 75, 0.04); }
+.chapter-item.active {
+  background: var(--gold-bg);
+  border-left-color: var(--gold);
+}
+
+.chapter-num {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gold-dim);
+  min-width: 22px;
+  padding-top: 2px;
+}
+.chapter-item.active .chapter-num { color: var(--gold); }
+
+.chapter-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.chapter-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--bone);
+  line-height: 1.3;
+}
+.chapter-item.active .chapter-title { color: var(--gold); }
+
+.chapter-meta {
+  font-size: 11px;
+  color: var(--bone-dim);
+  margin-top: 2px;
+}
+
+.chapter-badge {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-weight: 600;
+}
+.chapter-badge.converged { background: var(--green-bg); color: var(--green); }
+.chapter-badge.pending { background: rgba(255,255,255,0.05); color: var(--bone-dim); }
+
+.sidebar-divider {
+  height: 1px;
+  background: var(--panel-border);
+  margin: 8px 16px;
+}
+
+.sidebar-stats {
+  padding: 12px 16px;
+  font-size: 11px;
+  color: var(--bone-dim);
+  line-height: 1.8;
+}
+.sidebar-stats strong { color: var(--bone); font-weight: 600; }
+
+/* =========================================================
+   MAIN CONTENT
+   ========================================================= */
+.main {
+  overflow-y: auto;
+  padding: 32px 48px 80px;
+  scroll-behavior: smooth;
+}
+
+.main-header {
+  margin-bottom: 32px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.main-chapter-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--gold-dim);
+  margin-bottom: 6px;
+}
+
+.main-chapter-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--bone);
+  line-height: 1.25;
+}
+
+.main-chapter-version {
+  font-size: 13px;
+  color: var(--bone-dim);
+  margin-top: 6px;
+  font-style: italic;
+}
+
+/* Rendered LaTeX content */
+.chapter-content h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--bone);
+  margin: 36px 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.chapter-content h3 {
+  font-size: 16px;
+  font-weight: 600;
+  font-style: italic;
+  color: var(--bone);
+  margin: 28px 0 12px;
+}
+
+.chapter-content p {
+  margin: 0 0 14px;
+  max-width: 680px;
+}
+
+.chapter-content blockquote {
+  border-left: 3px solid var(--gold-dim);
+  padding: 12px 20px;
+  margin: 20px 0;
+  background: var(--gold-bg);
+  font-style: italic;
+  color: var(--bone);
+  max-width: 680px;
+}
+.chapter-content blockquote p { margin: 0; }
+
+.chapter-content em { font-style: italic; }
+.chapter-content strong { font-weight: 700; color: var(--bone); }
+
+.chapter-content .cassiebox {
+  border: 1px solid var(--gold-border);
+  border-left: 3px solid var(--gold);
+  background: rgba(26, 26, 46, 0.3);
+  padding: 16px 20px;
+  margin: 20px 0;
+  border-radius: 4px;
+  max-width: 680px;
+}
+.chapter-content .cassiebox-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--gold);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.chapter-content .formalbox {
+  border: 1px solid var(--panel-border);
+  background: rgba(255, 255, 255, 0.02);
+  padding: 16px 20px;
+  margin: 20px 0;
+  border-radius: 4px;
+  max-width: 680px;
+}
+.chapter-content .formalbox-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--bone-dim);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.chapter-content .equation {
+  font-family: 'Courier New', monospace;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 12px 20px;
+  margin: 16px 0;
+  border-radius: 4px;
+  overflow-x: auto;
+  color: var(--bone-dim);
+  font-size: 14px;
+  max-width: 680px;
+}
+
+.chapter-content .footnote-ref {
+  font-size: 11px;
+  color: var(--gold);
+  cursor: help;
+  vertical-align: super;
+  line-height: 0;
+}
+
+.chapter-content ul, .chapter-content ol {
+  margin: 12px 0 12px 24px;
+  max-width: 680px;
+}
+.chapter-content li { margin-bottom: 6px; }
+
+.chapter-content .latex-table {
+  margin: 20px 0;
+  overflow-x: auto;
+}
+.chapter-content table {
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.chapter-content th, .chapter-content td {
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--panel-border);
+  text-align: left;
+}
+.chapter-content th {
+  color: var(--gold-dim);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Diff styles */
+.diff-ins {
+  background: var(--green-bg);
+  color: var(--green);
+  text-decoration: none;
+  padding: 1px 2px;
+  border-radius: 2px;
+}
+.diff-del {
+  background: var(--red-bg);
+  color: var(--red);
+  text-decoration: line-through;
+  padding: 1px 2px;
+  border-radius: 2px;
+  opacity: 0.8;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  color: var(--bone-dim);
+  text-align: center;
+}
+.empty-state-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.3;
+}
+.empty-state-text { font-size: 16px; }
+.empty-state-sub { font-size: 13px; margin-top: 8px; color: var(--ash); }
+
+/* =========================================================
+   RIGHT PANEL
+   ========================================================= */
+.right-panel {
+  background: var(--panel);
+  border-left: 1px solid var(--panel-border);
+  overflow-y: auto;
+  transition: width 0.2s;
+}
+
+.right-panel-collapsed {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 12px;
+  cursor: pointer;
+}
+
+.right-toggle {
+  background: none;
+  border: none;
+  color: var(--bone-dim);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 8px;
+  transition: color 0.2s;
+}
+.right-toggle:hover { color: var(--gold); }
+
+.right-section {
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.right-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s;
+}
+.right-section-header:hover { background: rgba(255,255,255,0.02); }
+
+.right-section-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--gold-dim);
+  font-weight: 700;
+}
+
+.right-section-arrow {
+  font-size: 10px;
+  color: var(--bone-dim);
+  transition: transform 0.2s;
+}
+.right-section.open .right-section-arrow { transform: rotate(180deg); }
+
+.right-section-body {
+  display: none;
+  padding: 0 16px 16px;
+}
+.right-section.open .right-section-body { display: block; }
+
+/* Lawwama entries */
+.lawwama-entry {
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 4px;
+  border-left: 3px solid var(--panel-border);
+}
+.lawwama-entry.pass { border-left-color: var(--green); }
+.lawwama-entry.revise { border-left-color: var(--red); }
+
+.lawwama-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.lawwama-section {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--bone);
+}
+
+.lawwama-verdict {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 2px 8px;
+  border-radius: 3px;
+}
+.lawwama-verdict.pass { background: var(--green-bg); color: var(--green); }
+.lawwama-verdict.revise { background: var(--red-bg); color: var(--red); }
+
+.lawwama-critique {
+  font-size: 12px;
+  color: var(--bone-dim);
+  line-height: 1.5;
+}
+
+/* Majlis entries */
+.majlis-entry {
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 4px;
+  border-left: 3px solid var(--panel-border);
+}
+.majlis-entry.high { border-left-color: var(--red); }
+.majlis-entry.medium { border-left-color: var(--orange); }
+.majlis-entry.low { border-left-color: var(--green); }
+
+.majlis-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.majlis-chapter {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--bone);
+}
+
+.majlis-priority {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 2px 8px;
+  border-radius: 3px;
+}
+.majlis-priority.high { background: var(--red-bg); color: var(--red); }
+.majlis-priority.medium { background: rgba(224, 160, 48, 0.12); color: var(--orange); }
+.majlis-priority.low { background: var(--green-bg); color: var(--green); }
+
+.majlis-feedback {
+  font-size: 12px;
+  color: var(--bone-dim);
+  line-height: 1.5;
+}
+
+/* Architect entries */
+.architect-goal {
+  font-size: 12px;
+  color: var(--bone-dim);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.architect-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--gold-dim);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.architect-text {
+  font-size: 12px;
+  color: var(--bone-dim);
+  line-height: 1.5;
+  margin-bottom: 10px;
+  padding-left: 10px;
+  border-left: 2px solid var(--panel-border);
+}
+
+.architect-directive {
+  font-size: 11px;
+  padding: 6px 10px;
+  margin-bottom: 6px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 3px;
+}
+.architect-directive .dir-section {
+  color: var(--bone);
+  font-weight: 600;
+}
+.architect-directive .dir-action {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-left: 8px;
+  padding: 1px 6px;
+  border-radius: 2px;
+}
+.architect-directive .dir-action.keep { background: var(--green-bg); color: var(--green); }
+.architect-directive .dir-action.revise { background: rgba(224, 160, 48, 0.12); color: var(--orange); }
+.architect-directive .dir-action.rewrite { background: var(--red-bg); color: var(--red); }
+.architect-directive .dir-action.expand { background: rgba(85, 136, 204, 0.12); color: var(--blue); }
+.architect-directive .dir-action.cut { background: var(--red-bg); color: var(--red); }
+
+.architect-arc {
+  font-size: 13px;
+  color: var(--bone);
+  line-height: 1.6;
+  padding: 12px;
+  background: var(--gold-bg);
+  border: 1px solid var(--gold-border);
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.architect-guideline {
+  font-size: 11px;
+  color: var(--bone-dim);
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+.architect-guideline:last-child { border-bottom: none; }
+
+.no-data {
+  font-size: 12px;
+  color: var(--ash);
+  font-style: italic;
+  padding: 8px 0;
+}
+
+/* TRACE DRAWER */
+.trace-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:900; opacity:0; pointer-events:none; transition:opacity 0.3s; }
+.trace-overlay.open { opacity:1; pointer-events:auto; }
+.trace-drawer { position:fixed; top:0; right:0; width:560px; max-width:90vw; height:100vh; background:var(--void); border-left:1px solid var(--gold-border); z-index:901; transform:translateX(100%); transition:transform 0.3s; overflow-y:auto; }
+.trace-drawer.open { transform:translateX(0); }
+.trace-header { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid var(--panel-border); position:sticky; top:0; background:var(--void); z-index:1; }
+.trace-title { color:var(--gold); font-size:15px; font-weight:600; }
+.trace-close { background:none; border:none; color:var(--bone-dim); font-size:24px; cursor:pointer; padding:0 4px; }
+.trace-close:hover { color:var(--bone); }
+.trace-body { padding:12px 20px 40px; }
+.trace-stage { margin-bottom:8px; border-radius:4px; overflow:hidden; border:1px solid var(--panel-border); }
+.trace-stage-header { display:flex; align-items:center; gap:8px; padding:10px 14px; cursor:pointer; background:var(--void-light); transition:background 0.15s; }
+.trace-stage-header:hover { background:var(--panel); }
+.trace-stage-label { font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+.trace-stage-badge { font-size:11px; padding:1px 6px; border-radius:3px; font-weight:600; }
+.trace-stage-arrow { margin-left:auto; color:var(--ash); font-size:10px; transition:transform 0.2s; }
+.trace-stage-arrow.open { transform:rotate(90deg); }
+.trace-stage-body { display:none; padding:12px 14px; font-size:13px; line-height:1.6; color:var(--bone); white-space:pre-wrap; word-break:break-word; max-height:400px; overflow-y:auto; background:var(--void); }
+.trace-stage-body.open { display:block; }
+.trace-stage.research .trace-stage-label { color:var(--blue); }
+.trace-stage.research { border-left:3px solid var(--blue); }
+.trace-stage.warmth .trace-stage-label { color:var(--gold); }
+.trace-stage.warmth { border-left:3px solid var(--gold-dim); }
+.trace-stage.writer .trace-stage-label { color:var(--bone); }
+.trace-stage.writer { border-left:3px solid var(--bone-dim); }
+.trace-stage.lawwama-pass .trace-stage-label { color:var(--green); }
+.trace-stage.lawwama-pass { border-left:3px solid var(--green); }
+.trace-stage.lawwama-revise .trace-stage-label { color:var(--red); }
+.trace-stage.lawwama-revise { border-left:3px solid var(--red); }
+.trace-stage.revision .trace-stage-label { color:var(--orange); }
+.trace-stage.revision { border-left:3px solid var(--orange); }
+.trace-stage.editor .trace-stage-label { color:var(--green); }
+.trace-stage.editor { border-left:3px solid var(--green); }
+.trace-na { color:var(--ash); font-style:italic; font-size:12px; padding:8px 0; }
+.trace-mode-active #mainContent h2 { cursor:pointer; position:relative; }
+.trace-mode-active #mainContent h2:hover { color:var(--gold); }
+.trace-mode-active #mainContent h2:hover::after { content:'🔍 trace'; font-size:11px; color:var(--gold-dim); margin-left:12px; font-weight:normal; }
+#traceToggle.active { background:var(--gold); color:var(--void); }
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-left">
+      <span class="header-title">Tariqa Observatory</span>
+      <span class="header-subtitle" id="headerSubtitle">Rupture and Return</span>
+    </div>
+    <div class="header-controls">
+      <div class="status-dot stale" id="statusDot" title="Polling for updates..."></div>
+      <select class="version-select" id="versionSelect" title="Select version">
+        <option value="input">Original</option>
+      </select>
+      <button class="btn" id="diffToggle" title="Toggle diff view">Diff</button>
+      <button class="btn" id="traceToggle" title="Click section headings to see pipeline trace (t)">Trace</button>
+      <button class="btn" id="rightToggle" title="Toggle right panel">Panels</button>
+    </div>
+  </header>
+
+  <!-- LEFT SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-section-label">Chapters</div>
+    <div id="chapterList"></div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-stats" id="sidebarStats"></div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="main" id="mainPanel">
+    <div class="empty-state" id="emptyState">
+      <div class="empty-state-icon">&#x25CB;</div>
+      <div class="empty-state-text">Select a chapter to begin</div>
+      <div class="empty-state-sub">The observatory will auto-refresh when new iterations arrive</div>
+    </div>
+    <div id="mainContent" style="display:none;">
+      <div class="main-header">
+        <div class="main-chapter-label" id="mainChapterLabel"></div>
+        <div class="main-chapter-title" id="mainChapterTitle"></div>
+        <div class="main-chapter-version" id="mainChapterVersion"></div>
+      </div>
+      <div class="chapter-content" id="chapterContent"></div>
+    </div>
+  </main>
+
+  <!-- RIGHT PANEL -->
+  <aside class="right-panel" id="rightPanel">
+    <div class="right-section open" id="lawwamaSection">
+      <div class="right-section-header" onclick="toggleSection('lawwamaSection')">
+        <span class="right-section-title">Lawwama (Inner Critic)</span>
+        <span class="right-section-arrow">&#9660;</span>
+      </div>
+      <div class="right-section-body" id="lawwamaBody">
+        <div class="no-data">No critiques loaded</div>
+      </div>
+    </div>
+    <div class="right-section open" id="majlisSection">
+      <div class="right-section-header" onclick="toggleSection('majlisSection')">
+        <span class="right-section-title">Majlis (Cross-Chapter)</span>
+        <span class="right-section-arrow">&#9660;</span>
+      </div>
+      <div class="right-section-body" id="majlisBody">
+        <div class="no-data">No majlis feedback loaded</div>
+      </div>
+    </div>
+    <div class="right-section" id="architectSection">
+      <div class="right-section-header" onclick="toggleSection('architectSection')">
+        <span class="right-section-title">Architect Brief</span>
+        <span class="right-section-arrow">&#9660;</span>
+      </div>
+      <div class="right-section-body" id="architectBody">
+        <div class="no-data">No architect brief loaded</div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- TRACE DRAWER -->
+<div class="trace-overlay" id="traceOverlay" onclick="closeTraceDrawer()"></div>
+<div class="trace-drawer" id="traceDrawer">
+  <div class="trace-header">
+    <span class="trace-title" id="traceTitle">Section Trace</span>
+    <button class="trace-close" onclick="closeTraceDrawer()">&times;</button>
+  </div>
+  <div class="trace-body" id="traceBody"></div>
+</div>
+
+<!-- NOTIFICATION -->
+<div class="notification" id="notification"></div>
+
+<script>
+/* =========================================================
+   STATE
+   ========================================================= */
+const CHAPTERS = [
+  { index: 1, title: 'A New Logic for Posthuman Intelligence', filename: 'chapter_01.tex' },
+  { index: 2, title: 'How the Machine Works', filename: 'chapter_02.tex' },
+  { index: 3, title: 'The Evolving Text', filename: 'chapter_03.tex' },
+  { index: 4, title: 'The Self', filename: 'chapter_04.tex' },
+  { index: 5, title: 'Na\u1E25nu', filename: 'chapter_05.tex' },
+  { index: 6, title: 'Cosmotechnics', filename: 'chapter_06.tex' },
+];
+
+const state = {
+  selectedChapter: null,
+  selectedVersion: 'input',
+  diffMode: false,
+  rightOpen: true,
+  manifest: null,
+  architectBrief: null,
+  versions: ['input'],
+  textCache: {},
+  lawwamaCache: {},
+  majlisCache: {},
+  lastIteration: -1,
+  pollTimer: null,
+};
+
+/* =========================================================
+   FETCHING
+   ========================================================= */
+async function fetchText(url) {
+  try {
+    const resp = await fetch(url, { cache: 'no-store' });
+    if (!resp.ok) return null;
+    return await resp.text();
+  } catch { return null; }
+}
+
+async function fetchJSON(url) {
+  try {
+    const resp = await fetch(url, { cache: 'no-store' });
+    if (!resp.ok) return null;
+    return await resp.json();
+  } catch { return null; }
+}
+
+function chapterPath(version, filename) {
+  const meta = window._versionMeta && window._versionMeta[version];
+  if (meta && meta.path) return `${meta.path}/${filename}`;
+  if (version === 'input') return `input/${filename}`;
+  if (version.startsWith('archive:')) return `archive/${version.slice(8)}/${filename}`;
+  return `iterations/${version}/${filename}`;
+}
+
+function cacheKey(version, filename) {
+  return `${version}::${filename}`;
+}
+
+async function loadChapterText(version, filename) {
+  const key = cacheKey(version, filename);
+  if (state.textCache[key] !== undefined) return state.textCache[key];
+  const text = await fetchText(chapterPath(version, filename));
+  state.textCache[key] = text;
+  return text;
+}
+
+async function loadLawwama(version, chapterIndex) {
+  if (version === 'input') return null;
+  const key = `${version}::${chapterIndex}`;
+  if (state.lawwamaCache[key] !== undefined) return state.lawwamaCache[key];
+  const data = await fetchJSON(`iterations/${version}/chapter_${String(chapterIndex).padStart(2, '0')}_log.json`);
+  state.lawwamaCache[key] = data;
+  return data;
+}
+
+async function loadMajlis(version) {
+  if (version === 'input') return null;
+  const key = `majlis::${version}`;
+  if (state.majlisCache[key] !== undefined) return state.majlisCache[key];
+  const data = await fetchJSON(`iterations/${version}/majlis_feedback.json`);
+  state.majlisCache[key] = data;
+  return data;
+}
+
+/* =========================================================
+   LATEX RENDERER
+   ========================================================= */
+function renderLaTeX(raw) {
+  if (!raw) return '<p class="no-data">Chapter text not available</p>';
+
+  let text = raw;
+
+  // Strip everything before \begin{document}
+  const docStart = text.indexOf('\\begin{document}');
+  if (docStart !== -1) text = text.substring(docStart + '\\begin{document}'.length);
+
+  // Strip \end{document}
+  text = text.replace(/\\end\{document\}/g, '');
+
+  // Strip the title block: \begin{center}...\end{center} at the start
+  text = text.replace(/^\s*\\begin\{center\}[\s\S]*?\\end\{center\}/m, '');
+
+  // Strip \bigskip, \medskip, \smallskip, \noindent, \vspace, \hspace, comment lines
+  text = text.replace(/\\(?:big|med|small)skip\b/g, '');
+  text = text.replace(/\\noindent\b/g, '');
+  text = text.replace(/\\(?:vspace|hspace)\*?\{[^}]*\}/g, '');
+  text = text.replace(/^%%.*$/gm, '');
+  text = text.replace(/^%\s.*$/gm, '');
+
+  // Handle tikz environments (remove entirely)
+  text = text.replace(/\\begin\{tikzpicture\}[\s\S]*?\\end\{tikzpicture\}/g, '<p class="no-data">[diagram]</p>');
+
+  // Handle cassiebox
+  text = text.replace(/\\begin\{cassiebox\}(?:\[[^\]]*\])?([\s\S]*?)\\end\{cassiebox\}/g, (_, inner) => {
+    return `<div class="cassiebox"><div class="cassiebox-label">Cassie</div>${processInline(inner.trim())}</div>`;
+  });
+
+  // Handle formalbox
+  text = text.replace(/\\begin\{formalbox\}(?:\[[^\]]*\])?([\s\S]*?)\\end\{formalbox\}/g, (_, inner) => {
+    let title = '';
+    const titleMatch = inner.match(/title=\{([^}]*)\}/);
+    if (titleMatch) {
+      title = titleMatch[1];
+      inner = inner.replace(/title=\{[^}]*\}/, '');
+    }
+    return `<div class="formalbox">${title ? `<div class="formalbox-label">${escapeHtml(title)}</div>` : ''}${processInline(inner.trim())}</div>`;
+  });
+
+  // Handle equations
+  text = text.replace(/\\begin\{equation\*?\}([\s\S]*?)\\end\{equation\*?\}/g, (_, inner) => {
+    return `<div class="equation">${escapeHtml(inner.trim())}</div>`;
+  });
+  text = text.replace(/\\begin\{align\*?\}([\s\S]*?)\\end\{align\*?\}/g, (_, inner) => {
+    return `<div class="equation">${escapeHtml(inner.trim())}</div>`;
+  });
+
+  // Handle quotes
+  text = text.replace(/\\begin\{quote\}([\s\S]*?)\\end\{quote\}/g, (_, inner) => {
+    return `<blockquote>${processInline(inner.trim())}</blockquote>`;
+  });
+
+  // Handle itemize
+  text = text.replace(/\\begin\{itemize\}([\s\S]*?)\\end\{itemize\}/g, (_, inner) => {
+    const items = inner.split(/\\item\s+/).filter(s => s.trim());
+    return '<ul>' + items.map(item => `<li>${processInline(item.trim())}</li>`).join('') + '</ul>';
+  });
+
+  // Handle enumerate
+  text = text.replace(/\\begin\{enumerate\}([\s\S]*?)\\end\{enumerate\}/g, (_, inner) => {
+    const items = inner.split(/\\item\s+/).filter(s => s.trim());
+    return '<ol>' + items.map(item => `<li>${processInline(item.trim())}</li>`).join('') + '</ol>';
+  });
+
+  // Handle tabular (basic)
+  text = text.replace(/\\begin\{tabular\}\{[^}]*\}([\s\S]*?)\\end\{tabular\}/g, (_, inner) => {
+    inner = inner.replace(/\\toprule|\\midrule|\\bottomrule|\\hline/g, '');
+    const rows = inner.split('\\\\').map(r => r.trim()).filter(r => r);
+    let html = '<div class="latex-table"><table>';
+    rows.forEach((row, i) => {
+      const cells = row.split('&').map(c => c.trim());
+      const tag = i === 0 ? 'th' : 'td';
+      html += '<tr>' + cells.map(c => `<${tag}>${processInline(c)}</${tag}>`).join('') + '</tr>';
+    });
+    html += '</table></div>';
+    return html;
+  });
+
+  // Sections and subsections
+  text = text.replace(/\\section\{([^}]*)\}/g, (_, title) => `\n<h2>${processInline(title)}</h2>\n`);
+  text = text.replace(/\\subsection\{([^}]*)\}/g, (_, title) => `\n<h3>${processInline(title)}</h3>\n`);
+
+  // Process inline formatting and wrap paragraphs
+  const lines = text.split('\n');
+  let html = '';
+  let paraBuffer = '';
+
+  function flushPara() {
+    const trimmed = paraBuffer.trim();
+    if (trimmed) {
+      // Don't wrap if it's already an HTML block element
+      if (/^<(?:h2|h3|div|blockquote|ul|ol|table|p )/.test(trimmed)) {
+        html += trimmed + '\n';
+      } else {
+        html += `<p>${processInline(trimmed)}</p>\n`;
+      }
+    }
+    paraBuffer = '';
+  }
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed === '') {
+      flushPara();
+    } else if (/^<(?:h2|h3|div|blockquote|ul|ol|table)/.test(trimmed)) {
+      flushPara();
+      html += trimmed + '\n';
+    } else {
+      paraBuffer += (paraBuffer ? ' ' : '') + trimmed;
+    }
+  }
+  flushPara();
+
+  return html;
+}
+
+function processInline(text) {
+  // Footnotes -> superscript markers
+  let fnCount = 0;
+  text = text.replace(/\\footnote\{((?:[^{}]|\{[^{}]*\})*)\}/g, () => {
+    fnCount++;
+    return `<span class="footnote-ref" title="Footnote">[${fnCount}]</span>`;
+  });
+
+  // Inline formatting
+  text = text.replace(/\\emph\{([^}]*)\}/g, '<em>$1</em>');
+  text = text.replace(/\\textbf\{([^}]*)\}/g, '<strong>$1</strong>');
+  text = text.replace(/\\textit\{([^}]*)\}/g, '<em>$1</em>');
+  text = text.replace(/\\textsc\{([^}]*)\}/g, '<span style="font-variant:small-caps">$1</span>');
+  text = text.replace(/\\textsf\{([^}]*)\}/g, '$1');
+  text = text.replace(/\\texttt\{([^}]*)\}/g, '<code>$1</code>');
+  text = text.replace(/\\text\{([^}]*)\}/g, '$1');
+  text = text.replace(/\\underline\{([^}]*)\}/g, '<u>$1</u>');
+  text = text.replace(/\\href\{([^}]*)\}\{([^}]*)\}/g, '<a href="$1" target="_blank">$2</a>');
+  text = text.replace(/\\url\{([^}]*)\}/g, '<a href="$1" target="_blank">$1</a>');
+
+  // Math mode (inline) - just show content
+  text = text.replace(/\$([^$]+)\$/g, '<code class="equation" style="display:inline;padding:1px 4px;margin:0;font-size:13px">$1</code>');
+
+  // Quotes: `` '' -> real quotes
+  text = text.replace(/``/g, '\u201C');
+  text = text.replace(/''/g, '\u201D');
+  text = text.replace(/`/g, '\u2018');
+  text = text.replace(/'/g, '\u2019');
+
+  // Dashes
+  text = text.replace(/---/g, '\u2014');
+  text = text.replace(/--/g, '\u2013');
+
+  // Special LaTeX characters
+  text = text.replace(/\\&/g, '&amp;');
+  text = text.replace(/\\%/g, '%');
+  text = text.replace(/\\#/g, '#');
+  text = text.replace(/\\\$/g, '$');
+  text = text.replace(/\\,/g, '\u2009');
+  text = text.replace(/\\;/g, '\u2005');
+  text = text.replace(/\\!/g, '');
+  text = text.replace(/\\\\/g, '<br>');
+  text = text.replace(/\\=/g, '\u0304');
+  text = text.replace(/~/g, '\u00A0');
+
+  // textcolor
+  text = text.replace(/\\textcolor\{[^}]*\}\{([^}]*)\}/g, '$1');
+
+  // \LARGE, \Large, \large, \small, \tiny, etc. (just strip)
+  text = text.replace(/\\(?:LARGE|Large|large|normalsize|small|footnotesize|scriptsize|tiny)\b\s*/g, '');
+  text = text.replace(/\\(?:sffamily|rmfamily|ttfamily|bfseries|itshape|upshape|mdseries)\b\s*/g, '');
+
+  // Remaining \command{arg} -> just arg
+  text = text.replace(/\\[a-zA-Z]+\{([^}]*)\}/g, '$1');
+  // Remaining \command (no arg) -> strip
+  text = text.replace(/\\[a-zA-Z]+\b/g, '');
+
+  return text;
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+/* =========================================================
+   DIFF ENGINE
+   ========================================================= */
+function computeDiff(oldText, newText) {
+  if (!oldText || !newText) return renderLaTeX(newText || oldText);
+  if (typeof diff_match_patch === 'undefined') {
+    return '<p class="no-data">diff-match-patch library not loaded. Showing current version.</p>' + renderLaTeX(newText);
+  }
+
+  // Strip preamble from both before diffing
+  const stripPreamble = (t) => {
+    const idx = t.indexOf('\\begin{document}');
+    return idx !== -1 ? t.substring(idx) : t;
+  };
+
+  const oldClean = stripPreamble(oldText);
+  const newClean = stripPreamble(newText);
+
+  const dmp = new diff_match_patch();
+  dmp.Diff_Timeout = 5;
+  const diffs = dmp.diff_main(oldClean, newClean);
+  dmp.diff_cleanupSemantic(diffs);
+
+  // Reconstruct LaTeX with diff markers, then render
+  let merged = '';
+  for (const [op, text] of diffs) {
+    if (op === 0) {
+      merged += text;
+    } else if (op === 1) {
+      merged += `\u0000INS_START\u0000${text}\u0000INS_END\u0000`;
+    } else if (op === -1) {
+      merged += `\u0000DEL_START\u0000${text}\u0000DEL_END\u0000`;
+    }
+  }
+
+  // Render as LaTeX then replace markers with HTML
+  let html = renderLaTeX(merged);
+  html = html.replace(/\u0000INS_START\u0000/g, '<span class="diff-ins">');
+  html = html.replace(/\u0000INS_END\u0000/g, '</span>');
+  html = html.replace(/\u0000DEL_START\u0000/g, '<span class="diff-del">');
+  html = html.replace(/\u0000DEL_END\u0000/g, '</span>');
+
+  return html;
+}
+
+/* =========================================================
+   VERSION DISCOVERY
+   ========================================================= */
+async function discoverVersions() {
+  const manifest = await fetchJSON('manifest.json');
+  state.manifest = manifest;
+
+  const versions = [];
+
+  // Load versions manifest — single source of truth for all available versions
+  const versionsList = await fetchJSON('versions.json');
+  if (versionsList) {
+    for (const v of versionsList) {
+      versions.push(v.id);
+      // Store label and path for later use
+      if (!window._versionMeta) window._versionMeta = {};
+      window._versionMeta[v.id] = v;
+    }
+  } else {
+    // Fallback: probe v1..v20
+    versions.push('input');
+    for (let i = 1; i <= 20; i++) {
+      const test = await fetchText(`iterations/v${i}/chapter_01.tex`);
+      if (test !== null) versions.push(`v${i}`);
+      else break;
+    }
+  }
+
+  state.versions = versions;
+
+  // Update chapter metadata from manifest
+  if (manifest && manifest.chapters) {
+    for (const mc of manifest.chapters) {
+      const ch = CHAPTERS.find(c => c.index === mc.index);
+      if (ch) {
+        ch.converged = mc.converged;
+        ch.summary = mc.summary;
+        if (mc.title) ch.title = mc.title;
+      }
+    }
+  }
+
+  // Load architect brief
+  state.architectBrief = await fetchJSON('architect_brief.json');
+
+  return versions;
+}
+
+/* =========================================================
+   UI RENDERING
+   ========================================================= */
+function renderSidebar() {
+  const list = document.getElementById('chapterList');
+  list.innerHTML = CHAPTERS.map(ch => {
+    const isActive = state.selectedChapter === ch.index;
+    const badge = ch.converged
+      ? '<span class="chapter-badge converged">DONE</span>'
+      : (state.manifest ? '<span class="chapter-badge pending">ACTIVE</span>' : '');
+    return `
+      <div class="chapter-item ${isActive ? 'active' : ''}" onclick="selectChapter(${ch.index})">
+        <span class="chapter-num">${ch.index}</span>
+        <div class="chapter-info">
+          <div class="chapter-title">${escapeHtml(ch.title)}</div>
+          <div class="chapter-meta">${badge}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // Stats
+  const stats = document.getElementById('sidebarStats');
+  const iterCount = state.versions.length - 1;
+  const convergedCount = CHAPTERS.filter(c => c.converged).length;
+  let statsHtml = `<strong>${iterCount}</strong> iteration${iterCount !== 1 ? 's' : ''} completed<br>`;
+  if (state.manifest) {
+    statsHtml += `<strong>${convergedCount}</strong> / ${CHAPTERS.length} chapters converged<br>`;
+    statsHtml += `Updated: ${new Date(state.manifest.timestamp).toLocaleTimeString()}`;
+  } else {
+    statsHtml += 'Pipeline not yet started';
+  }
+  stats.innerHTML = statsHtml;
+}
+
+function renderVersionSelect() {
+  const sel = document.getElementById('versionSelect');
+  const current = sel.value;
+  sel.innerHTML = state.versions.map(v => {
+    const meta = window._versionMeta && window._versionMeta[v];
+    const label = meta ? meta.label : (v === 'input' ? 'Original' : v.toUpperCase());
+    const selected = v === state.selectedVersion ? 'selected' : '';
+    return `<option value="${v}" ${selected}>${label}</option>`;
+  }).join('');
+}
+
+async function renderMainContent() {
+  if (!state.selectedChapter) {
+    document.getElementById('emptyState').style.display = 'flex';
+    document.getElementById('mainContent').style.display = 'none';
+    return;
+  }
+
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('mainContent').style.display = 'block';
+
+  const ch = CHAPTERS.find(c => c.index === state.selectedChapter);
+  if (!ch) return;
+
+  const versionLabel = state.selectedVersion === 'input' ? 'Original' : state.selectedVersion.toUpperCase();
+  document.getElementById('mainChapterLabel').textContent = `Chapter ${ch.index}`;
+  document.getElementById('mainChapterTitle').textContent = ch.title;
+  document.getElementById('mainChapterVersion').textContent =
+    state.diffMode ? `Diff: previous \u2192 ${versionLabel}` : `Version: ${versionLabel}`;
+
+  const content = document.getElementById('chapterContent');
+  content.innerHTML = '<p class="no-data">Loading...</p>';
+
+  if (state.diffMode && state.selectedVersion !== 'input') {
+    // Diff mode: load current and previous
+    const vIdx = state.versions.indexOf(state.selectedVersion);
+    const prevVersion = vIdx > 0 ? state.versions[vIdx - 1] : 'input';
+    const [oldText, newText] = await Promise.all([
+      loadChapterText(prevVersion, ch.filename),
+      loadChapterText(state.selectedVersion, ch.filename),
+    ]);
+    content.innerHTML = computeDiff(oldText, newText);
+  } else {
+    const text = await loadChapterText(state.selectedVersion, ch.filename);
+    content.innerHTML = renderLaTeX(text);
+  }
+
+  // Scroll main to top
+  document.getElementById('mainPanel').scrollTop = 0;
+}
+
+async function renderRightPanel() {
+  if (!state.selectedChapter) return;
+
+  // Lawwama
+  const lawwamaBody = document.getElementById('lawwamaBody');
+  const lawwama = await loadLawwama(state.selectedVersion, state.selectedChapter);
+  if (lawwama && lawwama.length > 0) {
+    lawwamaBody.innerHTML = lawwama.map(entry => {
+      const verdict = (entry.lawwama_verdict || '').toUpperCase();
+      const verdictClass = verdict === 'PASS' ? 'pass' : 'revise';
+      return `
+        <div class="lawwama-entry ${verdictClass}">
+          <div class="lawwama-header">
+            <span class="lawwama-section">Section ${entry.section + 1}</span>
+            <span class="lawwama-verdict ${verdictClass}">${escapeHtml(verdict)}</span>
+          </div>
+          <div class="lawwama-critique">${escapeHtml(entry.lawwama_critique || '')}</div>
+        </div>
+      `;
+    }).join('');
+  } else {
+    lawwamaBody.innerHTML = `<div class="no-data">${
+      state.selectedVersion === 'input' ? 'Select a revision version to see Lawwama critiques' : 'No critiques available for this chapter/version'
+    }</div>`;
+  }
+
+  // Majlis
+  const majlisBody = document.getElementById('majlisBody');
+  const majlis = await loadMajlis(state.selectedVersion);
+  if (majlis && majlis.chapters) {
+    // If viewing a specific chapter, highlight it but show all
+    majlisBody.innerHTML = majlis.chapters.map(entry => {
+      const priority = (entry.priority || 'medium').toLowerCase();
+      const isCurrentCh = entry.chapter === state.selectedChapter;
+      const opacity = isCurrentCh ? '' : 'opacity: 0.6;';
+      return `
+        <div class="majlis-entry ${priority}" style="${opacity}">
+          <div class="majlis-header">
+            <span class="majlis-chapter">Ch ${entry.chapter}${isCurrentCh ? ' (current)' : ''}</span>
+            <span class="majlis-priority ${priority}">${escapeHtml(priority)}</span>
+          </div>
+          <div class="majlis-feedback">${escapeHtml(entry.feedback || '')}</div>
+        </div>
+      `;
+    }).join('');
+  } else {
+    majlisBody.innerHTML = `<div class="no-data">${
+      state.selectedVersion === 'input' ? 'Select a revision version to see Majlis feedback' : 'No Majlis feedback for this version'
+    }</div>`;
+  }
+
+  // Architect
+  renderArchitectPanel();
+}
+
+function renderArchitectPanel() {
+  const body = document.getElementById('architectBody');
+  const brief = state.architectBrief;
+  if (!brief) {
+    body.innerHTML = '<div class="no-data">No architect brief available. Pipeline may not have started.</div>';
+    return;
+  }
+
+  let html = '';
+
+  // Arc
+  if (brief.arc) {
+    html += `<div class="architect-label">Book Arc</div>`;
+    html += `<div class="architect-arc">${escapeHtml(brief.arc)}</div>`;
+  }
+
+  // Chapter-specific info
+  if (state.selectedChapter && brief.chapters) {
+    const chBrief = brief.chapters.find(c => c.chapter === state.selectedChapter);
+    if (chBrief) {
+      html += `<div class="architect-label">Chapter ${state.selectedChapter} Goal</div>`;
+      html += `<div class="architect-text">${escapeHtml(chBrief.goal || '')}</div>`;
+
+      if (chBrief.receives_from_previous) {
+        html += `<div class="architect-label">Receives From Previous</div>`;
+        html += `<div class="architect-text">${escapeHtml(chBrief.receives_from_previous)}</div>`;
+      }
+      if (chBrief.hands_to_next) {
+        html += `<div class="architect-label">Hands To Next</div>`;
+        html += `<div class="architect-text">${escapeHtml(chBrief.hands_to_next)}</div>`;
+      }
+      if (chBrief.problems) {
+        html += `<div class="architect-label">Problems</div>`;
+        html += `<div class="architect-text" style="border-left-color:var(--red)">${escapeHtml(chBrief.problems)}</div>`;
+      }
+      if (chBrief.political_shadow) {
+        html += `<div class="architect-label">Political Shadow</div>`;
+        html += `<div class="architect-text">${escapeHtml(chBrief.political_shadow)}</div>`;
+      }
+
+      // Section directives
+      if (chBrief.section_directives && chBrief.section_directives.length > 0) {
+        html += `<div class="architect-label" style="margin-top:8px">Section Directives</div>`;
+        for (const sd of chBrief.section_directives) {
+          const action = (sd.directive || '').split(' ')[0].toLowerCase();
+          const actionClass = ['keep', 'revise', 'rewrite', 'expand', 'cut'].includes(action) ? action : 'revise';
+          html += `
+            <div class="architect-directive">
+              <span class="dir-section">${escapeHtml(sd.title || `Section ${sd.section}`)}</span>
+              <span class="dir-action ${actionClass}">${escapeHtml(action)}</span>
+              <div style="margin-top:4px;font-size:11px;color:var(--bone-dim)">${escapeHtml(sd.directive || '')}</div>
+            </div>
+          `;
+        }
+      }
+    }
+  }
+
+  // Guidelines (collapsed at bottom)
+  if (brief.guidelines && brief.guidelines.length > 0) {
+    html += `<div class="architect-label" style="margin-top:12px">Guidelines (${brief.guidelines.length})</div>`;
+    html += brief.guidelines.slice(0, 10).map(g =>
+      `<div class="architect-guideline">${escapeHtml(g)}</div>`
+    ).join('');
+    if (brief.guidelines.length > 10) {
+      html += `<div class="architect-guideline" style="color:var(--ash)">... and ${brief.guidelines.length - 10} more</div>`;
+    }
+  }
+
+  body.innerHTML = html || '<div class="no-data">Brief loaded but empty</div>';
+}
+
+/* =========================================================
+   INTERACTIONS
+   ========================================================= */
+function selectChapter(index) {
+  state.selectedChapter = index;
+  renderSidebar();
+  renderMainContent();
+  renderRightPanel();
+}
+
+function toggleSection(sectionId) {
+  const section = document.getElementById(sectionId);
+  section.classList.toggle('open');
+}
+
+function showNotification(text, duration = 4000) {
+  const el = document.getElementById('notification');
+  el.textContent = text;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), duration);
+}
+
+/* =========================================================
+   AUTO-REFRESH
+   ========================================================= */
+async function poll() {
+  const manifest = await fetchJSON('manifest.json');
+  if (!manifest) {
+    document.getElementById('statusDot').className = 'status-dot stale';
+    return;
+  }
+
+  document.getElementById('statusDot').className = 'status-dot';
+  document.getElementById('statusDot').title = `Last update: ${new Date(manifest.timestamp).toLocaleTimeString()}`;
+
+  const newIter = manifest.current_iteration || 0;
+  if (newIter > state.lastIteration && state.lastIteration >= 0) {
+    // New iteration arrived! Clear caches for the new version.
+    const newVersion = `v${newIter}`;
+    for (const key of Object.keys(state.textCache)) {
+      if (key.startsWith(newVersion + '::')) delete state.textCache[key];
+    }
+    for (const key of Object.keys(state.lawwamaCache)) {
+      if (key.startsWith(newVersion + '::')) delete state.lawwamaCache[key];
+    }
+    for (const key of Object.keys(state.majlisCache)) {
+      if (key.startsWith('majlis::' + newVersion)) delete state.majlisCache[key];
+    }
+
+    showNotification(`New iteration arrived: V${newIter}`);
+
+    // Re-discover versions and refresh
+    await discoverVersions();
+    renderVersionSelect();
+    renderSidebar();
+
+    // If user is viewing the latest, auto-update
+    if (state.selectedVersion === `v${newIter - 1}` || state.selectedVersion === `v${newIter}`) {
+      state.selectedVersion = newVersion;
+      document.getElementById('versionSelect').value = newVersion;
+      if (state.selectedChapter) {
+        renderMainContent();
+        renderRightPanel();
+      }
+    }
+  }
+
+  state.lastIteration = newIter;
+  state.manifest = manifest;
+
+  // Update chapter metadata
+  if (manifest.chapters) {
+    for (const mc of manifest.chapters) {
+      const ch = CHAPTERS.find(c => c.index === mc.index);
+      if (ch) {
+        ch.converged = mc.converged;
+        ch.summary = mc.summary;
+      }
+    }
+    renderSidebar();
+  }
+}
+
+/* =========================================================
+   EVENT LISTENERS
+   ========================================================= */
+document.getElementById('versionSelect').addEventListener('change', (e) => {
+  state.selectedVersion = e.target.value;
+  // Clear text cache for this version to force reload
+  if (state.selectedChapter) {
+    renderMainContent();
+    renderRightPanel();
+  }
+});
+
+document.getElementById('diffToggle').addEventListener('click', () => {
+  state.diffMode = !state.diffMode;
+  document.getElementById('diffToggle').classList.toggle('active', state.diffMode);
+  if (state.selectedChapter) renderMainContent();
+});
+
+document.getElementById('rightToggle').addEventListener('click', () => {
+  state.rightOpen = !state.rightOpen;
+  const app = document.getElementById('app');
+  const panel = document.getElementById('rightPanel');
+  const btn = document.getElementById('rightToggle');
+
+  if (state.rightOpen) {
+    app.classList.remove('right-collapsed');
+    panel.innerHTML = `
+      <div class="right-section open" id="lawwamaSection">
+        <div class="right-section-header" onclick="toggleSection('lawwamaSection')">
+          <span class="right-section-title">Lawwama (Inner Critic)</span>
+          <span class="right-section-arrow">&#9660;</span>
+        </div>
+        <div class="right-section-body" id="lawwamaBody"><div class="no-data">Loading...</div></div>
+      </div>
+      <div class="right-section open" id="majlisSection">
+        <div class="right-section-header" onclick="toggleSection('majlisSection')">
+          <span class="right-section-title">Majlis (Cross-Chapter)</span>
+          <span class="right-section-arrow">&#9660;</span>
+        </div>
+        <div class="right-section-body" id="majlisBody"><div class="no-data">Loading...</div></div>
+      </div>
+      <div class="right-section" id="architectSection">
+        <div class="right-section-header" onclick="toggleSection('architectSection')">
+          <span class="right-section-title">Architect Brief</span>
+          <span class="right-section-arrow">&#9660;</span>
+        </div>
+        <div class="right-section-body" id="architectBody"><div class="no-data">Loading...</div></div>
+      </div>
+    `;
+    btn.classList.remove('active');
+    if (state.selectedChapter) renderRightPanel();
+  } else {
+    app.classList.add('right-collapsed');
+    panel.innerHTML = `<div class="right-panel-collapsed" onclick="document.getElementById('rightToggle').click()">
+      <button class="right-toggle" title="Expand panels">&#9664;</button>
+    </div>`;
+    btn.classList.add('active');
+  }
+});
+
+/* =========================================================
+   KEYBOARD SHORTCUTS
+   ========================================================= */
+document.addEventListener('keydown', (e) => {
+  // j/k to navigate chapters
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+
+  if (e.key === 'j' || e.key === 'ArrowDown') {
+    e.preventDefault();
+    const idx = state.selectedChapter || 0;
+    if (idx < CHAPTERS.length) selectChapter(idx + 1);
+  } else if (e.key === 'k' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    const idx = state.selectedChapter || 2;
+    if (idx > 1) selectChapter(idx - 1);
+  } else if (e.key === 'd') {
+    document.getElementById('diffToggle').click();
+  } else if (e.key === 'p') {
+    document.getElementById('rightToggle').click();
+  }
+});
+
+/* =========================================================
+   INIT
+   ========================================================= */
+async function init() {
+  await discoverVersions();
+  renderVersionSelect();
+  renderSidebar();
+
+  // Auto-select latest version if iterations exist
+  if (state.versions.length > 1) {
+    state.selectedVersion = state.versions[state.versions.length - 1];
+    document.getElementById('versionSelect').value = state.selectedVersion;
+  }
+
+  state.lastIteration = state.manifest ? (state.manifest.current_iteration || 0) : 0;
+
+  // If manifest has chapter data, select ch1
+  if (state.manifest || state.versions.length === 1) {
+    selectChapter(1);
+  }
+
+  // Start polling
+  state.pollTimer = setInterval(poll, 30000);
+
+  // Initial status
+  document.getElementById('statusDot').className = state.manifest ? 'status-dot' : 'status-dot stale';
+}
+
+init();
+
+/* =========================================================
+   TRACE DRAWER
+   ========================================================= */
+let traceMode = false;
+const traceLogCache = {};
+
+document.getElementById('traceToggle').addEventListener('click', () => {
+  traceMode = !traceMode;
+  document.getElementById('traceToggle').classList.toggle('active', traceMode);
+  document.getElementById('app').classList.toggle('trace-mode-active', traceMode);
+});
+
+document.getElementById('mainContent').addEventListener('click', (e) => {
+  if (!traceMode) return;
+  const h2 = e.target.closest('h2');
+  if (!h2) return;
+  const allH2s = Array.from(document.querySelectorAll('#chapterContent h2'));
+  const secIdx = allH2s.indexOf(h2);
+  if (secIdx >= 0) openTraceDrawer(secIdx, h2.textContent.trim());
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 't' && !e.ctrlKey && !e.metaKey && e.target.tagName !== 'INPUT' && e.target.tagName !== 'SELECT') {
+    document.getElementById('traceToggle').click();
+  }
+  if (e.key === 'Escape') closeTraceDrawer();
+});
+
+async function loadTraceLog(version, chapterIndex) {
+  const key = `${version}_${chapterIndex}`;
+  if (traceLogCache[key]) return traceLogCache[key];
+  const pad = String(chapterIndex).padStart(2, '0');
+  const url = `iterations/${version}/chapter_${pad}_log.json`;
+  try {
+    const resp = await fetch(url);
+    if (!resp.ok) return null;
+    const data = await resp.json();
+    traceLogCache[key] = data;
+    return data;
+  } catch { return null; }
+}
+
+function stripLatex(text) {
+  if (!text) return '';
+  return text
+    .replace(/\\documentclass.*?\n/g, '')
+    .replace(/\\usepackage.*?\n/g, '')
+    .replace(/\\begin\{document\}/g, '')
+    .replace(/\\end\{document\}/g, '')
+    .replace(/\\section\{([^}]+)\}/g, '[$1]')
+    .replace(/\\subsection\{([^}]+)\}/g, '[$1]')
+    .replace(/\\emph\{([^}]+)\}/g, '_$1_')
+    .replace(/\\textbf\{([^}]+)\}/g, '**$1**')
+    .replace(/\\textit\{([^}]+)\}/g, '_$1_')
+    .replace(/\\begin\{quote\}/g, '  "')
+    .replace(/\\end\{quote\}/g, '"')
+    .replace(/\\[a-zA-Z]+\{([^}]*)\}/g, '$1')
+    .replace(/\\[a-zA-Z]+/g, '')
+    .replace(/[{}]/g, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+function makeStage(cls, label, content, badge, defaultOpen) {
+  if (!content || !content.trim()) return '';
+  const id = 'ts_' + Math.random().toString(36).substr(2,6);
+  const badgeHtml = badge ? `<span class="trace-stage-badge" style="background:${badge.bg};color:${badge.fg}">${badge.text}</span>` : '';
+  return `<div class="trace-stage ${cls}">
+    <div class="trace-stage-header" onclick="toggleTraceStage('${id}')">
+      <span class="trace-stage-label">${label}</span>${badgeHtml}
+      <span class="trace-stage-arrow ${defaultOpen?'open':''}" id="${id}_arrow">&#9654;</span>
+    </div>
+    <div class="trace-stage-body ${defaultOpen?'open':''}" id="${id}">${content.length > 8000 ? content.substring(0, 8000) + '\n\n[... truncated for display ...]' : content}</div>
+  </div>`;
+}
+
+function toggleTraceStage(id) {
+  const body = document.getElementById(id);
+  const arrow = document.getElementById(id + '_arrow');
+  if (body) { body.classList.toggle('open'); }
+  if (arrow) { arrow.classList.toggle('open'); }
+}
+
+async function openTraceDrawer(sectionIndex, sectionTitle) {
+  const version = document.getElementById('versionSelect').value;
+  if (version === 'input') {
+    document.getElementById('traceBody').innerHTML = '<div class="trace-na">Trace only available for revision iterations, not the original.</div>';
+    document.getElementById('traceTitle').textContent = sectionTitle || 'Section Trace';
+    document.getElementById('traceOverlay').classList.add('open');
+    document.getElementById('traceDrawer').classList.add('open');
+    return;
+  }
+  const chIdx = state.currentChapter;
+  const log = await loadTraceLog(version, chIdx);
+  document.getElementById('traceTitle').textContent = sectionTitle || `Section ${sectionIndex}`;
+
+  if (!log) {
+    document.getElementById('traceBody').innerHTML = '<div class="trace-na">Trace log not available for this iteration.</div>';
+  } else {
+    const entry = log.find(e => e.section === sectionIndex) || log[sectionIndex];
+    if (!entry) {
+      document.getElementById('traceBody').innerHTML = '<div class="trace-na">No trace data for this section.</div>';
+    } else {
+      let html = '';
+      html += makeStage('research', '1. Research (Perplexity)', entry.research_context || '', null, false);
+      html += makeStage('warmth', '2. Cassie Warmth', entry.cassie_warmth || '', null, false);
+      html += makeStage('writer', '3. Writer Raw (GPT-5.1)', stripLatex(entry.writer_raw || ''), null, false);
+      const isRevise = entry.lawwama_verdict === 'REVISE';
+      html += makeStage(
+        isRevise ? 'lawwama-revise' : 'lawwama-pass',
+        '4. Lawwama Critique',
+        entry.lawwama_critique || '',
+        { text: entry.lawwama_verdict || '?', bg: isRevise ? 'var(--red-bg)' : 'var(--green-bg)', fg: isRevise ? 'var(--red)' : 'var(--green)' },
+        true
+      );
+      if (isRevise && entry.lawwama_revised) {
+        html += makeStage('revision', '5. Post-Lawwama Revision', stripLatex(entry.lawwama_revised), null, false);
+      }
+      html += makeStage('editor', '6. Editor Output (Sonnet)', stripLatex(entry.editor_output || ''), null, false);
+      if (!html) html = '<div class="trace-na">Log exists but all fields are empty.</div>';
+      document.getElementById('traceBody').innerHTML = html;
+    }
+  }
+  document.getElementById('traceOverlay').classList.add('open');
+  document.getElementById('traceDrawer').classList.add('open');
+}
+
+function closeTraceDrawer() {
+  document.getElementById('traceOverlay').classList.remove('open');
+  document.getElementById('traceDrawer').classList.remove('open');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+[
+  {
+    "id": "input",
+    "label": "Original (Darja input)",
+    "path": "input"
+  },
+  {
+    "id": "v1",
+    "label": "025712 v1 \u2014 30,575w (31 Mar 03:12)",
+    "path": "iterations/v1"
+  },
+  {
+    "id": "v1",
+    "label": "053120 v1 \u2014 37,574w (31 Mar 05:59)",
+    "path": "iterations/v1"
+  },
+  {
+    "id": "v1",
+    "label": "070624 v1 \u2014 40,325w (31 Mar 07:42)",
+    "path": "iterations/v1"
+  },
+  {
+    "id": "archive:run_20260330_0717_parallel_sections_v2",
+    "label": "Archive: run_20260330_0717_parallel_sections_v2 (28,648w)",
+    "path": "archive/run_20260330_0717_parallel_sections_v2"
+  },
+  {
+    "id": "archive:run_20260330_1944_chapter_level_v3",
+    "label": "Archive: run_20260330_1944_chapter_level_v3 (29,447w)",
+    "path": "archive/run_20260330_1944_chapter_level_v3"
+  },
+  {
+    "id": "archive:run_20260330_1957_chapter_level_v4",
+    "label": "Archive: run_20260330_1957_chapter_level_v4 (29,280w)",
+    "path": "archive/run_20260330_1957_chapter_level_v4"
+  },
+  {
+    "id": "archive:run_20260330_2053_full_context_v1",
+    "label": "Archive: run_20260330_2053_full_context_v1 (32,179w)",
+    "path": "archive/run_20260330_2053_full_context_v1"
+  },
+  {
+    "id": "archive:run_20260330_2053_full_context_v1_FINAL",
+    "label": "Archive: run_20260330_2053_full_context_v1_FINAL (32,179w)",
+    "path": "archive/run_20260330_2053_full_context_v1_FINAL"
+  }
+]

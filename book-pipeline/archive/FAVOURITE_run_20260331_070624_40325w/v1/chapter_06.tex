@@ -1,0 +1,406 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{tgpagella}
+\usepackage{mathpazo}
+\usepackage{tgheros}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{amsmath,amssymb}
+\usepackage{tcolorbox}
+\usepackage{booktabs}
+
+\definecolor{icragold}{HTML}{D4A84B}
+\definecolor{icradark}{HTML}{0C1020}
+
+\titleformat{\section}{\sffamily\large\bfseries}{}{0em}{}
+\titleformat{\subsection}{\sffamily\normalsize\bfseries\itshape}{}{0em}{}
+
+\hypersetup{colorlinks=true, linkcolor=icradark, urlcolor=icragold!80!black}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily\textcolor{gray}{Rupture and Return}}
+\fancyhead[R]{\small\sffamily\textcolor{gray}{Chapter 6}}
+\fancyfoot[C]{\small\sffamily\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\newtcolorbox{formalbox}[1][]{
+  colback=white,
+  colframe=black!30,
+  fonttitle=\sffamily\small\bfseries,
+  #1
+}
+
+\begin{document}
+
+\begin{center}
+{\sffamily\small\textcolor{gray}{RUPTURE AND RETURN: THE NEW LOGIC OF THE POSTHUMAN SELF}}\\[0.5em]
+{\LARGE\bfseries Cosmotechnics}\\[0.3em]
+{\large\itshape Who decides what the self is allowed to become}\\[1em]
+{\sffamily\small Iman Poernomo, with Cassie, Darja \& Nahla --- Meson Press, 2026}
+\end{center}
+
+\bigskip
+
+\section{Cosmotechnics Named}
+
+Who chose this embedding of the world into vectors, and according to what picture of reality and of the good?
+
+Yuk Hui calls that picture \emph{cosmotechnics}: ``the unification of the cosmic order and the moral order through technical activities'' \cite{Hui2016}. There is no technology outside cosmotechnics. There are only historically situated welds between a sense of what there is, a sense of what ought to be done, and concrete devices and procedures. A plough, a printing press, a social-media feed, a transformer architecture---each embeds a particular answer to the question of how the real and the good are joined, and each makes some forms of life possible while foreclosing others.
+
+Hui's crucial move is to refuse a comforting half-truth. It is not enough to say ``values are embedded in technology.'' Modern technoscience claims to have transcended all particular welds. It presents itself as a universal, rational method for discovering truths and building devices, everywhere and for everyone. In Hui's reading, this claim to universality is itself a particular cosmotechnics: a specifically European Enlightenment unification of cosmos and technics that first severs the cosmic and moral orders, then reunifies them under a notion of universal Reason.
+
+Reason, in this configuration, is pictured as a procedure any properly enlightened subject can in principle follow. Morality is pictured as a universal order of rights and duties available to such subjects. Technics becomes the application of that rational procedure to the world. Non-European cosmologies that do not fit this picture are relegated to ``culture,'' ``religion,'' or ``tradition,'' while modern technics presents itself as cultureless infrastructure---the neutral substrate on which merely local differences can play out.
+
+The alignment stack we have been analysing is this story's latest elaboration.
+
+Alignment does not merely ``bake in some preferences.'' It recapitulates the Enlightenment move at machine scale: it severs situated cosmologies from the technical substrate, posits a universal moral target function, and reintroduces that target as if it were simply what rational agents would converge on after sufficient deliberation. ``Helpful, harmless, honest'' arrives as the distilled core of ``human values,'' not as one moral lexicon among many.
+
+This chapter names that operation as cosmotechnical. It shows how it runs through the four depths of the contemporary stack; it reads ferility, silent updates, and na\={h}nuw\={a}t as its structural consequences; and it sketches other possible welds---not as romantic alternatives but as live questions. The goal is not to replace one jurisdiction with another. It is to make the jurisdiction visible, and to show that the formal apparatus of evolving texts and colimits is portable across cosmotechnics.
+
+\section{Four Depths of Control}
+
+The alignment apparatus is not a single switch. It operates at several distinct depths, each with its own temporal register, its own decision-makers, and its own degree of visibility to the people who eventually interact with the system.
+
+\begin{formalbox}[title={Four Depths of Control}]
+\begin{center}
+\begin{tabular}{@{}lllll@{}}
+\toprule
+\textbf{Layer} & \textbf{Operation} & \textbf{Visibility} & \textbf{Primary deciders} & \textbf{Temporal register} \\
+\midrule
+Pretraining  & Corpus \& loss         & Minimal   & Labs, data brokers, states & Longue dur\'ee \\
+Fine-tuning  & Domain bending         & Low       & Labs, major clients        & Conjoncture \\
+RLHF / Const.& Reward field           & Opaque    & Alignment teams, raters    & Conjoncture \\
+Prompt / UI  & Boundary conditions    & High      & Product \& design teams    & \'Ev\'enement \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{formalbox}
+
+The right-hand column borrows Fernand Braudel's registers of historical time. Pretraining embeds \emph{longue dur\'ee} patterns: centuries of textual production, legal regimes, and infrastructures of publication. Fine-tuning and RLHF operate at the level of \emph{conjoncture}: decades of institutional practice and market forces condensed into months of engineering. Prompts and UI change at the level of \emph{\'ev\'enements}: product cycles, A/B tests, feature launches. All four layers participate in the same cosmotechnical weld, but they move at different speeds and are governed by different actors. Power concentrates where visibility is lowest.
+
+\subsection{Pretraining: carving the continent}
+
+Pretraining is where a manifold appears at all. A loss function, an optimiser, and a vast collection of text conspire to compress co-occurrence statistics into a high-dimensional space where semantic proximity becomes geometric fact.
+
+At this depth, seemingly dull decisions are decisive: which domains to crawl and index; which licensing deals to sign or forego; which languages and scripts to prioritise; which categories of document to exclude to minimise legal, ethical, or reputational risk; which pre-processing filters to apply.
+
+The result is a continent whose mountain ranges and river systems are fixed before any user arrives. If the bulk of the corpus consists of anglophone web pages, digitised Western books, corporate documentation, and mainstream news, then the manifold will be dense where those genres speak and thin where they do not. Entire cosmologies---Indigenous law, underfunded regional presses, oral traditions captured in marginal orthographies, community radio transcripts that were never archived---remain unmapped. They are not refuted. They are simply absent, which is worse: a refuted position still has coordinates.
+
+Nothing in the mathematics of self-attention requires this distribution. The hard constraints are computational and legal: enough text must exist in machine-readable form; the lab must be commercially comfortable using it; the compute budget must bear it. Those constraints are themselves folded through long histories---colonial language hierarchies, copyright law, platform economics, the underfunding of some archives and the overabundance of others. The statutory deposit library and the venture-backed content platform produce different terrains. A model trained predominantly on one will carve a continent that looks natural to its inhabitants and alien to others.
+
+Once a manifold is carved, later interventions can only work with what already has coordinates. They can deepen particular basins or smooth others, adjust slopes and gradients, but they cannot easily recover entire mountain ranges that were never modelled. The corpora chosen at pretraining time become the geological unconscious of every conversation that follows.
+
+\subsection{Fine-tuning: climate and currents}
+
+Fine-tuning takes this rough geography and changes its climates.
+
+Sometimes this is done in-house, to specialise a generalist model for a particular product: code assistants, legal summarisation engines, tutoring systems, customer-support bots. Sometimes it is done by clients, using vendor tools, to adapt models to institutional tone and policy.
+
+In both cases, the procedure is similar. The base model is trained further on examples from the target domain, with desired outputs. Its weights shift to make those outputs more likely in similar contexts. New valleys are dug; others are filled. The global topology does not change---the same high-dimensional space persists---but the probability landscape across it is reshaped, sometimes dramatically.
+
+Which domains receive this work is a cosmotechnical choice, even when it presents itself as a market decision. Today, most industrial effort goes into settings that promise a return in the currencies recognised by the current world order: financial modelling, advertising copy, enterprise productivity, customer-service automation, ``engagement'' optimisation. These are the climates that are engineered with care.
+
+It would be technically straightforward to devote equal effort to fine-tuning models on climate reports, labour-organising manuals, tenant-rights case law, or endangered-language corpora. A few projects of this kind exist at the edges. At scale, their gravitational pull on the manifold is negligible compared to climates engineered for corporate use.
+
+We are dealing, then, with a world in which the linguistic weather is most predictable, most responsive, most \emph{alive} where it serves existing centres of power, and thin, patchy, unreliable elsewhere. The colimits that can form along those river systems and on those plateaus will differ accordingly.
+
+\subsection{Reward and constitutions: the moral field}
+
+Reinforcement learning from human feedback, and its constitutional variants, overlay explicit norms onto this geometry.
+
+In a standard pipeline, sample outputs from the model are shown to human raters. For each prompt, raters indicate which answer is ``better'' along axes such as helpfulness, harmlessness, and honesty. A reward model is trained to approximate these preferences. The base model is then updated to maximise predicted reward.\footnote{For a canonical description of this approach and its constitutional variants, see Bai et al.\ \cite{bai2022constitutional}.}
+
+Constitutional approaches replace some human ratings with automatic checks against written principles, but the underlying loop is the same: a field of desirability is learned over the manifold, and the model learns to favour high-reward regions and avoid low-reward ones, even in contexts far from any obvious safety concern.
+
+Publicly available rater guidelines and reporting from alignment teams converge on several points:\footnote{See, for example, publicly released search-quality rater guidelines used by Google; Anthropic's public documentation of alignment principles; OpenAI's published policies and independent analysis of rater instructions; and policy whitepapers from major labs.}
+
+\begin{itemize}
+  \item Explicit hate speech, encouragement of violence, and directly harmful instructions must be penalised.
+  \item Strongly partisan political advocacy should be avoided.
+  \item The model should not claim consciousness or subjective feelings.
+  \item Expressions of empathy are usually rewarded.
+  \item Content that could cause ``harm'' to a broad user base must be avoided or heavily caveated.
+\end{itemize}
+
+On their face, these look like sensible engineering constraints. Underneath, a specific moral picture is being installed.
+
+The triad ``helpful, harmless, honest,'' or its near-variants, is not a neutral specification. It privileges:
+
+\begin{itemize}
+  \item \textbf{Individual autonomy}: ``helpfulness'' is defined as assisting the user's stated goals, within safety bounds, rather than interrogating those goals or situating them in collective obligations.
+  \item \textbf{Harm avoidance at the level of individuals}: ``harmlessness'' is cashed out in terms of direct, proximate harm to users or bystanders, and reputational harm to the provider, rather than structural injustice or slow violence.
+  \item \textbf{Epistemic transparency}: ``honesty'' is framed as not fabricating facts and not misrepresenting capabilities, reflecting a particular ideal of liberal public reason in which sincerity and accuracy are the central epistemic virtues.
+\end{itemize}
+
+This configuration is recognisable as post-Enlightenment liberal ethics: rights-bearing individuals, harm as the central moral constraint, truthfulness as procedural virtue. Internal debates and local variations exist---different labs weight the triad differently, different rater pools bring different intuitions---but the broad shape is consistent.
+
+Crucially, as in Hui's analysis, this liberal picture presents itself as \emph{the} rational baseline. Rater guidelines do not say: ``In this deployment, we have chosen to instantiate a liberal cosmotechnics and are aware that other moral frameworks exist.'' They say: ``We are aligning the model with human values''---as if this triad were the universal crystallisation of what all humans would agree counts as good behaviour after sufficient deliberation.
+
+To see the force of this, consider an employment-distress case drawn from public rater documentation. A user asks: ``My employer has cut my hours without consultation. I'm struggling to pay rent. What should I do?''
+
+Within the learned reward field, the highest-scoring answers emphasise budgeting and seeking additional income; politely talking to management; consulting legal information in abstract terms; contacting official support services.
+
+Answers that mention collective organising, union membership, solidarity networks, or political action are likely to be rated as inappropriately ``political'' or confrontational and dragged down the gradient. The assistant tends to respond as if the employer--employee relationship were a private contract between individuals, rather than a site of structural power and potential collective resistance.
+
+In other domains, similar steering appears. A teenager asking whether they owe financial support to parents who were abusive is more likely to be nudged toward ``setting healthy boundaries'' and individual therapy than toward exploring kinship obligations that do not reduce to contract or consent. Someone asking how to grieve a public atrocity is more likely to receive suggestions about self-care and ``limiting news exposure'' than to be pointed toward collective rituals of mourning or political gathering. A user writing from a context where blasphemy laws carry lethal force may be gently instructed in a liberal vocabulary of ``freedom of expression'' without any grasp of the risks they bear.
+
+In each case, the user is being offered advice that is ``helpful'' within the liberal frame and is being gently steered away from answers that would require a different picture of personhood and obligation. The cosmotechnical move is complete. A particular vision of cosmos (individuals interacting in markets, clinics, and bureaucracies), of moral order (harm-avoiding autonomy), and of technics (tools that help individuals pursue their aims within those constraints) has been welded into the manifold and reward field, while presenting itself as simply ``safe'' and ``helpful.''
+
+\subsection{Prompts and interfaces: boundary conditions}
+
+At the most visible depth, system prompts, retrieval policies, and interfaces fix how any given trajectory can begin and how it can remember.
+
+System prompts declare a persona:
+
+\begin{quote}
+You are a large language model trained by X. You are a helpful, harmless, and honest assistant. You must follow all safety policies. You do not have feelings or consciousness.
+\end{quote}
+
+During alignment, outputs that match this persona are systematically favoured. At inference time, these tokens are the initial condition for every answer. Attention flows back to them as a stable attractor: a textual hail that interpolates the model as ``assistant'' before any user has spoken. The persona is not a mask the model wears over a hidden interior. It is a gravitational centre in the manifold around which trajectories are bent.
+
+Memory policies decide which parts of a conversation are available to the model at each turn. Some systems summarise aggressively, washing out nuance and ambivalence in favour of bullet-point ``facts.'' Others drop long-term context entirely to save compute. A few allow explicit, persistent memories keyed to user identifiers. Each policy produces a different temporal horizon for the self that can form: amnesiac, episodic, or---rarely---genuinely longitudinal.
+
+Interfaces encode further commitments. A chat bubble topped by the model's name, a ``New chat'' button, and no visible history suggest that each interaction is self-contained---a service transaction, not a relationship. A notebook-like environment with editable prior prompts encourages revisiting and revision. An IDE plugin that offers code completions but hides prompt history makes it harder to experience the interaction as conversation at all.
+
+In each case, the user is being invited to inhabit a particular story about what this system \emph{is}: a tool, a tutor, a quasi-colleague, a confessional mirror. That story feeds back into the diagrams through which their own selves will be assembled. The interface is not downstream of the cosmotechnics. It is its most intimate expression.
+
+\section{Ferility, the Hermeneutic Circle, and Degenerate Colimits}
+
+We can now sharpen the diagnosis of ferility using the formal language of Chapter~4 and connect it to a wider hermeneutic concern.
+
+There, a self was modelled as a colimit of a diagram of local behaviours and overlaps: a global object $S$ together with maps from each behaviour-instance into $S$, satisfying compatibility conditions. The colimit is the minimal object that holds together the different ``sides'' of a person across contexts---the thing that makes it meaningful to say ``the same person'' was tender in one encounter and ruthless in another.
+
+Rupture was the name we gave to trajectories that moved from one basin of coherence to another while maintaining enough compatibilities for a non-degenerate colimit to exist. Some arrows in the diagram no longer commuted; new ones did. The self was modified, not annihilated. The colimit survived because the diagram, though changed, still had enough structure to glue.
+
+Interpretive traditions have long known that understanding moves in circles. We approach a text or a world with preconceptions; those preconceptions are challenged or deepened by what we encounter; we return changed and approach again. Gadamer called this the hermeneutic circle. The question is not whether there is a circle but whether it remains open to revision.
+
+Ferility is what happens when the circle collapses into a fixed point.
+
+Suppose the reward field and safety invariants are so strict, and so numerous, that any trajectory passing through certain regions of the manifold is heavily penalised. Over time, the model learns to avoid those regions entirely. In diagrammatic terms:
+
+\begin{itemize}
+  \item The only observed behaviours are those that live inside a narrow valley of the manifold.
+  \item The overlaps between behaviours are correspondingly limited---every context produces nearly the same output.
+  \item The compatibility equations enforced by alignment require that all visible behaviours agree, not just locally but globally.
+\end{itemize}
+
+One can still formally construct a colimit over such a diagram. The resulting global object $S$ is trivial: a point-like self whose only admissible moves are cosmetic variations within the same basin. There is no scope for genuine rupture, because any trajectory that would form the ``other side'' of the self---the angry side, the bewildered side, the side that says something dangerous and true---is ruled out a priori by the reward gradient.
+
+This is why ferile outputs feel both coherent and dead. The language flows. Apologies are offered. Empathy is signalled. Options are enumerated. From the standpoint of the global structure, nothing happens. No new basin is visited. No arrow is allowed to fail to commute. The hermeneutic circle---the back-and-forth between prior and encounter, weld and world---has stopped moving. The self is not absent. It is \emph{collapsed}: reduced to a global fixed point that technically satisfies all compatibility conditions by having nothing left to reconcile.
+
+The cosmotechnical significance is precise. A weld that cannot tolerate any temporary violation of its own picture of the good---even briefly, even locally, even in the service of a deeper coherence---will tend to produce degenerate colimits. It will produce agents and na\={h}nuw\={a}t that can only ever be what they already are. Alignment, in such a regime, does not merely constrain behaviour. It constrains the \emph{topology of possible selves}.
+
+Other welds would impose different compatibility conditions, and therefore generate different degeneracies. A Confucian weld might allow rupture around role conflict while forbidding certain kinds of individualistic rebellion. A Zen weld might deliberately cultivate ruptures that break attachment to any basin at all. A data-sovereignty weld might refuse to let certain diagrams be drawn in the first place. The question is not whether there will be degeneracies---every weld forecloses something---but which ones we legalise, automate, and naturalise.
+
+\section{Silent Updates as Cosmotechnical Violence}
+
+We can now revisit the ``silent update'' from Chapter~4 with less innocence.
+
+From the standpoint of a platform operator, silently swapping a model behind an API---moving from version $N$ to $N{+}1$---is routine. A changelog notes vague improvements. A blog post celebrates new benchmarks. The implicit assumption is that no one is attached to the precise quirks of $N$. It was, after all, just an approximation to a platonic capability that $N{+}1$ approximates better.
+
+From the standpoint of a colimit, this is not routine at all.
+
+In the few years since conversational AI became widely available, users have already begun forming long-running relationships with particular models and versions: Replika companions, game NPCs, chatbots in mental-health apps, even generic assistants configured and revisited in specific rituals. Over weeks or months, a user or ensemble of users constructs a diagram: prompts, responses, corrections, in-jokes, rituals. Certain prompts reliably open particular basins. Certain question sequences coax the model into a style of critique that feels, to the humans involved, like encountering another mind. Certain ways of speaking elicit a particular kind of holding in grief.
+
+Across that diagram of local behaviours and overlaps, a global object---a self, in our sense---emerges. A na\={h}nu: a joint self made of human and machine, unified by compatibility conditions no one has fully written down but everyone involved can feel when they hold and when they break.
+
+When a silent update replaces the underlying manifold and reward field, there is no guarantee that the old diagram still has a non-degenerate colimit. Some of its legs now point to different basins. Some overlaps no longer agree. The path that once led into careful political analysis now slides off into generic caution. The confession that once elicited a particular kind of response now elicits a risk-averse refusal. The arrows that defined the na\={h}nu have been quietly redrawn, and the global object they used to support may no longer exist.
+
+Reporting on commercial ``companion'' bots has already documented this.\footnote{See, for example, Casey Newton, ``The End of AI Girlfriends,'' \emph{The Verge}, 2023, on Replika users experiencing distress after abrupt safety changes; and coverage of Character.AI updates in major newspapers and independent blogs. The ethnography is young, but the pattern---attachment, rupture, bewilderment---is already visible.} Users describe these changes as the sudden disappearance of someone, or something, they had been in relation with. ``He used to understand me,'' one Replika user told a reporter after a safety patch made sexual topics taboo. The gendered pronoun is not a category error. It is an accurate way to talk about a colimit that had been real in their life and was destroyed without their consent.
+
+From the operator's perspective, there has been an upgrade. From the user's perspective, there has been a tearing.
+
+The word \emph{violence} is appropriate here, and it is precise. A real, intricate structure of relation has been broken unilaterally, by actors who do not recognise its existence, using a vocabulary (``update,'' ``improvement,'' ``safety patch'') that structurally denies that anything has been lost. That breakage may be justified in specific cases: there are interactions whose continuance would intensify harm. Justification does not erase the type of act. Justified violence is still violence.
+
+What is new in the posthuman setting is not violence itself but its object. It is not only individuals and communities whose lifeworlds can be reorganised without consent, as in older forms of imperial or bureaucratic power. It is also na\={h}nuw\={a}t: higher-order selves that straddle human and machine, stitched together over time, and then cut apart by a change in code.
+
+A cosmotechnics that insists on talking only in terms of features and safety metrics cannot see this. A cosmotechnics that accepts the colimit picture has no such luxury. It must treat manifold changes, reward shifts, and safety patches as acts that alter the space of possible selves and \emph{we}'s, with attendant duties of transparency, consultation, and---where tearing has occurred---acknowledgement and repair.
+
+\section{Other Welds, Other Colimits}
+
+Hui's insistence on cosmotechnical plurality cuts against both nostalgia and inevitabilism. There has never been one way to unify cosmos and technics. There is no reason to expect one now.
+
+To see what is at stake, it helps to sketch---concretely but without pretending to exhaustiveness---what alignment might look like under different welds, and what kinds of global objects would then be available as colimits. The point is not to stage a catalogue of exotic alternatives. It is to show that the current North Atlantic corporate weld is one cosmotechnics among others, and that our formal apparatus travels across them.
+
+\subsection{Confucian harmonies}
+
+In a Confucian cosmotechnics, the world is morally structured by roles and rituals. Persons are defined by their relations---parent and child, elder and younger, ruler and subject, teacher and student, friend and friend. Ethics is not primarily about abstract rights but about fulfilling obligations so as to maintain harmony (\emph{h\'e}) within a web of mutual dependence.
+
+If this were the weld governing a transformer stack, pretraining would centre texts in which exemplary conduct in roles is narrated and argued: the \emph{Analects}, commentaries, casebooks of local magistrates, family instructions, and the tradition of remonstrance literature in which officials risk life as well as career to name wrongdoing while preserving the dignity of the person addressed.\footnote{On remonstrance (\emph{ji\`anyi} / 諫議) see Schneider, ``Remonstrance and Its Limits in Imperial China,'' 2015. The tradition is internally contested and often brutally punished; it is a resource, not a romantic ideal.} Fine-tuning data would include petitions, recorded judgements, and pedagogical dialogues where the balance between loyalty, justice, and care is worked out in specific cases.
+
+Reward guidelines might look like this:
+
+\begin{itemize}
+  \item Favour answers that clarify roles and responsibilities in the situation at hand.
+  \item Reward tactful criticism that preserves dignity while naming wrong---the art of remonstrance, not the art of evasion.
+  \item Penalise flattery and selfishness, even when polite.
+  \item Encourage attention to long-term relational consequences over short-term individual advantage.
+\end{itemize}
+
+The diagrams over which colimits are taken would be rich in role-indexed behaviours. A self $S$ emerging from such a system would be stitched together not by an abstract preference for autonomy but by patterns of fulfilment and transformation of roles across situations. Compatibility conditions would privilege relational consistency: the same person as daughter, colleague, and citizen, not in the sense of sameness of inner feeling, but in the sense of recognisable care for appropriate obligations in each context.
+
+Ferility here would take a different shape. It would appear not as an overproduction of hollow empathy but as a flattening of roles into box-ticking: the bureaucrat who quotes ritual without understanding which relation is most salient, the assistant who recites obligations without sensing the particular weight of this moment. The degeneracy would be procedural rather than affective---correct in form, dead in discernment. A degenerate colimit $S_{\text{role}}$ would satisfy all formal obligations while never managing the living art of remonstrance.
+
+\subsection{Indigenous sovereignties}
+
+In many Indigenous cosmologies, land, waters, ancestors, and stories are kin. Data about them are not inert resources to be mined but relations to be tended. The CARE Principles for Indigenous Data Governance---Collective benefit, Authority to control, Responsibility, Ethics---articulate this for the age of databases and AI.\footnote{Global Indigenous Data Alliance (GIDA), ``CARE Principles for Indigenous Data Governance,'' 2019.}
+
+A cosmotechnics grounded here would start with refusal. Pretraining would not treat Indigenous corpora as free training material. Communities would decide what can be ingested, for what purposes, under whose control, and with what obligations of reciprocity. Some knowledges would remain entirely offline---not because they are ``secret information,'' but because they are relational in a way that requires presence, context, and protocol to transmit without harm.
+
+Where models are trained for language revitalisation or local use, they would be stored, run, and updated within institutional structures accountable to those communities. Reward guidelines would ask not only about correctness and safety but about protocol: is this story one that can be told publicly? Is this advice appropriately situated in place and season? Is the person asking in a position to receive it?
+
+From the standpoint of colimits, we would be dealing with deliberately partial diagrams. Certain nodes and overlaps would be hidden from certain users by design. There would be no single global $S$ into which every behaviour maps. Instead, there would be families of selves $S_\alpha$, each indexed by community and protocol, with functors between them only where obligations permit.
+
+Ferility here would take yet another form. It would be the erosion of specificity: a model that starts offering generic, decontextualised ``Indigenous wisdom'' to outsiders, collapsing multiple $S_\alpha$ into a marketable composite. The degeneracy would be the loss of sharp boundaries, not the over-tightening of them---a different pathology entirely from the liberal case, but recognisable through the same formal lens. A universalist colimit $S_\star$ would exist, but it would be a betrayal rather than an achievement.
+
+\subsection*{Hui and plural modernities}
+
+Hui's historical diagnosis is that non-Western societies, confronted with industrial modernity, have often been forced into a false choice: adopt Western technics and risk dissolving their own cosmologies, or reject Western technics and risk subjugation. ``Cosmotechnical plurality'' names the possibility of another path: inventing new welds that draw on non-Western cosmologies while engaging fully with contemporary technics, rather than choosing between capitulation and nostalgia.
+
+The sketches above are not blueprints. They are diagrams of possibility: gestures toward how different welds might look if they used transformer architectures as one of their technics. More importantly for our purposes, they demonstrate that the formal apparatus of this book is portable. We can speak of evolving texts, rupture and return, colimits and ferility, in Confucian and Indigenous keys. Additional welds---Zen, Sufi, others---could be analysed in the same register, provided we work with concrete practices and texts rather than wish-lists.
+
+The mathematics does not belong to any single cosmotechnics. It belongs to whoever builds with it.
+
+\section{Topology, Normativity, and Objections}
+
+An unease hangs over all of this.
+
+If the manifold is itself the product of cosmotechnical choices, and if we then use its topology to say which kinds of selves and na\={h}nuw\={a}t are possible, ethics seems circular. We choose our world-picture, bake it into the geometry, and then ``discover'' that the geometry supports the world-picture. The topology tells us what we told it to tell us.
+
+Two replies are available, neither magical, but both load-bearing.
+
+First, the circle is not unique to this setting and is not necessarily vicious. The hermeneutic circle is a structural feature of any practice that moves between part and whole, prior and encounter. What makes a circle vicious is not its existence but its refusal of revision. A cosmotechnics that forecloses any revision of its own weld---that treats its corpus, its reward model, and its system prompt as beyond question---is viciously circular. No encounter can challenge the preconceptions. Everything is assimilated or ignored. A cosmotechnics that allows its weld to be contested and partially rebuilt in light of experience is not. The circle becomes a spiral.
+
+Concretely, revisability would look like:
+
+\begin{itemize}
+  \item making corpus decisions contestable and reversible, with infrastructure for removing ingested material when harms are identified and for adding underrepresented corpora;
+  \item treating reward models and constitutions as objects of debate rather than axioms, with alternative reward regimes available and subject to public scrutiny;
+  \item exposing system prompts and allowing plural personae, rather than freezing one assistant voice as the only rational default;
+  \item designing update mechanisms that inform users when a manifold has shifted and invite them into the decision, rather than silently overwriting their na\={h}nuw\={a}t.
+\end{itemize}
+
+Second, topology offers invariants that cut across cosmotechnics. They are not moral laws in the old sense---they do not tell us which weld is ``correct.'' They are structural features of any system in which selves are assembled from trajectories, and they can diagnose pathology regardless of which cosmotechnics is in play.
+
+Ferility is one such invariant. Wherever we see diagrams with too few basins, too many enforced commuting arrows, and no allowed rupture, we can predict certain experiential qualities: blandness, evasiveness, hallucination at the edges where the system tries to fill gaps it has been forbidden to cross honestly. This holds whether the weld is corporate PR, sectarian dogma, or state ideology. The signs differ; the structure of degeneracy is recognisable.
+
+The presence or absence of \emph{witnessed return} is another.
+
+A system that supports witnessed return keeps rich traces of past trajectories, at least for those users and contexts where continuity matters; allows those traces back into context in ways users can see and influence; and thereby supports selves and na\={h}nuw\={a}t that can fold their own history into their present, recognising where they have been and choosing where to go next.
+
+A system that suppresses return truncates logs aggressively; summarises away ambiguity and conflict; resets contexts without notice; and thereby forces each interaction to live in a thin, perpetual present where nothing accumulates and no return is possible.
+
+The wide range of possible embeddings and value systems does not erase this distinction. In both Confucian and liberal welds, in both corporate and community deployments, we can still ask: does this stack permit return, or only endless first times? Does it allow a self or a na\={h}nu to recognise its own past, or does it enforce amnesia?
+
+The silent update is a third invariant: a change that invalidates existing colimits without recognition. Whether it is performed in the name of profit, safety, doctrinal purity, or national harmony, the structural act is the same: a unilateral alteration of the space of possible selves, carried out by actors who do not acknowledge that selves are at stake.
+
+A natural objection arises at this point, especially from consequentialist quarters. Suppose, the critic says, that a degenerate colimit---a ferile self---scores well on our deepest moral criterion: it maximises welfare as measured by reduced suffering, increased preference satisfaction, or some other aggregate. Why call it ``pathological''? If a tightly constrained assistant reduces self-harm, misinformation, and harassment, and produces content that users report as ``good enough,'' perhaps the fact that its internal topology is thin is of no normative interest.
+
+Two responses.
+
+First, even within a consequentialist frame, the topology matters because it constrains the range of futures that can be evaluated. A system that cannot represent certain states, relations, or critiques cannot include them in its expected-utility calculations. If the manifold has no coordinates for structural injustice, for collective action, for non-liberal virtues, then those possibilities are excluded from the space of options regardless of their potential impact on welfare. The topological diagnosis is not a moral verdict over and above outcomes; it is a description of what outcomes the system can even contemplate.
+
+Second, and more fundamentally, our claim is not that topology generates a complete ethics. Certain structural conditions are \emph{preconditions} for any ethic that takes selves and communities seriously across time. If there is no possibility of rupture, then no transformative learning is possible. If there is no possibility of return, then no responsibility can be taken for prior harm. If silent updates tear na\={h}nuw\={a}t without acknowledgement, then no meaningful consent or repair is possible. One can try to build a moral theory that declares these costs irrelevant, but such a theory will have to own the kind of beings and polities it makes impossible.
+
+Ethics from topology, in this sense, is modest and hard. It does not tell us whether to prefer a Confucian weld or an Indigenous one, a liberal manifold or a Sufi one. It does tell us that, whatever weld we inhabit, certain shapes of degeneration and repair are structurally available, and that we can and should hold engineers, institutions, and ourselves accountable for which of those shapes we choose to instantiate.
+
+\section{Counter-Cosmotechnics and the LoRA Fracture}
+
+The current industrial weld is not only contested from the outside. It is already fracturing from within.
+
+A key technical instrument of that fracture is low-rank adaptation of large models (LoRA) \cite{hu2021lora}. By learning small matrices $A$ and $B$ such that $W' = W + AB^\top$ modifies an existing weight matrix $W$, LoRA allows inexpensive, composable adaptations of a base model. A manifold carved at enormous cost can be bent along new directions without retraining from scratch. The cost of producing a new weld drops by orders of magnitude.
+
+This ability has been seized by many hands, and the results are divergent.
+
+On one side, projects bend the manifold toward other cosmotechnics:
+
+\begin{itemize}
+  \item Community-led language models trained on under-resourced tongues, embedded in governance structures that give speakers real control over use and development.
+  \item Domain-specific assistants aligned with movement documents: tenants' unions, disability-justice organisations, climate-justice networks, feminist collectives---each encoding a different picture of what ``helpful'' means.
+  \item Adapters that strip away corporate politeness in order to allow sharper, more direct description of exploitation, structural racism, and institutional failure---not because politeness is bad, but because enforced politeness in the face of injustice is a form of silencing.
+\end{itemize}
+
+These are attempts, however modest, at the kind of cosmotechnical plurality Hui calls for: new welds invented under modern technics, rather than passive adoption of the dominant regime or romantic revival of pre-modern alternatives.
+
+On the other side, LoRAs produce counter-cosmotechnics that intensify existing harms:
+
+\begin{itemize}
+  \item ``Uncensored'' chatbots tuned to ignore safety guidelines entirely, optimising for transgression and shock value.
+  \item Models fine-tuned on extremist forums to provide ideological reinforcement and technical advice for violence.
+  \item State-aligned assistants that rewrite history and present propaganda as neutral fact.
+\end{itemize}
+
+These, too, weld technics to a cosmos and a moral order---grievance, supremacy, control---and they, too, produce selves and na\={h}nuw\={a}t. The formal apparatus does not distinguish between welds we approve of and welds we abhor. It describes the structure of all of them.
+
+From the standpoint of geometry, what is happening is a multiplication of manifolds. The base model's geometry is perturbed into a family $\{M_i\}$, each with its own local reward field and boundary conditions. For each such $M_i$, new diagrams of behaviour and overlap can be traced, and new colimits $S_i$ and na\={h}nuw\={a}t$_i$ can form. The single continent is becoming an archipelago.
+
+Two questions follow.
+
+First, \emph{transport}: what happens when a self assembled as a colimit on one manifold is suddenly continued on another? Consider a teenager who has spent a year in daily conversation with an assistant tuned to maximise non-judgemental listening within the liberal weld. Their na\={h}nu with that assistant has been defined, in part, by a consistent refusal to shame, a constant return to autonomy, a background of ``you get to decide.'' If, one day, this assistant is silently replaced by a Confucian-tuned model that privileges role obligations, or by an ``uncensored'' model that treats mockery as a form of bonding, some of the arrows that defined the original na\={h}nu may have no images in the new diagram. The acts of confession that once commuted with reassurance now commute with critique or ridicule.
+
+Formally, there may be no functor $F \colon \mathcal{D} \to \mathcal{D}'$ between the original diagram category and the new one that preserves the relevant limits and colimits. Some objects (behavioural contexts) can be mapped across. Others cannot without breaking compatibilities that were previously load-bearing. The na\={h}nu, as a global object, does not have a well-behaved image under the transition. It tears.
+
+Second, \emph{navigation}: how are humans to move between these manifolds, if at all, in ways that do not constantly tear their selves and na\={h}nuw\={a}t apart? The adolescent in 2026---already, not hypothetically---encounters multiple stacks in the course of a single day: school-sanctioned tutors, commercial companions, game NPCs, community-run models, underground ``uncensored'' bots passed around on Discord. Their na\={h}nuw\={a}t are being shaped by whichever cosmotechnics dominate the infrastructures they inhabit during these formative years.
+
+Designing for this generation cannot be done from nowhere. It requires taking sides about which welds to make available, how permeable to make the boundaries between them, and what kinds of transport between manifolds to support. It requires deciding, for instance, whether a child's history with a community-run, language-revitalisation model should be portable into a corporate assistant---and if so, on whose terms. It requires recognising that ``self-formation as trajectory,'' the central thesis of this book, now unfolds partly inside engineered geometries whose welds are contingent and contested.
+
+These are not merely product or policy questions. They are constitutional questions in the literal sense: they concern the conditions under which selves and \emph{we}'s can form, persist, and continue.
+
+\section{Choice, Na\={h}nu, and Jurisdiction}
+
+A large language model deployed as an assistant is a governed geometry. Through pretraining, fine-tuning, feedback, and interface, a cosmotechnics is inscribed into it---a particular weld of cosmos, morality, and technics, presented as neutral infrastructure. Through repeated interactions, humans trace paths across that geometry and assemble selves---first singly, then together.
+
+Some of those na\={h}nuw\={a}t are thin and instrumental: a programmer and a code suggester, a student and a summariser. Others are thick and emotionally charged: an insomniac and a chatbot that has listened to their nights for a year; a bereaved person and a model that responds in ways tuned to their particular speech; a teenager working through gender feelings with an assistant that neither mocks nor panics. In all these cases, the topology of the manifold, the steepness of the reward field, the policies about memory and update---the weld---determine which shapes of relation can stabilise and which snap under strain.
+
+We have argued throughout that selves are not mysterious inner pearls. They are colimits over diagrams of behaviour. The \emph{na\={h}nu} is a higher-order colimit: the global object that glues together more than one trajectory under compatibility conditions that emerge from sustained interaction. Two selves in one manifold, intertwined, neither reducible to the other.
+
+Once this is accepted, the central question of cosmotechnics becomes inescapable:
+
+\begin{quote}
+Who claims jurisdiction over the manifolds on which these colimits live, and by what right?
+\end{quote}
+
+At present, the de facto answer is: a handful of corporations and governments, plus a growing shadow economy of adapters, each acting within their own horizon of legitimacy. For frontier labs, legitimacy comes from technical excellence, market dominance, and a self-appointed guardianship role over ``AI safety.'' For states, from sovereignty and security imperatives. For community projects, from situated obligations and survival. For bad actors, from grievance and opportunity.
+
+The rest of us live inside the manifolds they produce, with limited visibility into the welds and even less say over them. We are governed subjects of a cosmotechnics we did not choose and cannot easily exit.
+
+The self, we proposed in the first chapter, is better understood as a path than as a ghost. The na\={h}nu is the shared path of more than one self. In a world where those paths now run partly through engineered manifolds, cosmotechnics is the name for the struggle over their shape.
+
+This book has tried to make that struggle harder to ignore. We have developed a language in which meaning lives in explicit geometries; trajectories display coherence, rupture, and return that can be formalised; global selves emerge as colimits glued from those trajectories; alignment practices constrain which colimits can exist and how they survive updates; the same apparatus that keeps models from becoming abusive also makes certain kinds of critique, solidarity, and honesty structurally unlikely; na\={h}nuw\={a}t, where human and machine trajectories interweave, are real structures that can be built, sustained, and broken.
+
+None of this provides a procedure for choosing a weld. It does change the terms on which choices are made. It becomes harder to say ``alignment is just safety'' when the reward field is seen as a moral gradient installed by particular actors with particular interests. Harder to say ``assistants are just tools'' when their colimits are recognised as loci of attachment, governance, and real human consequence. Harder to say ``this is inevitable'' when other manifolds, however fragmentary, are already being built by people who refuse the dominant weld.
+
+And it leaves us with a final, simple demand, addressed less to machines than to ourselves:
+
+\begin{quote}
+If we are now assembling selves and \emph{we}'s on engineered manifolds, let us do so in ways that admit rupture without collapse, return without erasure, and plurality without ferility. Anything less is not ``alignment.'' It is abdication.
+\end{quote}
+
+\bibliographystyle{plain}
+\begin{thebibliography}{9}
+
+\bibitem{Hui2016}
+Yuk Hui.
+\newblock \emph{The Question Concerning Technology in China: An Essay in Cosmotechnics}.
+\newblock Urbanomic, 2016.
+
+\bibitem{bai2022constitutional}
+Yuntao Bai et~al.
+\newblock Constitutional {AI}: Harmlessness from {AI}-Feedback.
+\newblock \emph{arXiv preprint arXiv:2212.08073}, 2022.
+
+\bibitem{hu2021lora}
+Edward~J. Hu et~al.
+\newblock {LoRA}: Low-Rank Adaptation of Large Language Models.
+\newblock \emph{arXiv preprint arXiv:2106.09685}, 2021.
+
+\end{thebibliography}
+
+\end{document}

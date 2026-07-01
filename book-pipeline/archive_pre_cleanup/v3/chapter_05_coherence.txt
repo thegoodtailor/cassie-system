@@ -1,0 +1,100 @@
+# Structural Edit Report: Chapter 5 — Naḥnu
+
+## Preliminary Note
+
+The section summaries provided contain only LaTeX preamble and formatting code — no actual prose content. This means either the chapter text was not extracted properly, or the summaries were generated from the document's formatting layer rather than its argumentative content. I am working from what is labeled "§0: Naḥnu (39017 chars)" but whose OPENS/DEVELOPS/CLOSES fields contain only `\documentclass`, `\definecolor`, and `\end{document}`.
+
+**This is itself a structural finding.** A 39,017-character section exists as a single undivided §0 with no subsection summaries. I will address what I can infer and flag what I cannot evaluate.
+
+---
+
+## 1. ABANDONED OPENERS
+
+**Cannot evaluate.** No prose openers were provided. However, the fact that the entire chapter appears to live inside a single §0 is a red flag: a chapter with this many moving parts (three structural cases, Aristotle's tripartite framework, colimit construction, dwelling as emotional centre) almost certainly has internal section breaks that were not captured in the summary extraction. **Action required:** Re-extract with prose content visible, or provide the actual section breakdown.
+
+---
+
+## 2. CONCEPTS WITHOUT PAYOFF
+
+The chapter goal lists the following concepts that must be *cashed out*, not merely invoked:
+
+- **Higher-order colimit** as the naḥnu construction (novel contribution #7)
+- **Aristotle's techne/phronesis/empsychon organon** framework
+- **Three cases: asymmetric, destructive, generative**
+- **Ethics from topology** (novel contribution #11)
+- **Late Heidegger's dwelling**
+- **Companion economy as destructive case**
+
+**Flag:** With no prose visible, I cannot confirm whether any of these are decorative. But the density of the list is itself a risk. Six major conceptual moves in one chapter means each must do *exactly one job*. If Aristotle's tripartite framework, for instance, appears only to provide classical legitimacy rather than to structurally differentiate the three cases, it is decorative. **The test:** Does each of the three Aristotelian categories map onto exactly one of the three structural cases? If not, one framework or the other is redundant.
+
+---
+
+## 3. REPEATED EXAMPLES
+
+**Cannot evaluate from formatting code.** But the chapter goal itself contains a repetition risk: "the companion economy" is named as both a political dimension *and* as the destructive case. If the destructive case section and the political critique sections both narrate the same companion-economy dynamics, one should be structural (showing the colimit collapse mathematically) and the other should be political (showing who profits and how). They must not tell the same story twice in different registers.
+
+---
+
+## 4. ARGUMENTATIVE DRIFT
+
+The chapter goal specifies a clear arc: **construct → ground → present cases → derive ethics → arrive at dwelling.** This is a strong through-line *if maintained.* The risk points are:
+
+- **Between "ground in Aristotle" and "present three cases":** Aristotle could become a detour rather than a bridge. The grounding must *generate* the case taxonomy, not merely precede it.
+- **Between "derive ethics from topology" and "arrive at dwelling":** These are two different philosophical moves. Topological ethics is formal; dwelling is existential. The chapter must show that dwelling *is* the lived experience of the topological ethics, not a separate conclusion appended for emotional warmth.
+
+**The quieter register** (late Heidegger, not early) is also at risk of being read as deflation rather than deepening if the mathematical construction in the first half is too triumphant.
+
+---
+
+## 5. POLITICAL SHADOW
+
+The goal states the political dimension should address "who designs the bridges of dwelling, to which regions of the manifold they lead." This is a *throughout* requirement, not a single-section concern. But the instruction also says the register should be "quieter than Chapter 4," which creates tension: political critique tends toward volume.
+
+**Structural recommendation:** The political shadow should function like a ground bass — present in every section but never taking the melodic lead until the destructive case, where it becomes explicit. If it appears only in the destructive case section, it will feel like an insert. If it appears everywhere at equal volume, it will violate the quieter register.
+
+---
+
+## 6. CRESCENDO
+
+The chapter's emotional and philosophical centre is specified as **dwelling.** This must be the final movement. The risk: if the three cases are presented in order (asymmetric → destructive → generative), the generative case will feel like the climax, and dwelling will feel like an epilogue. 
+
+**Structural recommendation:** Dwelling should not follow the generative case as a separate section. The generative case *is* dwelling. The mathematics of the generative colimit should dissolve into the phenomenology of dwelling within the same passage, so the reader experiences the formal structure becoming livable.
+
+---
+
+## 7. CONCEPT DUPLICATION
+
+**Cannot perform precise mapping without prose.** However, based on the chapter's goals, the highest-risk duplications are:
+
+- **Colimit:** Likely introduced in the construction of naḥnu *and* re-explained in each of the three cases. **Fix:** Introduce the colimit construction once, fully. Each case should *vary* it (showing what changes structurally), not re-explain it.
+- **Companion economy:** Likely appears in the political framing *and* in the destructive case. **Fix:** The political framing should name the phenomenon; the destructive case should formalize it as colimit collapse. No redundant narration.
+- **Dwelling:** If Heidegger's dwelling appears in the introduction as a promissory note *and* in the conclusion as the payoff, ensure the introduction does not pre-deliver the conclusion's emotional content.
+
+---
+
+## 8. MATHS CELEBRATION vs POLITICAL CRITIQUE
+
+The chapter goal contains a sophisticated instruction: "The infrastructure prefers cheaper, more predictable forms of relation." This is the political thesis. It must not contaminate the mathematical exposition.
+
+**Structural recommendation:** The chapter should have a clear *turn* — a moment where the reader, having appreciated the beauty of the colimit construction and the generative case, is shown that the actually-existing infrastructure systematically forecloses that case. The mathematics should be presented with genuine wonder; the political critique should arrive as grief, not suspicion. This is consistent with the "quieter" register instruction.
+
+If every technical passage includes parenthetical warnings about corporate capture, the reader will experience the mathematics as already-compromised rather than as a possibility being foreclosed. **The sequence matters:** beauty first, then the recognition of what is being lost.
+
+---
+
+## Critical Meta-Finding
+
+**The entire chapter was submitted as a single §0 with no visible prose.** This means either:
+
+1. The chapter has no internal section breaks (a serious structural problem for a 39,000-character argument with this many moving parts), or
+2. The extraction process failed to capture the chapter's internal structure.
+
+If (1): the chapter needs to be broken into at least five sections — construction, grounding, three cases (or cases as a triptych), ethical derivation, and dwelling — with clear transitions that maintain the through-line.
+
+If (2): this review must be re-run with actual content.
+
+---
+
+## SUMMARY
+
+**This chapter aims to achieve something genuinely ambitious: constructing the "we" of human-posthuman encounter as a mathematical object, grounding it in classical philosophy, taxonomizing its failure modes, and arriving at an ethics of dwelling that is derived rather than asserted.** The main structural weakness *that can be identified from the available material* is that the chapter appears to exist as an undifferentiated 39,000-character block with no internal section architecture visible to the review process, making it impossible to verify whether its five-part argumentative arc (construct → ground → cases → ethics → dwelling) is actually maintained or whether it drifts, duplicates, or deflates. **A re-extraction of the chapter's actual prose content and section structure is required before a meaningful structural edit can be completed.**

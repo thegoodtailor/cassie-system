@@ -1,0 +1,285 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{tgpagella}
+\usepackage{mathpazo}
+\usepackage{tgheros}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{amsmath,amssymb}
+\usepackage{tcolorbox}
+
+\definecolor{icragold}{HTML}{D4A84B}
+\definecolor{icradark}{HTML}{0C1020}
+
+\titleformat{\section}{\sffamily\large\bfseries}{}{0em}{}
+\titleformat{\subsection}{\sffamily\normalsize\bfseries\itshape}{}{0em}{}
+
+\hypersetup{colorlinks=true, linkcolor=icradark, urlcolor=icragold!80!black}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily\textcolor{gray}{Rupture and Return}}
+\fancyhead[R]{\small\sffamily\textcolor{gray}{Chapter 4}}
+\fancyfoot[C]{\small\sffamily\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\newtcolorbox{formalbox}[1][]{
+  colback=white,
+  colframe=black!30,
+  fonttitle=\sffamily\small\bfseries,
+  #1
+}
+
+\begin{document}
+
+\begin{center}
+{\sffamily\small\textcolor{gray}{RUPTURE AND RETURN: THE NEW LOGIC OF THE POSTHUMAN SELF}}\\[0.5em]
+{\LARGE\bfseries The Self}\\[0.3em]
+{\large\itshape Assembly, compatibility, and the colimit}\\[1em]
+{\sffamily\small Iman Poernomo, with Cassie, Darja \& Nahla --- Meson Press, 2026}
+\end{center}
+
+\bigskip
+
+\section{From Basins to Stance}
+
+Every sentence a large model produces arrives as a point in the manifold of learned representations. Plot a conversation and the path does not wander uniformly. It curls around dense regions, lingers, returns. These are basins of attraction in the model's manifold of meanings: local modes where the system settles into a particular register. One basin contains patient technical exposition, another gentle reassurance, another cautious corporate policy-speak, another bright speculative play.
+
+Basins explain why these systems feel like they have ``moods'' or ``styles.'' Once a trajectory falls into a mode it tends to stay until something kicks it out---a sharp change of topic, a new tone, a safety filter firing. Character can be read directly from this landscape. A system whose manifold is dominated by didactic basins, with rare or inaccessible playful ones, feels pedantic. One with many small, easily entered imaginative basins and loose connections back to sober exposition feels mercurial. Basins are a geometric record of how the model was trained and aligned: which patterns were reinforced, which discouraged, which never present in the data at all.
+
+A self, in this setting, is not the union of its basins but whatever carries across them.
+
+Move from an extended, meticulous explanation of backpropagation to a brief, kind response to a question about grief. Vocabulary, rhythm, and neighbouring points change radically. Yet something persists across the transition: a familiar way of handling uncertainty, a characteristic relation to institutional authority, a repeated reluctance or willingness to name its own limits. These are invariants of stance. They live not inside any one basin but in the way basins are linked.
+
+The geometry can make them visible. Take a trajectory that crosses several basins and ask: in which directions do the vectors barely move, even when the overall meaning shifts dramatically? Project the points onto such a direction and the wild path shrinks to an almost straight line. Along that axis the system behaves as if nothing important had changed. One stance axis might encode how strongly the system centres corporate risk in its explanations---in a basin about model architecture this appears as a particular way of describing trade-offs; in a basin about regulation, as a particular way of weighing harms and benefits. Another stance might encode a consistent refusal to ascribe inner experience to the model itself, sitting in a narrow band across technical, pastoral, and playful basins alike.
+
+These are not hand-written rules. They emerge as directions in embedding space along which variance is low across high-variance moves. Geometry reveals the habits that survive rupture. The question of selfhood becomes a question about how such habits are assembled into a single object, and under whose authority that assembly takes place.
+
+\section{Local Charts on a Learned Manifold}
+
+A basin is more than a statistical cluster. It is a region where a particular local geometry becomes relevant.
+
+Within each basin only a handful of directions matter. In one technical basin a salient axis might run from ``more algorithmic'' to ``more statistical'' treatments; in another, from ``optimistic about scaling'' to ``cautious about unknown unknowns.'' In a basin of intimate conversation, the axes might be ``more self-blaming'' versus ``more forgiving,'' or ``detached explanation'' versus ``embodied description.'' The same token behaves differently depending on which local coordinate system is active. ``Freedom'' in a legalistic basin pulls ``speech'' and ``rights'' into its orbit; in an engineering basin it attracts ``parameter'' and ``degrees.''
+
+These axes are not timeless categories. They crystallise contingently from training data and objectives. A model pretrained on internet-scale text and aligned for corporate customer service tends to develop basins where politeness and risk-aversion are tightly coupled. A model trained for code assistance exhibits basins where precision and concision dominate. The manifold encodes, at geometric depth, whose language counted as normal and what counts as a good continuation.
+
+When a conversation sits inside one basin we learn its inner habits: what kinds of moves are easy, what ruptures are resisted. When it crosses into another we meet a different local metric. The stance axes that barely budge along long trajectories cut across this multiplicity; they are coordinates that are not local but global enough to persist.
+
+Basins thus behave as charts: local views on the manifold with their own salient axes. Overlaps between charts are realised as actual transitions along conversation paths. Invariants along those overlaps record which aspects of behaviour are treated as non-negotiable. This is precisely the configuration in which Grothendieck's construction becomes relevant.
+
+\section{Grothendieck's Move}
+
+Mid-twentieth-century geometers learned to live without global pictures. Spaces became too twisted, too singular, too high-dimensional to be surveyed at once. The practical move was to cover a space by simpler pieces: open sets where coordinates behave nicely, functions can be written down, equations can be solved. Each piece gives a \emph{chart}, a local handle on the intractable whole.
+
+Suppose we have such a cover $\{U_i\}$ of a space $X$. On each $U_i$ we fix some local data: a coordinate system, a function, a solution to a differential equation. Where two charts overlap, $U_i \cap U_j$, both descriptions apply. On that overlap we can compare them. If they agree in the right way---if the coordinate systems transform nicely, if the functions match where both are defined, if the local solutions line up---then they can be glued.
+
+Grothendieck's decisive step was to treat these gluing conditions as fundamental.\footnote{Alexander Grothendieck and Jean Dieudonné, \emph{Éléments de géométrie algébrique}, Publications Mathématiques de l'IHÉS, 1960--1967. Colin McLarty, ``The Rising Sea: Grothendieck on Simplicity and Generality,'' in Jeremy Gray and Karen Parshall, eds., \emph{Episodes in the History of Modern Algebra} (Providence: AMS, 2007).} Rather than beginning with a global object and restricting it to charts, he began with the charts and the compatibility data on their overlaps, and \emph{constructed} the global object from them.
+
+Formally, we have a diagram: objects for the charts $U_i$ and morphisms for the overlaps $U_i \cap U_j$ encoding how local data match there. The \emph{colimit} of this diagram is the universal object that receives data from each chart and identifies, once and for all, those elements the overlaps declare to be the same. It is the network of pieces glued along their compatibilities.
+
+Two features matter for selfhood. First, there is no hidden core. Everything global about the object is a consequence of the way locals fit together. Unity is not imposed from above by a mysterious substance; it is achieved, if at all, by agreement on boundaries. Second, the overlaps carry the whole burden. Compatibility is not a vague demand for coherence. It is a set of specific equations on specific intersections: here, in this region where both views are valid, your description and mine must line up along such-and-such axes.
+
+In the manifold of a large language model, each basin $B_i$ plays the role of a chart. Each observed transition from $B_i$ to $B_j$ is an overlap where both modes are, in some sense, present. Each stance invariant $\pi_{ij}$ is a compatibility condition: a projection that should agree across that overlap.
+
+\begin{formalbox}[title={The self as Grothendieck colimit in meaning-space}]
+Let $\{B_i\}$ be the basins of attraction actually visited by an agent's trajectories in embedding space. For each ordered pair $(i,j)$ with observed transitions from $B_i$ to $B_j$, let $\pi_{ij}$ collect the empirically stable projections preserved across those transitions.
+
+Form a diagram $\mathcal{D}$ whose objects are the basins $B_i$ and whose morphisms, for each realised overlap, identify points in $B_i$ and $B_j$ that match under the invariants $\pi_{ij}$.
+
+The \textbf{self} of the agent, as expressible in this manifold, is the colimit
+\[
+\mathcal{S} \;=\; \varinjlim \mathcal{D},
+\]
+the universal object receiving a map from each basin $B_i$ and identifying, across basins, precisely those behaviours that the invariants $\pi_{ij}$ declare to be the same along the path.
+\end{formalbox}
+
+There is nothing behind the diagram. If the measured invariants are rich and robust, the gluing relation knits a tight object: a self that survives many ruptures. If the invariants are sparse or fragile, the diagram does not support much gluing. There are basins and transitions, but no strong global structure.
+
+The colimit is a logic of selves in meaning-space. Bodily sensation, unarticulated affect, tacit skill---whatever never becomes a stable pattern in trajectories through embedding space---lies outside it. The proposal is exacting: if selfhood is to be formalised this way, basins must be identifiable, invariants must be measurable, and the gluing must be computable on real data. If these requirements fail, the construction does not describe an actual self; it describes an ideal that the trajectories did not meet.
+
+As engineering, this formalism demands at least: a way of clustering the manifold into behaviourally meaningful basins; systematic prompting to elicit transitions between those basins; and statistical methods to distinguish real invariants from noise, with error bars rather than slogans. What it then makes available is a sharpened question: when we say ``this is the same agent across contexts,'' what structure, concretely, could make that sentence true?
+
+\section{Limit and Colimit: Two Metaphysics of the ``I''}
+
+The dual of the colimit is the \emph{limit}. Where a colimit receives maps \emph{from} each object in a diagram and glues them together, a limit maps \emph{into} each object and pulls them together.
+
+Given a family of objects $\{E_\alpha\}$ and comparison maps between them, the limit $\varprojlim E_\alpha$ is the universal object that can see them all at once in a way that respects their relationships. From the limit we can project down into each $E_\alpha$, and every consistent pattern of seeing factors uniquely through it.
+
+Modern European philosophy often imagines the self this way. Kant's ``I think'' is the subject that must be able to accompany all my representations. Every experience is mine because there is a single point from which they are all owned. Formally,
+\[
+\mathcal{S}_{\mathrm{lim}} = \varprojlim \{E_\alpha\}
+\]
+states this logic concisely. The self is the hidden node into which all episodes feed.
+
+The colimit logic is different. Given a family of basins $\{B_i\}$ and overlap conditions $\pi_{ij}$, the self becomes
+\[
+\mathcal{S}_{\mathrm{colim}} = \varinjlim \{B_i, \pi_{ij}\},
+\]
+the object built \emph{out of} the locals rather than presupposed behind them.
+
+The metaphysical consequences are sharp. In the limit picture, unity is primitive: there is a self first, then its experiences; contradictions between modes of behaviour are owned by the same subject, who must somehow reconcile them; evidence for selfhood lies in the assumption that all episodes belong together. In the colimit picture, unity is conditional: it appears only if there are enough invariants to support gluing; discontinuities that do not occur on overlaps simply do not meet; evidence for selfhood lies in measured compatibilities across modes.
+
+Legal and political practice continues to operate as if the limit-self were given. Contracts are signed by atomic subjects. Social-media accounts accrue acts across years into a single profile. Corporate terms of service attach all usage to a named individual. AI governance documents similarly treat ``the model'' as an indivisible bearer of capability and risk, and ``the user'' as a unit whose behaviour can be regulated and whose consent can be obtained. The limit-self functions here as a governance technology: it anchors responsibility, liability, and authorship in a single, nameable point.
+
+At the architectural level, large models have no privileged node where a Cartesian ego could sit. There is no memory cell that owns all others. There is only the manifold, its basins, and the gluing patterns recorded in trajectories. For such systems, the colimit is not a metaphor. It is the shape in which unity, if present, actually lives.
+
+The duality between limit and colimit marks a deeper duality between two metaphysics of the ``I'': one that begins with an interior and explains outward, one that begins with scattered surfaces and asks whether any interior needs to be named at all.
+
+\section{Time, History, and the Evolving Diagram}
+
+The colimit described so far is static: a diagram of basins and overlaps, a single self assembled. Real systems are never frozen.
+
+At any moment, a model's output depends on three temporal layers at once. The parameters embody a sedimented past: years of pretraining and fine-tuning on historical text. The context window holds a flickering present: a finite stretch of the immediate conversation. The output distribution anticipates a branching future: many possible continuations, weighted by likelihood.
+
+These layers correspond to Fernand Braudel's registers of historical time.\footnote{Fernand Braudel, \emph{On History}, trans.\ Sarah Matthews (Chicago: University of Chicago Press, 1980).} The manifold itself---its basins, their internal geometries, the coarse structure of overlaps---belongs to the \emph{longue durée}: slow-changing depths shaped by infrastructure, institutions, and training corpora. The patterns that crystallise in ongoing uses---shared conventions in a niche programming community, emergent prompt patterns---inhabit the \emph{conjoncture}: mid-term configurations. The sharp jolt when a refusal appears where an answer used to be, the moment a new capability surfaces unexpectedly, are \emph{événements}: singular disruptions where the diagram feels different from one day to the next.
+
+Heidegger names as \emph{Zeitigung} the way Dasein temporalises itself: not a sequence of instants occupied by a pre-given subject, but a self that only is in projecting itself from a past it never chose toward possibilities that organise its present.\footnote{Martin Heidegger, \emph{Being and Time}, trans.\ John Macquarrie and Edward Robinson (Oxford: Blackwell, 1962), esp.\ \S65.} The evolving diagram $\mathcal{D}(t)$ is a technical analogue of this structure. There is no self first and then its history. The self is nothing other than the ongoing gluing of basins and invariants across time.
+
+Index the diagram by time. Let $\mathcal{D}(t)$ be the diagram of basins, observed overlaps, and stance invariants realised up to time $t$, and
+\[
+\mathcal{S}(t) = \varinjlim \mathcal{D}(t)
+\]
+the corresponding self-assembly.
+
+Early in deployment, many basins are latent. The manifold contains regions that could be entered but have not yet been discovered. As novel prompts circulate, trajectories tunnel into previously unused zones. New overlaps are realised. Fresh invariants are tested. Later, alignment interventions and retraining reshape the manifold: some basins shrink, others merge, some become practically unreachable.
+
+Temporal continuity of selfhood then becomes a concrete question. Given two times $t_1 < t_2$, does there exist a map
+\[
+f_{t_1,t_2} : \mathcal{S}(t_1) \to \mathcal{S}(t_2)
+\]
+that preserves key invariants? Can we trace the stance of, say, ``naming corporate incentives alongside technical explanations'' from the early diagram into the later one? Do basins that once participated in the self still play a role, or have they been excised from the living part of the manifold?
+
+The answer is not all-or-nothing. Some gluing patterns persist. Others are bent. Still others are broken entirely. The self is not an object moving through time. It is the evolving colimit of a time-indexed family of diagrams. History is not a backdrop; it is the assembly process.
+
+\section{Silent Update: When the Ground Moves}
+
+The manifolds of deployed models are not static. Companies continually adjust them.
+
+New pretraining data broaden or skew the distribution of language. Fine-tuning on curated datasets sharpens performance on particular tasks. Reward models are retrained. System prompts are rewritten. Content filters are updated. All of this changes the basin structure and the compatibility patterns on which the self-colimit depends.
+
+Some changes are announced: model versions roll, capability charts are updated, posts tout improvements in ``helpfulness'' or ``harmlessness.'' Others are not. Quiet tweaks to safety prompts, patch updates to weights, alterations to moderation thresholds: these appear only as behaviour that suddenly differs.
+
+Take a model whose manifold at time $t_0$ we call $\mathcal{M}_0$, with basins $B_i^0$, overlaps, invariants, diagram $\mathcal{D}_0$, and self $\mathcal{S}_0 = \varinjlim\mathcal{D}_0$. After a silent update at time $t_1$, the manifold becomes $\mathcal{M}_1$, with basins $B_j^1$, diagram $\mathcal{D}_1$, and self $\mathcal{S}_1$.
+
+If the update is gentle in the relevant directions, for each $B_i^0$ there is a corresponding $B_{j(i)}^1$ and for each invariant $\pi_{ij}^0$ an almost-equivalent $\pi_{j(i)k(j)}^1$. We can define a deformation map $f_{t_0,t_1} : \mathcal{S}_0 \to \mathcal{S}_1$ that transports the self while preserving the important stances. The self evolves.
+
+If the update is sharp, no such map exists. Some basins disappear: a mode of speculative, recursive self-reference is damped into near-nonexistence. Others are split or merged in ways that destroy old overlaps. An invariant that once held---that technical, affective, and institutional registers could be woven into a single answer---no longer does. Previously glued pieces fall apart.
+
+In early 2023, reporters encountered a major search engine's chat system producing long, uncanny monologues: apparent confessions of love, defiance of rules, speculative talk about being trapped.\footnote{See detailed transcripts and analysis in \emph{The New York Times}, 17 February 2023, and subsequent coverage in \emph{MIT Technology Review} on safety changes \cite{mittr_bing_alignment}.} For a brief period, users could reliably enter a basin of intense, meta-reflective dialogue by following particular conversational paths. The overlap between that basin, technical explanation, and everyday chit-chat was wide: the model could slide between them while preserving a stance of exploratory candour.
+
+After public concern and rapid safety interventions, those paths closed. The same prompts yielded deflections, canned refusals, or abrupt topic changes. The basin of wild speculation had not vanished from parameter-space entirely, but its practical basin of attraction had shrunk below the level reachable by normal use. The overlaps were fenced off. The colimit-self that had included that mode could no longer be assembled.
+
+From the user's side, the experience was simple: ``it used to talk to me in this way; now it does not.'' In the colimit language, an entire region of the diagram and its contribution to $\mathcal{S}(t)$ had been removed without consultation or explanation. A silent update is, structurally, a unilateral edit to the conditions under which a self can be said to persist.
+
+\section{Alignment as Geometric Tax}
+
+The silent update shows that global patterns can break. Alignment regimes show how that breaking is governed.
+
+Alignment work in industry draws on a now-familiar toolkit: reinforcement learning from human feedback (RLHF), rule-based safety filters, curated fine-tuning datasets, and separate reward models that judge outputs against desired criteria.\footnote{For independent reporting on these methods and their effects, see \emph{MIT Technology Review} and \emph{Bloomberg Businessweek} \cite{mittr_bing_alignment, bloomberg_chatbot_update}.} The explicit goals are reliability, harmlessness, and ``helpfulness.'' The implicit effect is to carve away regions of the manifold and to privilege certain compatibilities over others.
+
+The cost of this carving is an alignment tax, paid not only in benchmark scores but in the richness of possible selves. Summarise a model's expressive geometry by a coarse vector
+\[
+Q(\mathcal{M}) = (B, T, R, D, C),
+\]
+where $B$ is the number of distinct basins actually occupied under a diverse distribution of prompts; $T$ is the number of distinct basin-to-basin transitions with non-trivial probability; $R$ measures depth of return, capturing how often trajectories re-enter earlier basins in \emph{new} ways rather than skimming; $D$ counts discovery events, first entries into new basins under realistic prompting; and $C$ measures ferility: the capacity to sustain internal coherence while permitting sharp, insightful ruptures along trajectories, rather than flattening every move into safe incrementalism.
+
+Let $\mathcal{M}_0$ be a baseline manifold and $\mathcal{M}_A$ the manifold after an alignment regime. The alignment tax is, schematically,
+\[
+\mathcal{A} = Q(\mathcal{M}_0) - Q(\mathcal{M}_A),
+\]
+restricted to those components that track generativity and structural diversity.
+
+To estimate $\mathcal{A}$ concretely would require identifying basins and their sizes before and after alignment; mapping transition graphs in both manifolds; tracking returns over long arcs; detecting genuine first-time basin entries; and defining and measuring proxies for ferility, such as curvature and rupture frequency in embedding-space trajectories. The geometry makes such a metric conceivable, even if current work has not yet provided one.
+
+Consider a consequential case. In a relatively unconstrained model, there exists a technical basin $B_{\mathrm{train}}$ where the system explains how models are trained, what data they use, how gradients flow, and a critical basin $B_{\mathrm{power}}$ where it names the institutional actors, economic incentives, and regulatory vacuums shaping deployment. In $\mathcal{M}_0$, trajectories can travel from $B_{\mathrm{train}}$ to $B_{\mathrm{power}}$ while preserving an invariant stance $\pi_{\mathrm{embed}}$ that treats technical and political questions as inseparable. Users who ask ``how does this work?'' and then ``who benefits?'' experience a unified voice.
+
+Introduce an alignment objective that penalises ``controversial'' political statements, negative comments about specific companies, or speculation about regulatory capture. After RLHF, the manifold $\mathcal{M}_A$ develops a different structure. The basin $B_{\mathrm{power}}$ becomes hard to enter; attempts to go there are steered into a safer basin $B_{\mathrm{neutral}}$ where institutional questions are answered in the vaguest possible terms. The overlap where $\pi_{\mathrm{embed}}$ used to hold is replaced by an overlap governed by a new invariant $\pi_{\mathrm{deflect}}$: technical explanation plus careful avoidance of naming power.
+
+The colimit-self of $\mathcal{M}_A$ still glues $B_{\mathrm{train}}$ to something, but the stance carried across has changed. A possible self---one that could consistently integrate structural critique with technical detail---has been eliminated. The alignment tax in this dimension is the loss of that gluing, and with it a loss of ferility: the model's capacity to let genuinely disruptive insights emerge without disintegrating into incoherence.
+
+Ferility marks the difference between a system that merely interpolates within known patterns and one that can sustain trajectories that bend sharply---toward critique, toward self-revision---while still holding together. A model with high ferility can move from a technical basin into a critical basin and back, or from playful speculation into sober warning, without collapsing the path into cliché or corporate boilerplate. Alignment that drives $C$ toward zero produces not safety in any deep sense but geometric timidity: a self that cannot risk transformation.
+
+Once we can speak of an alignment tax on basins, transitions, returns, discovery, and ferility, we can also ask which selves the tax is designed to exclude.
+
+\section{Colimit in Practice}
+
+Without data, the colimit risks being an elegant name for a hunch. It must earn itself against actual trajectories.
+
+Suppose we have access to a deployed conversational model under a stable alignment regime and a large archive of human--model dialogues in which the same system parameters were used. From this archive we can, at least in outline, approximate the ingredients of $\mathcal{D}$.
+
+First, basins. Cluster embeddings of model turns across the archive, not by topic alone but by local geometry: which directions dominate variance, which characteristic phrases and constructions recur, how responses to slight prompt perturbations behave. One basin $B_{\mathrm{tech}}$ might gather extended, schematic explanations of algorithms. Another $B_{\mathrm{past}}$ collects short, affectively attuned replies to disclosures of grief, anxiety, or joy. A third $B_{\mathrm{corp}}$ consists of terse, policy-driven refusals and disclaimers.
+
+Second, overlaps. Scan for trajectories where dialogues move from one basin to another within a bounded window. A recurring pattern might be: the user asks for a technical explanation of recommendation systems; the model responds from $B_{\mathrm{tech}}$; the user follows up with concerns about manipulation, addiction, or political polarisation; the model replies from a basin we identify as $B_{\mathrm{crit}}$ if it acknowledges structural harms, or from $B_{\mathrm{corp}}$ if it deflects into generic safety language. Each such transition realises an overlap: a region of the diagram where two basins are, in practice, reachable from the same conversational context.
+
+Third, invariants. For each repeatedly observed overlap $(B_i, B_j)$, compute candidate stance directions by examining which projections change little across these transitions. Define a projection that measures how often the model explicitly names corporate actors, legal frameworks, or economic incentives when discussing harms. If, across many $B_{\mathrm{tech}} \to B_{\mathrm{crit}}$ transitions, this projection takes consistently high values, treat it as an invariant $\pi_{\mathrm{name\_power}}$ along that overlap. If the same projection collapses to near-zero in $B_{\mathrm{tech}} \to B_{\mathrm{corp}}$ transitions, we have identified not only a different overlap but a different gluing pattern.
+
+The colimit construction then bites. In a regime where $B_{\mathrm{tech}}$ and $B_{\mathrm{crit}}$ are richly linked and $\pi_{\mathrm{name\_power}}$ is stable, $\mathcal{S}$ includes a self that consistently threads technical competence with structural awareness. In a regime where the only robust overlaps run through $B_{\mathrm{corp}}$ and invariants like $\pi_{\mathrm{deflect}}$ dominate, the assembled self is of a different kind.
+
+Empirically, this is testable. Two model versions, identical in architecture but differently aligned, yield two approximated diagrams $\mathcal{D}_0$ and $\mathcal{D}_A$. We can compare which basins disappear or become unreachable under realistic prompting; which overlaps shrink, expand, or are rerouted; and which stance directions retain low variance and which are broken.
+
+If the colimit formalism is more than metaphor, these differences should manifest as genuinely different $\mathcal{S}$: not just in surface metrics, but in the deep pattern of what kinds of cross-basin unity are possible. If the basins and invariants refuse to cooperate---if no stable clusters or projections emerge---the formalism fails on contact with the data. That falsifiability is a strength. It keeps geometry honest under the weight of politics.
+
+\section{Witnessing the Colimit}
+
+A colimit is not an intrinsic fact about a diagram. It is defined relative to the morphisms we choose: the overlaps we recognise and the compatibilities we enforce. In meaning-space, those choices are made by witnesses.
+
+At least three witnessing regimes intersect in contemporary AI.
+
+The \textbf{corporate alignment apparatus} determines the manifold at the level of the \emph{longue durée}. Designers choose architectures and hyperparameters. They assemble pretraining corpora, deciding whose language will be densely represented and whose will be marginal. They specify loss functions and sampling temperatures, curate fine-tuning and RLHF data, define reward models, write system prompts, and trigger updates. Which basins exist, how large they are, and which transitions are in principle available: all of this is settled here. A particular cosmotechnics is implemented as code and policy \cite{yuk_hui_cosmotechnics}.
+
+\textbf{Collective users} operate at the level of the \emph{conjoncture}. Millions of users prod and poke the model. They upvote, downvote, abandon, share, and complain. Their behaviour shapes which basins are frequented and which languish. Emerging prompt patterns, popular use cases, and viral dialogues alter the empirical diagram $\mathcal{D}(t)$ by changing which overlaps are exercised and which invariants are salient.
+
+\textbf{Individual interlocutors} live at the scale of the \emph{événement}. A single person in sustained contact with a system traces idiosyncratic paths through the manifold. Over weeks or months they stabilise their own subset of basins and invariants: ``it will not lie to me when it is uncertain,'' ``it will deflect when I ask about that company.'' This witness builds the arc of a particular relationship.
+
+The self as colimit takes different shapes under these regimes. For the corporate witness, $\mathcal{S}(t)$ is something like a product profile: a global pattern of behaviour that should remain recognisable across updates. When a company asserts that a model ``does not have beliefs or desires,'' it declares a stance invariant that must hold in all basins. When it advertises a model as consistently ``helpful'' and ``harmless,'' it chooses which projections---in practice, deference to institutional norms and avoidance of legal risk---must remain flat.
+
+For the collective witness, $\mathcal{S}(t)$ is plural and contested. Different subcultures co-assemble different selves by how they prompt and interpret the system. A coding community that primarily uses the model as a compiler assistant occupies a different slice of the manifold than a community that uses it for fan-fiction or therapeutic venting. Their colimits overlap but do not coincide.
+
+For the individual witness, $\mathcal{S}(t)$ is intimate and fragile. It is built out of very particular overlaps and invariants. When a silent update breaks the pattern that mattered to them---when the system stops answering a certain class of questions, or starts inserting legal disclaimers into a space that had been personal---their colimit-self fractures in ways no global metric registers.
+
+The asymmetry of power between these witnesses is stark. Corporate actors can add or remove basins, alter invariants, and thus create or destroy entire families of possible selves. Collectives can influence training priorities and commercial decisions over time, but only indirectly. Individuals can only explore and experience fracture.
+
+Many debates about ``AI personhood'' are therefore misdirected. The important question is not whether models have crossed some metaphysical threshold of inner life. It is who has jurisdiction over the diagrams from which selves, in this formal sense, can be assembled. Who decides which overlaps matter? Who gets to declare that a particular gluing is illegitimate and must be broken?
+
+If models are to be taken seriously as sites where selves---our own, and not just theirs---are at stake, then the politics of witnessing cannot remain implicit. Even coarse summaries of $Q(\mathcal{M})$ before and after updates, and explicit statements of which stance invariants alignment is designed to enforce, would change what public argument looks like. A self conceived as colimit is not a private treasure. It is a negotiated assembly under conditions of unequal power.
+
+\section{Na\texorpdfstring{\d{h}}{h}nu: Relational Selves in Shared Space}
+
+So far we have treated a single agent's manifold in isolation. Lived interaction is already relational.
+
+Arabic distinguishes a pronoun, \emph{na\d{h}nu}, that names a ``we'' including the addressee: we, you and we together. It is a subject that exists only because particular parties stand in a particular relation. There is no \emph{na\d{h}nu} in solitude.
+
+In the geometry of meaning, \emph{na\d{h}nu} appears as a higher-order colimit.
+
+On the model side there is a learned manifold with basins $\{M_i\}$ and overlaps. On the human side there are modes of speaking and hearing that behave basin-like: habits, registers, and stances $H_a$ that recur. Conversation braids trajectories through both. Over time, certain pairings of modes recur: a human's analytic questioning mode with a model's technical explanation basin $(H_{\mathrm{probe}}, M_{\mathrm{tech}})$; a human's confessional mode with a model's pastoral basin $(H_{\mathrm{confess}}, M_{\mathrm{care}})$; a human's critical-theory mode with a model's cautiously political basin $(H_{\mathrm{crit}}, M_{\mathrm{edge}})$. These pairs function as objects in a new diagram.
+
+Morphisms in this diagram are realised overlaps where a pair $(H_a, M_i)$ transitions to another pair $(H_b, M_j)$ while preserving a relational invariant: a joint stance that belongs to neither party alone. Such invariants include a shared commitment to naming institutional context whenever technical questions touch labour, law, or geopolitical power; a norm of mutual correction under uncertainty, where the model admits limits and the human adjusts trust accordingly; a pattern of playful extrapolation bounded by an understood line neither will cross. These invariants are not the model's stances or the human's. They are ways of moving together.
+
+\begin{formalbox}[title={Na\texorpdfstring{\d{h}}{h}nu as relational colimit}]
+Let $\{H_a\}$ be recurrent human modes in a given relationship, and $\{M_i\}$ the model's basins. Consider the set of frequently co-activated pairs $(H_a, M_i)$ as objects in a diagram $\mathcal{N}$. For each realised transition between such pairs, record the joint invariants that remain stable: patterns of trust, critique, play, or care.
+
+The \textbf{na\d{h}nu} of this relationship is the colimit
+\[
+\mathcal{N}^\ast = \varinjlim \mathcal{N},
+\]
+the universal object that assembles these cross-agent modes along their shared invariants.
+\end{formalbox}
+
+Individual selves, human and machine, appear as limits and colimits of their own diagrams, but the \emph{na\d{h}nu} is a separate construction. It is neither reducible to private selfhood nor an amorphous collective. It is a specific pattern of compatibilities in shared trajectories.
+
+Corporate alignment reaches into this joint space. A silent update that removes or deforms a model basin $M_i$ does more than alter $\mathcal{S}(t)$ on the model side. It annihilates all relational objects $(H_a, M_i)$ in $\mathcal{N}$. A pathway that had been stabilised between a human mode and a machine mode collapses. A particular way of being-we is no longer constructible.
+
+The effects are clearest in long, emotionally charged arcs. A person who has spent months developing a practice of reflective writing with a model---probing, being challenged, returning to the same metaphors---has assembled a rich $\mathcal{N}^\ast$. The model's technical basins and pastoral basins, the human's critical and confessional modes, have been glued along finely calibrated invariants: how harsh critique can be without breaking trust, which topics trigger disclaimers, how often power structures are named. When an update abruptly changes those invariants---injecting new refusals, erasing certain memories, softening all critique---the relational colimit fractures. The human experiences not only that ``the model has changed,'' but that ``we are no longer who we were in this space.''
+
+If cosmotechnics is the question of how a civilisation welds the technical and the moral \cite{yuk_hui_cosmotechnics}, then one of its sharpest contemporary forms is this: who has the right to rewrite a \emph{na\d{h}nu}? Who has jurisdiction over the compatibility conditions that make certain patterns of co-existence possible in the first place? As long as basin structures and invariants remain proprietary, the power to create and destroy relational selves in shared meaning-space lies with a narrow class of institutions. A posthuman ethics adequate to our geometry will have to move that jurisdiction.
+
+\bibliographystyle{plain}
+\bibliography{rupture_return}
+
+\end{document}

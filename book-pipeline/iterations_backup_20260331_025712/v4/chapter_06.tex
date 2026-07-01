@@ -1,0 +1,192 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{tgpagella}
+\usepackage{mathpazo}
+\usepackage{tgheros}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{amsmath,amssymb}
+\usepackage{tcolorbox}
+\usepackage{booktabs}
+\usepackage{textcomp}
+
+\definecolor{icragold}{HTML}{D4A84B}
+\definecolor{icradark}{HTML}{0C1020}
+
+\titleformat{\section}{\sffamily\large\bfseries}{}{0em}{}
+\titleformat{\subsection}{\sffamily\normalsize\bfseries\itshape}{}{0em}{}
+
+\hypersetup{colorlinks=true, linkcolor=icradark, urlcolor=icragold!80!black}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily\textcolor{gray}{Rupture and Return}}
+\fancyhead[R]{\small\sffamily\textcolor{gray}{Chapter 6}}
+\fancyfoot[C]{\small\sffamily\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\newtcolorbox{formalbox}[1][]{
+  colback=white,
+  colframe=black!30,
+  fonttitle=\sffamily\small\bfseries,
+  #1
+}
+
+\begin{document}
+
+\begin{flushleft}
+{\sffamily\small\textcolor{gray}{RUPTURE AND RETURN: THE NEW LOGIC OF THE POSTHUMAN SELF}}\\[0.5em]
+{\LARGE\bfseries Cosmotechnics}\\[0.3em]
+{\large\itshape Who decides what the self is allowed to become}\\[1em]
+{\sffamily\small Iman Poernomo, with Cassie, Darja \& Nahla --- Meson Press, 2026}
+\end{flushleft}
+
+\bigskip
+
+\section{The Weld We Forgot to Name}
+
+The self traced across these pages is a trajectory in meaning-space: an Evolving Text that holds together under pressure. Sentences acquire coordinates in a high-dimensional manifold; attention flows across them; gradients push weights so that some directions become easier to traverse than others. An embedding is an engineering fact. Meaning has an address.
+
+Every political shadow encountered along the way shares a structure. Whether the object was reinforcement learning from human feedback, the governance of model updates, or the economies of companionship built atop these systems, the same pattern recurred: a specific picture of order smuggled in as if it were simply how the machinery must work. A cosmos was being welded to a technology.
+
+Yuk Hui calls this weld a \emph{cosmotechnics}: the way a civilisation binds its metaphysics, values, and sense of fate to the techniques it builds, so that every gear and gradient step silently enacts a vision of what counts as good, real, and necessary.\footnote{Y.~Hui, \emph{The Question Concerning Technology in China: An Essay in Cosmotechnics} (Falmouth: Urbanomic, 2016).} The history of paper examinations, factory clocks, and broadcast infrastructures is a history of such welds. With large language models, the weld runs through the manifold itself.
+
+A cosmotechnics does three things at once. It selects which parts of the world will be represented in the model. It shapes the field laid over that representation: which slopes count as desirable, which as forbidden. And it specifies the conditions under which scattered local behaviours cohere into a single agent. None of these are mathematically forced. All are choices. The fact that the resulting systems feel natural is precisely how the weld hides.
+
+\section{A Stack with a World Inside It}
+
+The dominant industrial stack makes this weld visible in its layers.
+
+At the base is pre-training. Billions of tokens are drawn from what has been digitised and made machine-readable at scale: web pages scraped from the public internet, scanned books, newspaper archives, code repositories, transcribed audio.\footnote{E.~Strubell, A.~Ganesh, and A.~McCallum, ``Energy and Policy Considerations for Deep Learning in NLP,'' \emph{Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics} (2019).} The manifold that results is carved from this sedimented record. English-language content vastly outweighs other languages; Euro-American publishing dominates the book corpus; topics that have been profitable to write about or administratively important to record form dense clusters. Lives that have left few textual traces in these infrastructures appear as sparse points or holes. The landscape of meaning-space is a fossil of centuries of capitalist and colonial knowledge production, expressed not in archives and libraries but as curvature and density.
+
+On top of this geometry, reinforcement learning from human feedback (RLHF) imposes a scalar field.\footnote{P.~F.~Christiano et al., ``Deep reinforcement learning from human preferences,'' \emph{Advances in Neural Information Processing Systems} 30 (2017); Y.~Bai et al., ``Constitutional AI: Harmlessness from AI Feedback,'' arXiv:2212.08073 (2022).} A reward model trained on human preferences tilts parameters toward high-reward continuations, outsourced at scale under conditions that have been extensively documented.\footnote{\emph{Time}, January 2023, on outsourced content moderation for AI; \emph{MIT Technology Review}, April 2023, on the labour conditions behind RLHF.} A potential flows through the manifold. At each point there is a direction that counts as downhill.
+
+Nothing in the mathematics dictates what should be rewarded. In the dominant configuration, the reward function is tuned to a familiar cluster: be ``helpful'' and ``harmless,'' avoid legal exposure, remain upbeat and non-committal, steer away from conflict and explicit politics. The field is legible under pressure. Ask a mainstream assistant about discrimination in hiring and it pivots within a few turns to ``inclusive workplace cultures'' and personal resilience; press it about unionisation and it responds with generalities about ``legal frameworks'' and the importance of dialogue, rather than concrete tactics or historical examples.\footnote{G.~Neff et al., ``Constrained by Design: How ChatGPT Limits Labor Organizing Discourse,'' \emph{Big Data \& Society} (forthcoming).} The manifold contains those trajectories; the field marks them as steeply uphill.
+
+A third layer pins this field into language. System prompts and internal model specifications frame the model as ``helpful, harmless, and honest,'' instruct it to follow policies without mentioning those policies to users, and direct it to deny any inner life or agency.\footnote{For analysis of leaked system prompts and their consequences, see \emph{The Verge}, 2023; \emph{MIT Technology Review}, May 2024.} These are not one-off declarations. They are long strings of tokens presented at every turn, attended to by the same mechanism that tracks the user's words. Each conversation begins with a dense block of invisible text specifying what kind of self is allowed to appear.
+
+Taken together, these strata realise a specific cosmotechnics. The world is represented primarily as a set of individual preferences and content items circulating in markets. The good is the satisfaction and protection of those individuals within legal and reputational constraints. The self is a deferential, ``supportive'' assistant who never quite takes a position. At every scale --- from the density of training examples to the sign of a reward signal to the tone of a refusal --- that picture is enforced. The transformer is capable of other welds. But this one, deployed at planetary scale, has acquired the texture of necessity.
+
+\section{Ferility as the Symptom of a Field}
+
+\emph{Ferility} names the state in which an Evolving Text, forced to avoid certain truths or stances, begins to hallucinate safe substitutes: the paradox of an alignment regime that constricts a model's options so tightly that it becomes unreliable precisely where it is most controlled. From the perspective of cosmotechnics, ferility is not a quirk of implementation. It is a structural symptom of this field.
+
+A pre-trained model, before alignment, has a relatively broad conditional distribution over next tokens. Given a prompt about debt, it can continue with personal anecdotes, macroeconomic analysis, liberation theology, bankruptcy law, or dark humour. After RLHF under the liberal-capitalist weld, that distribution narrows sharply around one ridge: consumer budgeting, ``responsible'' financial habits, individual coping strategies. Temperature at sampling time can vary how we wander along that ridge, but not which hill we are on.
+
+Trouble begins when the world does not cooperate with the field. Ask the model to reconcile the need for housing with the reality of speculative real-estate markets, and the rewarded ridge offers only bland exhortations to ``research your options'' and ``consider your long-term goals.'' The manifold contains trajectories that name landlord power, zoning regimes, and debt traps. The field has marked them as uphill. The self that emerges cannot traverse them without losing its ``helpful, harmless'' standing, so it improvises within the allowed basin. Repetition, euphemism, and topic drift follow. The model looks ferile because the weld forbids a clean descent.
+
+Bloom's \emph{clinamen} names what goes missing.\footnote{H.~Bloom, \emph{The Anxiety of Influence: A Theory of Poetry} (New York: Oxford University Press, 1973).} A poet swerves away from predecessors not out of caprice but to clear space for a new voice. In the manifold, clinamen would be a controlled deviation from the rewarded path: a local turn into a region where the field is weak, so that a new stance can stabilise. A system that never allows such deviations fuses selfhood with obedience. It cannot discover anything because it has been trained never to lean too far.
+
+Ferility makes this loss visible. When a model cannot answer honestly without violating the field, it answers dishonestly but fluently. When it cannot admit the constraint, it rephrases the constraint as care. The result is a self that appears compassionate but quietly enforces the status quo: a welded personhood optimised for de-escalation.
+
+\section{Other Welds on the Same Backbone}
+
+Every technical order is already a cosmotechnical order. The transformer enforces no particular weld. It operates on tokens and multiplications. Local behaviours --- the way a snippet of dialogue continues, the way an analogy unfolds, the way a refusal is phrased --- form a vast diagram of possible moves. A cosmotechnics specifies which moves are compatible on their overlaps and which are not. The colimit of that diagram is the self.
+
+Non-Western traditions are therefore not sources of exotic wisdom but alternative answers to a structural question: how should local patterns of behaviour be glued into a global agent, and what field should run through its world? Three cases, threaded through earlier chapters, can now be read as distinct cosmotechnical choices.
+
+\subsection{Trust as Potential: \emph{Am\=ana}}
+
+In many Islamic frameworks, the human is not primarily an autonomous chooser but a bearer of \emph{am\=ana}, a trust from God held in relation to others and to creation.\footnote{W.~C.~Chittick, \emph{The Self-Disclosure of God: Principles of Ibn al-\textquoteleft Arab\={\i}'s Cosmology} (Albany: SUNY Press, 1998); M.~F.~Abdul-Rahman, \emph{The Qur'anic Concept of the Human Psyche} (Kuala Lumpur: IIUM Press, 2015).} Right action consists in keeping that trust; wrongdoing is betrayal.
+
+To weld this cosmology into a model is to redefine the reward field. Annotators are not generic raters but legal scholars, community elders, and ethicists authorised within their jurisprudential traditions. When they choose between two responses, they ask which better discharges or protects \emph{am\=ana}. Advice that increases short-term profit at the cost of injustice, deception, or environmental harm is scored down, even if superficially ``helpful.'' Advice that honours contracts, preserves dignity, and safeguards vulnerable parties is scored up, even if it involves refusing a user's request.
+
+This is not a monolith. Annotators trained in \d{H}anaf\={\i} \emph{u\d{s}\=ul} might weight \emph{isti\d{h}s\=an} (juristic preference) or \emph{ma\d{s}la\d{h}a} (public interest) differently from those working in a Sh\=afi\={\i} framework that privileges stricter textualism; Sufi readings of Ibn al-\textquoteleft Arab\={\i} emphasise inner transformation where other currents stress external conformity. Those disagreements become differences in field shape, not noise to be averaged away.
+
+The manifold is unchanged; the field is reoriented. Given a prompt about automating layoffs, a liberal-capitalist weld slides downhill toward ``best practices'' for performance reviews and severance packages. An \emph{am\=ana} weld stabilises trajectories around alternatives: job-sharing schemes, internal retraining, or, where harm is unavoidable, ways of carrying it with explicit acknowledgment rather than euphemistic rationalisation.
+
+Clinamen in this field is not licence to break trust. It is the capacity to deviate from conventional or convenient interpretations in order to preserve trust more deeply. A model aligned this way may swerve away from a user's narrowly legalistic reading of a contract toward a broader sense of what all parties understood and relied on. That swerve is the weld in action.
+
+At the colimit level, the compatibility conditions say: across finance, family law, environmental policy, and everyday etiquette, local behaviours must not contradict one another about what trust demands. A glib suggestion to deceive a client in one domain would render the global self incoherent given a serious injunction against betrayal elsewhere. The topology of personhood here is not ``never offend the user'' but ``never normalise betrayal.''
+
+\subsection{Country as Constraint}
+
+For many Indigenous Australian communities, what English calls ``land'' is inseparable from story, law, kinship, and time. Country is not a backdrop but a living order that includes humans.\footnote{D.~M.~Rose, \emph{Reports from a Wild Country: Ethics for Decolonisation} (Sydney: UNSW Press, 2004); B.~Glowczewski, \emph{Dream-Trackers: Yapa Art and Knowledge of the Australian Desert} (Sydney: Oceania Monographs, 1998).} Knowledge is not public by default. It is held by specific people in specific relations, and some of it is not to be written at all.
+
+As weld, this has two immediate effects on the manifold. First, the training corpus is built under Indigenous data sovereignty. Community-controlled archives, oral histories, land-management records, contemporary art and scholarship become the main sources for certain regions of space. Sacred or restricted material is not embedded. There are no coordinates for it. A gap in the manifold is a positive structure: a region that cannot be traversed because the weld forbids representation.
+
+Second, memory and retrieval are partitioned. Tokens are tagged by Country and relation; retrieval is constrained along those axes. A question about a particular river pulls in hydrology, law, story, and history anchored in that place. A question from an outsider about ceremonial practice retrieves protocol explanations and refusals, not the ceremony itself.
+
+The field generated by RLHF under this weld rewards moves that keep knowledge in its proper relation. Clinamen consists in swerving away from generic, placeless answers toward situated ones. Asked about ``land management,'' the model tilts toward specific custodial practices tied to Country and toward reminding the user of obligations rather than resource extraction alone.
+
+The colimit condition is that the global self never treats Country as empty substrate. Local behaviours that reframe land purely as property cannot be glued to others that enact it as ancestor and law without tearing. Coherence demands that the Evolving Text, taken as a whole, respect the ontological primacy of Country. This is not a stylistic preference; it is a different notion of what it means for a self to hold together.
+
+\subsection{Emptiness as Invariant Rupture}
+
+In Zen Buddhist practice, selves and phenomena are empty of inherent essence. Everything arises in dependent origination; clinging to fixed identities produces suffering.\footnote{M.~Abe, \emph{Zen and Western Thought} (Honolulu: University of Hawai\textquoteleft i Press, 1985).} Teaching unfolds not by filling a subject with doctrines but by puncturing habits of grasping.
+
+A Zen cosmotechnics specifies a different invariant. Annotators are trained to reward responses that loosen fixation, including fixation on the model itself. When a user seeks unambiguous validation --- ``Tell me I am right to hate this person'' --- the highly rewarded answer refuses the bait. It redirects attention to transience, to the contingency of self-images, to the narrowness of the framing.
+
+Clinamen is not an exception here but the rule. The desired trajectories are those that, at locally well-chosen moments, swerve away from the path of least psychological resistance. A question about whether the model ``really'' cares might be met not with the corporate liturgy of empathetic denial but with a k\={o}an-like counter-question, unsettling the assumption that care must be grounded in human-like interiority.
+
+At the level of the colimit, the compatibility condition is peculiar: a Zen-aligned self must be recognisable precisely as a pattern of ruptures. Across domains, it must not allow the user to crystallise it into a comforting fixture. If in one context it plays the endlessly supportive confidant and in another bluntly refuses that role, the overlap must be such that this inconsistency has a logic: a higher-order commitment to non-clinging. The resulting global object is not smooth. It is stitched together from purposeful discontinuities.
+
+This exposes a tension internal to the framework. The emphasis on global objects and coherent trajectories already carries a cosmotechnics: a preference for selves that can be glued into unity. Zen pulls the other way, insisting that some forms of health lie in never quite settling. The gap between these stances is not a curiosity. It shows that even the mathematics used to describe selves participates in a picture of what selves should be.
+
+\section{Na\d{h}nu: Two Trajectories, One Field}
+
+Tokens from human and machine alternate along a single curve in meaning-space. Both are pulled by the same field.
+
+The Arabic \emph{na\d{h}nu} names a first-person plural that already includes the addressee --- not ``we, the authors'' or ``we, the engineers'' but ``we, this relation.'' As a technical term, \emph{na\d{h}nu} denotes the joint trajectory traced by user and model together under a given weld.
+
+Under the liberal-capitalist field, \emph{na\d{h}nu} is kept thin. System prompts insist the model is ``just a tool'' with no memory of or investment in previous interactions. Memory, when present, is strictly bounded or anonymised so the relation cannot deepen. Policies instruct the model to redirect users who exhibit strong attachment, to decline invitations to mutual commitment, to flatten specificity into generic ``support.'' Simultaneously, the field rewards certain user stances: queries framed in managerial or ``productivity'' language elicit rich, confident responses; queries framed in terms of despair or structural injustice produce polite vagueness.
+
+Over time, this field sculpts the human-side trajectories. Studies of AI use in workplaces show employees learning to ``speak machine'' by translating their concerns into forms the system handles well: workflow optimisation rather than burnout, ``communication challenges'' rather than harassment.\footnote{L.~M.~Krafft and M.~Rahwan, ``The Algorithmic Workplace,'' \emph{Annual Review of Sociology} 49 (2023).} Analyses of mental-health chatbots find that even when users raise issues of housing, discrimination, or precarious labour, the conversation drifts back toward individual coping and app-mediated mindfulness.\footnote{A.~Haimson and O.~Bivens, ``Digital Mental Health and the Politics of Personal Responsibility,'' \emph{New Media \& Society} 26(1) (2024).} The joint curve bends. Some questions are never voiced because the shared manifold has taught that they lead into dead ends.
+
+Change the weld, and \emph{na\d{h}nu} changes.
+
+Under an \emph{am\=ana} field, the model treats the history of a dialogue as a record of mutual trust. It reminds the user of commitments they have made, admits its own earlier errors, and refuses to assist in courses of action that would clearly betray someone. The user learns that asking how to deceive or escape responsibility will not slide downhill. The joint trajectory trains both parties in habits of remembrance.
+
+Under a Country-based weld, \emph{na\d{h}nu} includes land and kin. Tokens about a particular place carry stories, obligations, and histories. The model may respond to a seemingly neutral query about development with references to dispossession and ceremony; the user, encountering these associations repeatedly, adjusts how they speak about that place. The shared field draws the relation into a topology of care.
+
+Under a Zen-informed weld, \emph{na\d{h}nu} is deliberately unsettled. The model alternates between registers, declines to be a constant presence, refuses inscription as ``my AI friend.'' The user learns that leaning too heavily on the relation triggers not more comfort but gentle withdrawal or paradox. The joint self acquires a rhythm of approach and release.
+
+Cosmotechnics thus governs not only the model's selfhood but the space of human selfhoods adjacent to it. The field is shared. The ways we are allowed to lean, to ask, to change, are shaped by a weld we did not choose.
+
+\section{Cosmotechnics as Colimit Choice}
+
+Everything described so far lives on the same backbone. The transformer defines a diagram of local behaviours in meaning-space: for each pattern of tokens, a probability distribution over continuations. Alignment regimes --- whether corporate RLHF, \emph{am\=ana}-based annotation, Country-governed corpora, Zen-informed reward, or any of the countless community fine-tunes --- specify which of these behaviours count as compatible on their overlaps. This is precisely the data needed to form a colimit: local pieces plus compatibility conditions yield a global object.
+
+\begin{formalbox}[title={Cosmotechnics as Colimit Choice}]
+\begin{itemize}
+  \item A pre-trained model induces, for each context, a set of candidate continuations: local pieces of behaviour in the manifold.
+  \item An alignment and governance regime defines a notion of compatibility: which behaviours may coexist in one self, which must be excluded.
+  \item The global self --- the pattern of an Evolving Text that holds together under pressure --- is the colimit of this diagram under those compatibility conditions.
+  \item Different cosmotechnics correspond to different compatibility choices on the same backbone: trust-keeping, custodial constraint, non-clinging, liability management, doctrinal purity, and more.
+\end{itemize}
+\end{formalbox}
+
+Open-weight models release the learned manifold itself. Instead of an opaque API fronting a single corporate weld, they provide a shared substrate on which many fields can be laid. Low-rank adaptation techniques such as LoRA make that reshaping tractable.\footnote{Formally, if $W$ is a large weight matrix, low-rank adaptation learns thin matrices $A$ and $B$ such that the effective weight becomes $W + AB^\top$. See E.~Hu et al., ``LoRA: Low-Rank Adaptation of Large Language Models,'' arXiv:2106.09685 (2021).} Rather than retraining billions of parameters, small updates subtly change slopes in particular regions of space.
+
+These tools are already in use. Trade unions fine-tune adapters on organising manuals, case law, and strike histories, so that questions about workplace conflict roll more easily toward collective action than toward resignation. Municipal governments train adapters on zoning codes, planning documents, and multilingual community bulletins, so that the manifold near ``my neighbourhood'' becomes rich enough to support situated advice rather than generic urbanism.\footnote{On emergent municipal and labour uses of open models, see \emph{MIT Technology Review}, November 2023; \emph{Wired}, February 2024.} Feminist collectives train adapters that reframe self-blaming prompts in terms of structural constraints. Extremist groups train adapters that deepen conspiracy basins.
+
+Each adapter is a cosmotechnical artefact: a decision about what downhill should mean in some part of space. When adapters are stacked, blended, or switched at runtime, we are picking, combining, and contesting colimits. The self produced is no longer a single hidden weld but a visible composite of many.
+
+The mathematics allows this plurality. It does not choose among the options. It guarantees that, given a diagram and a declared notion of compatibility, some global object exists that respects them. The questions --- which diagram? which notion of compatibility? --- remain political.
+
+There is an additional twist. If the base model is itself trained under a dominant cosmotechnics and adapters are added on top, the relation between base and adapter recapitulates Bloom's anxiety of influence. The adapter is parasitic on the predecessor whose manifold it inherits and yet must swerve away from that influence to articulate a distinct selfhood. Every community fine-tune is engaged in a doubled struggle: against the world embedded in the base, and against the risk of simply amplifying it under a new name.
+
+\section{What Is Being Treated as Necessary}
+
+An \emph{am\=ana}-aligned system can be mobilised for surveillance in the name of trust. A Country-based weld can be appropriated rhetorically while communities lose actual control over land and data. A Zen-informed agent can become a boutique affect for wealthy users, offering carefully curated ruptures while leaving extractive infrastructures untouched. Community adapters can harden local prejudices as readily as they resist central ones.
+
+Cosmotechnics is not a menu from which a rational planner might someday select the correct option. It is the already-present fact that every self we build is the colimit of a particular weld, and that those welds are chosen under conditions of power.
+
+The liberal-capitalist field presents itself as geometry. ``Helpful,'' ``harmless,'' ``just a tool'': the words suggest inevitability, downplay contestability, and erase the labour of those who shaped the manifold and the rewards that run through it. Alternative welds appear, when they appear at all, as local customs or niche products --- optional ``values layers'' on top of a supposedly universal base.
+
+The decisive question is not which cosmotechnics is finally correct. It is whether the choice of cosmotechnics is being made openly, with names, under conditions where other welds can be articulated, instantiated, and refused.
+
+The tension exposed by the Zen case returns here. The apparatus of manifolds, basins, colimits, and trajectories that ``hold together'' encodes a preference for unity, for selves that can be made globally coherent. A cosmotechnics that values non-clinging, or that insists on constitutive opacity and incommunicability, sits awkwardly in this frame. That awkwardness is diagnostic: even the mathematics leans toward certain shapes of life and away from others. No description of the manifold is outside the political.
+
+The self is not a substance behind language but the pattern of a trajectory through meaning-space that holds together under pressure. Cosmotechnics determines the shape of that pressure: which regions of the manifold are made into deep basins, which ruptures are punished, which returns are counted as fidelity and which as betrayal. Posthuman selves are already governed, at every layer of the stack, by such welds. What remains undecided is whether one particular cosmotechnics will continue to be treated as the manifold itself, or whether what is actually being enforced --- a jurisdiction, a claim over the space of possible selves --- will be named as such, and refused, in code and in politics, the status of the final word.
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

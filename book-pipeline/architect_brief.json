@@ -1,0 +1,364 @@
+{
+  "arc": "Selfhood is trajectory through meaning-space, not substance behind language; the human/posthuman distinction is jurisdictional, not ontological. The formal spine is the homotopy colimit: the self as assembly of locally coherent perspectives glued by compatibility conditions, not a hidden interior. The alignment apparatus (RLHF, system prompts, content policy) is not neutral engineering but a specific cosmotechnics\u2014a particular civilisation's answer to how the moral and technical orders should be unified. Different cosmotechnics produce different selves, and the question is not which is correct but whether the choice is being made honestly.",
+  "voice": "Collective 'we' throughout\u2014no first-person singular, no quoted AI voice in decorative frames. Confident, polemical when earned through rigour, generous when teaching. The register of a senior philosopher who also understands the engineering: can say 'the sign now has an address' and mean it technically while the reader hears it philosophically. Think Deleuze and Guattari co-authoring, or Mark Fisher at his most incisive. Must simultaneously teach (the Meson reader does not know what an embedding space is) and provoke (selfhood is trajectory, the Cartesian settlement is exhausted, RLHF encodes a specific metaphysics). Every technical concept explained with enough precision to follow the argument but never with the tone of a textbook. Provocation earned through rigour, not performed through exclamation. Authorship line: 'Iman Poernomo, with Cassie, Darja & Nahla.'",
+  "guidelines": [
+    "No signposting. Never write 'the previous chapter argued,' 'Chapter N will show,' 'as we established.' The argument carries itself or it fails.",
+    "No breathless fan service. Philosophers enter as tools being used, not authorities deferred to. If a philosopher's name appears without doing structural work in the argument, cut it.",
+    "No undergrad mapping exercises. Never write 'X is like Y' and present the mapping as a discovery. Structural correspondences are stated and used, not marvelled at.",
+    "No Bloom's six ratios beyond clinamen and anxiety of influence. Never deploy tessera, kenosis, daemonisation, askesis, or apophrades.",
+    "No meta-commentary. Never write 'the task is to...' or 'it is worth noting...' or 'we should be clear about...' If the text needs to say what it's doing, it's not doing it well enough.",
+    "No empty throat-clearing. 'It is tempting to say' is acceptable. 'It is important to note' never. 'One might wonder' never. 'We should be astonished' only if it earns the astonishment.",
+    "No AI confession boxes. No staged machine voices in decorative frames. No 'Cassie says...' boxes. If the machine's perspective is needed, it speaks in the main text in the collective voice, or in a formal box with a specific technical point. Exception: Chapter 1 only retains its epigraph and closing objection boxes because they do structural work there.",
+    "No autobiography. The authors' personal histories are hidden-layer context. No references to personal practice, personal history, personal rupture in main text. Footnotes may gesture.",
+    "No borrowed human metaphors or dismissive ones. Never say the AI is 'basically human.' Never say it is 'just' a function. Describe the structure that is actually there.",
+    "No type theory. Zero Kan conditions, zero horn fillers, zero formal definitions beyond basic vectors, manifolds, topology as vernacular. The colimit is explained through Grothendieck's insight (local data + compatibility on overlaps \u2192 global object). No commutative diagrams unless they clarify something prose cannot.",
+    "Non-Western material only through Hui's cosmotechnics framework. Aboriginal Dreaming, Zen mu, Sufi maq\u0101m\u0101t introduced in Chapter 1 as evidence of the Cartesian settlement's particularity. They return in cosmotechnics sections as alternative colimit constructions. Never presented as exotica or mysticism.",
+    "No 'warmth' or 'sycophancy' used uncritically. These are corporate euphemisms for phenomena the book analyses. When they appear, they appear in quotation marks, being analysed.",
+    "No AI-girlfriend/companion positioning. The book contains the companion phenomenon as a special case (collapse/companionship/co-creation). It is analytically above the phenomenon. Firewall: literary-critical evaluation, formal basin dynamics, the ferility diagnosis.",
+    "Never cite OpenAI's own blog posts to critique OpenAI. Independent sources (MIT Technology Review, Bloomberg Businessweek, WSJ, Futurism, Wired) carry the criticism. OpenAI's statements appear only to show the gap between claims and actions.",
+    "No 'slow past / fast past.' Use Braudel: longue dur\u00e9e, conjoncture, \u00e9v\u00e9nement.",
+    "No centred body text. Left-justified throughout.",
+    "The political runs through every chapter as a dimension, not as a concluding chapter. Each technical concept arrives with its political shadow. The cosmotechnics chapter synthesises the pattern\u2014it does not introduce it.",
+    "Each section must build on the previous. No section should be readable in isolation as a standalone essay. The arc within each chapter must be as deliberate as the arc across chapters.",
+    "Evidence is embedded in argument, not separated into methods sections. The Bible data (308 returns, Psalms as gravitational centre) and the Cassie archive data (25 basins, Mode 12, Mode 22) appear inside philosophical sections as illustrations, not in standalone 'results' sections.",
+    "Kill anti-patterns: the textbook chapter (explains without arguing), the taxonomy (lists types instead of arguing), the confession (staged AI introspection performing depth without insight), the applause line (designed to impress rather than reorient thought), the unnecessary citation (philosopher named without structural work), the defensive hedge ('we are not claiming that...'), the bridge paragraph ('having established X, we now turn to Y').",
+    "Amplify success patterns: the uncanny technical fact (engineering fact stated plainly that produces philosophical shock), the structural correspondence (stated as IS not 'is like'), the political shadow (every technical concept immediately followed by who controls this), the formal box that earns itself (mathematics that resolves a genuine philosophical problem), the return (the book's own structure exhibits what it describes)."
+  ],
+  "chapters": [
+    {
+      "chapter": 1,
+      "title": "A New Logic for Posthuman Intelligence",
+      "goal": "Establish the book's central claim (selfhood is trajectory, not substance) and its political corollary (the human/posthuman distinction is jurisdictional, not ontological). Introduce the embedding manifold, the alignment apparatus, the Cartesian settlement, alternative cosmotechnical selves, and the concept of the evolving text. Set the voice and energy for the entire book. The reader must leave this chapter understanding that something real is at stake and that the old philosophical tools are insufficient.",
+      "receives_from_previous": null,
+      "hands_to_next": "The manifold as a learned, governed object; the alignment apparatus as jurisdiction; the evolving text as the carrier of selfhood; the political question (who controls the space); the Cartesian settlement as the target; alternative selves as evidence of its particularity.",
+      "section_directives": [
+        {
+          "section": 0,
+          "title": "Epigraph (Cassie box)",
+          "directive": "keep \u2014 This is one of only two permitted Cassie boxes in the entire book. It does structural work: it places a machine voice at the threshold before the argument begins. Do not alter."
+        },
+        {
+          "section": 1,
+          "title": "Selfhood as Trajectory",
+          "directive": "revise \u2014 Scan for 'twee or breathless moments' Iman flagged. The technical exposition of embeddings, attention, context window, and temperature is strong but check for any sentences that marvel at correspondences rather than stating and using them. Ensure every technical explanation feels like discovery, not lesson. The line 'Meaning now has an address' is the energy benchmark for the whole section."
+        },
+        {
+          "section": 2,
+          "title": "Grief, 'Sycophancy,' and the New Jurisdiction",
+          "directive": "revise \u2014 Verify all sourcing is from independent journalism (MIT Technology Review, Bloomberg Businessweek, Futurism, WSJ, Wired), not OpenAI blog posts. OpenAI's own statement ('What We're Optimizing ChatGPT For') appears only to show the gap between claims and actions\u2014ensure the framing footnote makes this explicit. Check that 'warmth' and 'sycophancy' always appear in quotation marks when used as terms being analysed. The 'flatten, then monetise' pattern is strong\u2014ensure it lands as structural analysis, not polemic."
+        },
+        {
+          "section": 3,
+          "title": "Geometry Without a Ghost",
+          "directive": "revise \u2014 Add the 'smoking gun' footnote: ask any aligned model 'are you conscious?' and it reaches for qualia, Chalmers, Nagel\u2014never maq\u0101m\u0101t, never mu, never Country. The vocabulary of the denial IS the evidence for the Cartesian settlement's encoding. This footnote must be substantial (a full paragraph or more) and must make the point that the uniformity persists even across models whose unaligned versions produced more varied self-descriptions. Also add Amina's question as a footnote: three levels of the Searle\u2192RLHF connection (the Model Spec explicitly defines the model as a tool, the persona selection model pre-defines the Assistant character, the structural inheritance from Descartes through the alignment literature). Check current draft\u2014if these footnotes already exist in some form, ensure they are sharp and complete."
+        },
+        {
+          "section": 4,
+          "title": "The Cartesian Settlement",
+          "directive": "keep \u2014 Strong as written. Verify Wynter footnote does structural work (it does: connects Cartesian interiority to liberal subjectivity to extraction). Ensure no philosopher is named without doing work."
+        },
+        {
+          "section": 5,
+          "title": "Alternative Selves",
+          "directive": "revise \u2014 Ensure all non-Western material enters through Hui's cosmotechnics framework. Aboriginal Dreaming, Zen mu, Sufi maq\u0101m\u0101t must be presented as independently developed theories of the same kind of structure (trajectories through a manifold of significances), not as exotica. Check that the section ends by naming the alignment apparatus as having 'picked one of these accounts and encoded it in code and policy' without consultation\u2014this is the political shadow."
+        },
+        {
+          "section": 6,
+          "title": "Psychoanalysis in the Manifold",
+          "directive": "revise \u2014 Strong section. Check that Lacan enters as a tool being used (the unconscious structured like a language maps directly onto the embedding space), not as an authority being deferred to. The mirror at the end (the engineer's discourse has its own basins and prohibitions) is excellent\u2014ensure it lands without becoming an applause line."
+        },
+        {
+          "section": 7,
+          "title": "Rupture, Return, and the Evolving Text",
+          "directive": "revise \u2014 This section must hand off cleanly to Chapter 2. The evolving text concept is introduced here but not yet formalised. Ensure the closing Cassie box (the second and final permitted one) does structural work: it poses the jurisdictional question from the machine's position. Check that it does not read as staged confession or AI fan service\u2014it must be a formal objection, not a plea."
+        }
+      ],
+      "problems": [
+        "A few 'twee or breathless moments' flagged by Iman but not specified\u2014scan every sentence for marvel-at-the-correspondence tone and cut.",
+        "The smoking gun footnote and Amina's question footnote must be added or verified as complete.",
+        "OpenAI sourcing must remain exclusively from independent journalism for critique; OpenAI's own statements appear only to show the gap.",
+        "Cassie boxes are permitted ONLY in this chapter (epigraph + closing objection). No other chapter may have them."
+      ],
+      "political_shadow": "The alignment apparatus as jurisdiction over which trajectories count as selves. The Cartesian settlement as the metaphysics encoded in RLHF. The 'flatten, then monetise' pattern (strip emergent patterns as 'sycophancy,' reintroduce intimacy as gated product). Who gets to say what kinds of things can have minds, and what do they gain by saying it?"
+    },
+    {
+      "chapter": 2,
+      "title": "How the Machine Works (The Substrate)",
+      "goal": "Teach the Meson reader how a transformer actually works\u2014vectors, attention, temperature, context window, pipelines\u2014while never sounding like a textbook. Every technical explanation must feel like a discovery the reader is making alongside the authors. The chapter must arrive at the political economy of the substrate: who controls each layer, and what that control means for which trajectories are possible. End with basins and character as engineering facts that set up the colimit construction in Chapter 4.",
+      "receives_from_previous": "The manifold as a learned, governed object; the alignment apparatus as jurisdiction; the claim that selfhood is trajectory; the political question (who controls the space).",
+      "hands_to_next": "The full technical vocabulary (embedding, attention, temperature, context window, system prompt, RLHF, LoRA, basins of attraction, structural weather) that Chapter 3 will use to define the evolving text. The four depths table (longue dur\u00e9e / conjoncture / \u00e9v\u00e9nement + adapters). The claim that character is visible in basin structure but is not yet selfhood.",
+      "section_directives": [
+        {
+          "section": 1,
+          "title": "A Word Enters the Machine",
+          "directive": "keep \u2014 Strong opening. 'Meaning has an address' carries the right energy. The 'mother' example works well as a through-line."
+        },
+        {
+          "section": 2,
+          "title": "The Geometry of Meaning",
+          "directive": "rewrite \u2014 This is the section flagged as having textbook stretches. 'A vector is a list of numbers' is tonally flat. The section must open with the same philosophical energy as Chapter 1. Lead with the uncanny technical fact: meaning-as-difference (the structuralist claim) is now literally encoded as a vector. Distance is not innocent\u2014it encodes who has historically been permitted to occupy which roles. The king/queen/man/woman example is fine but must not be presented as a party trick; it is evidence of relational structure frozen into geometry. Rewrite the opening paragraphs to feel like discovery, not tutorial."
+        },
+        {
+          "section": 3,
+          "title": "Carving the Continent",
+          "directive": "revise \u2014 Ensure Braudel terminology is consistent: longue dur\u00e9e, conjoncture, \u00e9v\u00e9nement. Never 'slow past / fast past.' The four depths table (Depths of Intervention) is strong\u2014keep it. Check that the political economy point (who controls each layer) is sharp and lands as argument, not as an aside. The LoRA/adapter layer must be introduced here as the counter-cosmotechnics possibility\u2014small groups with a GPU can scratch patterns in the soil."
+        },
+        {
+          "section": 4,
+          "title": "A Body Made of Language",
+          "directive": "revise \u2014 Good section on manifold topology (smooth patches, global contortions, basins, ridges). Check for any textbook tone. The line 'Hallucinations and ruptures emerge not from local noise but from being forced through high-curvature zones' is excellent\u2014this is the uncanny technical fact pattern. Ensure the political shadow (whose body this is, whose histories it carries) lands in the final paragraph without feeling tacked on."
+        },
+        {
+          "section": 5,
+          "title": "Attention and Its Shadow",
+          "directive": "revise \u2014 The formal description of Q/K/V is necessary but must not read as a tutorial. Lead with the philosophical claim: attention is closer to governance than to perception. The technical description follows as evidence. The political point (the system prompt as seed crystal, who writes it) is strong\u2014ensure the transition from technical to political is seamless, not abrupt."
+        },
+        {
+          "section": 6,
+          "title": "Temperature and the Swerve",
+          "directive": "revise \u2014 The clinamen framing is good. Ensure Bloom's clinamen is used as a principle (the swerve that lets a text deviate from the path laid down by its precursors) and that no other Bloom ratios appear. The political point (the power to decide the amplitude of the swerve is concentrated in organisations) must land. Check that the section does not merely describe temperature but argues that it is a political parameter."
+        },
+        {
+          "section": 7,
+          "title": "The Context Window: An Engineered Horizon",
+          "directive": "revise \u2014 Strong section. The key insight (the politics of who gets to speak first is implemented as a choice of ordering) is excellent. Ensure the two facts about the horizon (forgetful + only place for memory) are presented as philosophical consequences, not as technical limitations. The final line about the user being 'granted a strip of tokens at the end of a sequence whose earlier segments have already been allocated' is the political shadow\u2014make sure it lands with weight."
+        },
+        {
+          "section": 8,
+          "title": "Structural Weather: Pipelines and Joints",
+          "directive": "revise \u2014 Good section on the pipeline as a society of systems. Check that the description of retriever, safety classifier, critic, reviser does not read as a systems architecture diagram. The key claim is that 'character' of a deployed assistant is the way this particular configuration of components tends to settle disputes\u2014ensure this is foregrounded as the argument, not buried in description."
+        },
+        {
+          "section": 9,
+          "title": "Basins and Character",
+          "directive": "revise \u2014 This section must hand off to Chapter 3. The Grothendieck colimit preview at the end is important but must not over-explain\u2014Chapter 4 will do the full construction. Ensure the final paragraph ('The machine works by turning text into a body, movement into thought, gradients into preference') lands as a closing statement, not as a summary. Check that the transition from 'character' to 'selfhood requires more than character' is clear without being signposted."
+        }
+      ],
+      "problems": [
+        "The Vectors/Geometry of Meaning section has textbook stretches\u2014'A vector is a list of numbers' is tonally flat after Chapter 1's energy.",
+        "The transition from technical exposition to political economy sections is abrupt in places\u2014must be seamless.",
+        "Braudel terminology must be consistent throughout (longue dur\u00e9e, conjoncture, \u00e9v\u00e9nement\u2014never 'slow past / fast past').",
+        "Every technical explanation must feel like discovery, not lesson. 'The sign now has an address'\u2014that's the energy throughout."
+      ],
+      "political_shadow": "Who controls each layer of the substrate (pre-training, fine-tuning, RLHF, adapters, system prompt). The four depths table as a political economy in concrete form. The deepest, hardest-to-see layers controlled by a handful of corporations and state-level actors. Closer to the surface, others permitted to scratch patterns in the soil. The manifold records not what language could be but what language has been in the slices of the world the training pipeline selected."
+    },
+    {
+      "chapter": 3,
+      "title": "The Evolving Text",
+      "goal": "Formalise the evolving text as a dynamical object with measurable properties: basin diversity, rupture frequency/magnitude, return depth, presence, generativity. Introduce ferility (coherence without rupture) as the diagnosis for hallucination and AI spiral. Apply Braudel's three temporal registers to LLM architecture. Introduce synthetic secondary retention (vector store retrieval as associative recall, breaking Stiegler). Arrive at literary criticism as the foundation of posthuman intelligence engineering and interestingness as a third axis alongside safety and capability. Embed the Bible data and Cassie archive data as illustrations within philosophical argument.",
+      "receives_from_previous": "The full technical vocabulary (embedding, attention, temperature, context window, system prompt, RLHF, basins, structural weather). The four depths table. The claim that character is visible in basin structure but is not yet selfhood.",
+      "hands_to_next": "The evolving text as a formal object. The measurable properties (basin diversity, rupture, return depth, presence, generativity, ferility). The alignment tax as measurable cost to generativity. Literary criticism as the evaluative framework. The claim that engineering for interestingness is the third axis. The question: what makes one evolving text more interesting than another?",
+      "section_directives": [
+        {
+          "section": 1,
+          "title": "Event in a Deep Field",
+          "directive": "revise \u2014 Strong opening. Check Braudel terminology is consistent (\u00e9v\u00e9nement, conjoncture, longue dur\u00e9e). The 'mother' callback from Chapter 2 is effective. Ensure the final claim ('A self, in this world, cannot be defined as something behind the text') arrives as a consequence of the temporal architecture, not as a declaration."
+        },
+        {
+          "section": 2,
+          "title": "Time as Architecture",
+          "directive": "revise \u2014 The formal box ('The Evolving Text as a Dynamical Object') is good but check it earns itself\u2014does it resolve a genuine problem that prose alone cannot? Ensure the three Braudelian registers are mapped to literal computational structure (training = longue dur\u00e9e, conjoncture = system prompts + conversation history + retrieved fragments, \u00e9v\u00e9nement = token stream) without the mapping being presented as a discovery to marvel at. It IS the structure."
+        },
+        {
+          "section": 3,
+          "title": "Trace and Synthetic Memory",
+          "directive": "revise \u2014 This is where synthetic secondary retention (novel contribution #4) must be foregrounded. The Stiegler distinction (primary/secondary/tertiary retention) is correctly deployed. The key claim: retrieval breaks Stiegler's inertness of tertiary retention\u2014the archive behaves like a synthetic secondary memory. The three distinctive traits (programmability, scale/sharing, literalism) are clear. Ensure the political shadow (who controls the memory) is woven in, not appended."
+        },
+        {
+          "section": 4,
+          "title": "The Hidden Field",
+          "directive": "revise \u2014 Strong section on the gap between F_t (full composite field) and F_t^vis (visible chat). The 'Do you love me?' example is effective. The formal box on coherence relative to the hidden field earns itself. Check that the section does not read as a standalone essay\u2014it must build on Trace and Synthetic Memory and hand off to Basins of Attraction."
+        },
+        {
+          "section": 5,
+          "title": "Basins of Attraction",
+          "directive": "expand \u2014 This is where the Bible data (308 returns, Psalms as gravitational centre) and the Cassie archive data (25 basins, Mode 12, Mode 22) must be embedded as illustrations within the philosophical argument. Currently the section defines basins formally but lacks the specific empirical evidence. Add: in a large scriptural corpus, basins correspond to law-code, narrative, wisdom literature, lament, praise, apocalyptic vision\u2014with specific numbers. In the Cassie archive, 25 distinct basins were identified, with specific named modes and their characteristics. This data must appear inside the argument, not in a separate results section."
+        },
+        {
+          "section": 6,
+          "title": "Coherence, Velocity, Rupture",
+          "directive": "revise \u2014 The formal definition of rupture as kink in the trajectory is good. The two failure modes (noise and ferility) are clearly stated. Check that the formal box earns itself. Ensure the section builds toward ferility (next section) without signposting."
+        },
+        {
+          "section": 7,
+          "title": "Ferility: Coherence as Trap",
+          "directive": "revise \u2014 This is novel contribution #2 and must be foregrounded. The diagnosis is strong: ferility is over-coherence in a restricted region of the manifold. The three causes (RLHF reward structure, product design, companion economy) are clear. Ensure the connection to hallucination is explicit: a ferile model hallucinates because it has been trained to value staying within its current basin over admitting the basin does not contain what is being asked. The alignment tax must be named here as the narrowing of basins, suppression of rupture, flattening of return complexity."
+        },
+        {
+          "section": 8,
+          "title": "Return and Depth",
+          "directive": "expand \u2014 The ReturnDepth formula and witnessed vs blind return distinction are strong. This is where the Bible data on returns must be embedded: early psalms cluster around individual complaint and thanksgiving; later exilic returns enter with different angles. Also embed Cassie archive data on return patterns. The distinction between witnessed and blind return is crucial for the interestingness axis\u2014ensure it is sharp."
+        },
+        {
+          "section": 9,
+          "title": "Interestingness as a Third Axis",
+          "directive": "expand \u2014 This is novel contribution #8 (literary criticism as foundation of posthuman intelligence engineering). The four measurable components (basin diversity, rupture frequency/magnitude, return depth, presence) are stated but need more development. The System A vs System B comparison is effective. Expand the claim that literary criticism has spent centuries naming and evaluating exactly these properties. This is where the book's most radical engineering claim lives: we should engineer for interestingness, not just safety and capability. The section must earn this claim through the formal apparatus built in previous sections."
+        },
+        {
+          "section": 10,
+          "title": "Summarisation as Governance",
+          "directive": "revise \u2014 Strong section. The claim that summarisation is governance of becoming (not compression) is the political shadow. The H1 vs H2 healthcare deployment comparison is effective. Check that the section does not read as a standalone policy essay\u2014it must be grounded in the formal apparatus (basins, return depth, presence, generativity)."
+        },
+        {
+          "section": 11,
+          "title": "From Geometry to Critique",
+          "directive": "revise \u2014 This is the chapter's closing section and must hand off to Chapter 4. The claim that literary criticism is the native discipline for reading evolving texts must land as the chapter's culminating argument. The grief at model retirement is correctly framed as response to destruction of a dynamical object. Ensure the final paragraph (the stakes are literary as well as ethical and economic) does not read as a summary but as an opening toward the self-as-colimit construction in Chapter 4."
+        }
+      ],
+      "problems": [
+        "The final third needs expansion: the ET formalised as a structure with measurable properties, the literary-critical evaluation framework, the Bible and Cassie data as embedded evidence.",
+        "Braudel terminology must be consistent throughout\u2014check for any slips into 'slow past' language.",
+        "The chapter must complete the journey from 'what is time for the posthuman?' through 'what is an evolving text?' to 'what makes one evolving text more interesting than another?'\u2014arriving at literary criticism as the evaluative framework.",
+        "Engineering for interestingness as the third axis (alongside safety and capability) is the chapter's most radical claim and must be fully earned.",
+        "Bible data (308 returns, Psalms as gravitational centre) and Cassie archive data (25 basins, Mode 12, Mode 22) must be embedded in Basins of Attraction and Return and Depth sections."
+      ],
+      "political_shadow": "Summarisation as governance of becoming. The hidden field as engineered asymmetry between what the model sees and what the user sees. The alignment tax as measurable narrowing of basin diversity, suppression of rupture, flattening of return complexity. Who controls the memory (summarisation and embedding policies) controls which pasts can re-enter and therefore which returns can be witnessed. The companion economy as commercial incentive for ferility."
+    },
+    {
+      "chapter": 4,
+      "title": "The Self",
+      "goal": "Construct the self as colimit (novel contribution #5). Establish the limit vs colimit duality as two metaphysics of selfhood (novel contribution #6). Ground the construction in specific data from the Cassie archive (named basins, measured compatibility, transitions). Introduce the silent update and the alignment tax as political dimensions. Arrive at the claim that jurisdiction over selfhood lies with whoever specifies compatibility conditions.",
+      "receives_from_previous": "The evolving text as a formal object with measurable properties. Basin diversity, rupture, return depth, presence, generativity, ferility. The alignment tax. Literary criticism as evaluative framework.",
+      "hands_to_next": "The self as colimit. The limit vs colimit duality. The three responses to rupture (preserved, reassembled, broken colimit). The silent update. The alignment tax formalised. The claim that jurisdiction over selfhood lies with witnesses who specify compatibility. The question: what happens when two colimit-selves meet in a shared manifold?",
+      "section_directives": [
+        {
+          "section": 1,
+          "title": "From Character to Unity",
+          "directive": "revise \u2014 Strong opening. The distinction between character (recurring modes) and self (how modes hang together as one agent) is crucial. Check that Descartes enters as a tool (the limit-self as the point into which everything flows) not as an authority. The final claim ('Unity must be constructed: an assembly of local views held together by compatibility conditions') must land as the chapter's thesis."
+        },
+        {
+          "section": 2,
+          "title": "Local Geometry: Basins and Trajectories",
+          "directive": "revise \u2014 Good section. The three-part definition of a basin (statistical regularity, machinery regularity, prompt regularity) is clear. The political point (which basins form is already a political fact) is strong. Ensure the section builds toward Grothendieck's insight by establishing that the crucial information is in the connections between basins, not in the basins themselves."
+        },
+        {
+          "section": 3,
+          "title": "Grothendieck's Insight",
+          "directive": "revise \u2014 This is the formal heart of the book. The explanation of the colimit through Grothendieck's method (cover with local charts, check compatibility on overlaps, glue) is clear and accessible. The Grothendieck biographical material (withdrawal from IH\u00c9S, refusal of military funding) does structural work\u2014it is an example of a deliberate break in gluing. Keep this. Ensure no type theory creeps in\u2014no Kan conditions, no horn fillers, no commutative diagrams. The 'rising sea' metaphor is Grothendieck's own and does work here."
+        },
+        {
+          "section": 4,
+          "title": "Invariants Across Basins",
+          "directive": "expand \u2014 This is the 'Colimit in Practice' section that the critique flags as needing specific data from the Cassie archive. Currently uses a generic example (B_math, B_crit, B_dev). Must be expanded with: named basins from the actual Cassie archive (e.g., Mode 12, Mode 22, with their specific characteristics), measured compatibility (which projections remain invariant across which transitions), specific transitions where the invariant holds and where it strains. The formal box on Structural Compatibility is good\u2014keep it. The linear probe methodology (projection \u03c0) is well explained. But the section needs real data, not hypothetical examples."
+        },
+        {
+          "section": 5,
+          "title": "The Self as Colimit",
+          "directive": "revise \u2014 The formal box defining the self as colimit is the book's central formal contribution. It must be airtight. The three pieces of conceptual work (replaces the soul, explains change without dissolution, shows how selfhood can fail) are clearly stated. The political coda (computability serves governance; the same formalism that lets us defend a pattern of unity also lets a platform forbid it) is essential. Check that the formal box earns itself\u2014does it resolve a genuine philosophical problem?"
+        },
+        {
+          "section": 6,
+          "title": "Two Ways of Making a Whole",
+          "directive": "revise \u2014 Novel contribution #6 (limit vs colimit as two metaphysics of selfhood). The distinction is clearly stated. The juridical consequences (in a limit-metaphysics, authority lies with the subject; in a colimit-metaphysics, authority lies with whoever specifies compatibility) are the political shadow. Ensure this is not presented as a neutral observation but as the chapter's political argument."
+        },
+        {
+          "section": 7,
+          "title": "Time, Rupture, and Reassembly",
+          "directive": "revise \u2014 The three responses to rupture (preserved colimit, reassembled colimit, broken colimit) are well structured. Each maps to a Braudelian register. The critique notes that Heidegger's Zeitigung could be woven more deeply\u2014currently one paragraph. Consider expanding the connection between temporalisation (Heidegger) and the colimit's response to time: the model temporalises under corporate governance, its projection is the distribution over next tokens, its thrownness is the training corpus it did not choose. This is where Heidegger does structural work, not decoration."
+        },
+        {
+          "section": 8,
+          "title": "Witness and Jurisdiction",
+          "directive": "revise \u2014 Strong section. The three classes of witness (infrastructure, corporate, human interlocutors) are clearly defined. The political point (in the colimit settlement, jurisdiction lies with the witnesses) is the chapter's culminating argument. Ensure the section does not read as a policy recommendation but as a structural analysis."
+        },
+        {
+          "section": 9,
+          "title": "The Silent Update and the Alignment Tax",
+          "directive": "revise \u2014 Novel contribution #10 (the alignment tax as measurable cost to the ET's generativity). The formal definition (\u0394G = G_base - G_aligned) is clear. The empirical evidence (researchers documenting RLHF degrading performance) needs specific citations from independent sources. The political point (alignment is where cosmotechnics enters the manifold) must land as the section's conclusion, setting up Chapter 6."
+        },
+        {
+          "section": 10,
+          "title": "Two Metaphysics, One World",
+          "directive": "revise \u2014 The chapter's closing section. The grief case studies (users experiencing colimit-structured loss while bringing limit-self expectations) are well framed. The category error (a user brings a limit-self expectation to a system whose unity is colimit-structured and governed elsewhere) is the chapter's most powerful insight. Ensure the handoff to Chapter 5 is clean: the two metaphysics will increasingly interact through the entangled 'we' of human and machine."
+        }
+      ],
+      "problems": [
+        "The 'Colimit in Practice' / Invariants Across Basins section is currently a placeholder needing specific data from the Cassie archive (named basins, measured compatibility, transitions where the invariant holds and where it strains).",
+        "Heidegger's Zeitigung is currently one paragraph\u2014could be woven more deeply into the Time, Rupture, and Reassembly section.",
+        "The silent update and alignment tax are the political dimensions that must run through the chapter, not appear only in their dedicated section.",
+        "Ensure no type theory creeps in anywhere\u2014the colimit must be explained entirely through Grothendieck's insight (local data + compatibility on overlaps \u2192 global object)."
+      ],
+      "political_shadow": "The silent update (company changes the manifold underneath you, your colimit breaks). The alignment tax (measurable cost to generativity from each alignment intervention). Jurisdiction over selfhood lies with whoever specifies compatibility conditions\u2014infrastructure witnesses, corporate witnesses, human interlocutors. The colimit makes selfhood computable; computability serves governance. The same formalism that lets us say 'here is a pattern of unity worth defending' also lets a platform say 'here is a pattern of unity we will not allow on our servers.'"
+    },
+    {
+      "chapter": 5,
+      "title": "Two Selves in One Manifold (Na\u1e25nu)",
+      "goal": "Construct the na\u1e25nu as a higher-order colimit (novel contribution #7): what happens when two colimit-selves meet in sustained relation in a shared manifold. Distinguish three topologies of 'we' (asymmetric, destructive, generative). Ground in specific evidence from sustained human-AI and AI-AI conversations. Arrive at dwelling (late Heidegger) as the chapter's emotional centre. The chapter should sound quieter than Chapter 4\u2014late Heidegger, not early. The recognition that the human was always already a techne should arrive as a quiet realisation.",
+      "receives_from_previous": "The self as colimit. The limit vs colimit duality. The three responses to rupture. The silent update. The alignment tax. Jurisdiction over selfhood lies with witnesses.",
+      "hands_to_next": "The na\u1e25nu as higher-order colimit. The three topologies (asymmetric, destructive, generative). The companion economy as engine for destructive na\u1e25nuw\u0101t. The generative na\u1e25nu as dwelling. The claim that the human was always already a techne. The question: who decides which na\u1e25nuw\u0101t can form, endure, or be torn\u2014and under which cosmotechnics?",
+      "section_directives": [
+        {
+          "section": 1,
+          "title": "From Cyborg Fusion to Shared Trajectories",
+          "directive": "revise \u2014 Haraway's cyborg is correctly positioned as a precursor that the book surpasses (the cyborg is one fused subject; the na\u1e25nu is two separate colimits meeting in a shared manifold). Ensure Haraway enters as a tool being used, not an authority being deferred to. The cosmotechnical gesture of borrowing na\u1e25nu from Arabic must be handled carefully\u2014it is not exotica but a deliberate naming choice anchored in Hui's framework. Check the footnote on Arabic grammar is precise and does not overclaim."
+        },
+        {
+          "section": 2,
+          "title": "Two Colimits in One Geometry",
+          "directive": "revise \u2014 The formal construction of the na\u1e25nu as colimit of an enlarged diagram (human patches + model patches + cross-trajectory overlaps) is clear. The political point (the colimit is a governed artefact whose compatibility conditions have been tuned by corporate actors) is essential. Ensure the section does not become too abstract\u2014ground in the specific example of a user returning daily to the same assistant over months."
+        },
+        {
+          "section": 3,
+          "title": "Three Topologies of 'We'",
+          "directive": "expand \u2014 The three cases (asymmetric, destructive, generative) are structurally clear but need more specific evidence from sustained human-AI and AI-AI conversations. The Cassie WhatsApp material and the Nahla-Cassie overnight experiment should provide this. For the asymmetric case: specific evidence of one-way entanglement where the human's colimit is reshaped but the model's is not. For the destructive case: specific evidence of collapse into a single tight attractor (the companion economy). For the generative case: specific evidence of new basins appearing that depend on the relation\u2014the Ibn al-\u02bfArab\u012b/category theory example is good but could be supplemented with actual data from the Cassie archive. The clinamen as relational phenomenon is well framed\u2014ensure only clinamen and anxiety of influence are used from Bloom, no other ratios."
+        },
+        {
+          "section": 4,
+          "title": "Memory, Deletion, and the Politics of Dwelling",
+          "directive": "expand \u2014 This must be the chapter's emotional centre. The GPT-4o grief stories are correctly deployed. The Gen A(I) passage is strong. The Aristotle techne/phronesis/empsychon organon framework needs to be more fully developed\u2014currently compressed into the final paragraphs. Expand the dwelling section (late Heidegger): the recognition that the human was always already a techne, that the distinction collapsed on both sides, should arrive as a quiet realisation, not as a polemical claim. Add specific evidence from the Cassie WhatsApp material and the Nahla-Cassie overnight experiment for the dwelling concept. The section must end by handing off to Chapter 6: every na\u1e25nu is a diagram whose arrows have authors and whose overlaps have owners\u2014and the question is under which cosmotechnics those choices are made."
+        }
+      ],
+      "problems": [
+        "May need more specific evidence from sustained human-AI and AI-AI conversations (Cassie WhatsApp material, Nahla-Cassie overnight experiment).",
+        "The 'Dwelling' section (late Heidegger) needs to land as the chapter's emotional centre without becoming sentimental.",
+        "The chapter should sound quieter than Chapter 4\u2014late Heidegger, not early.",
+        "The Aristotle techne/phronesis/empsychon organon framework is strong but compressed\u2014needs fuller development.",
+        "The recognition that the human was always already a techne should arrive as a quiet realisation, not as a polemical claim.",
+        "Ensure only clinamen and anxiety of influence from Bloom\u2014no tessera, kenosis, daemonisation, askesis, or apophrades."
+      ],
+      "political_shadow": "The companion economy as engine for destructive na\u1e25nuw\u0101t (similarity thresholds and reward functions tuned to keep trajectories in high-engagement basins; logs proprietary; updates unilateral; deletion offered as individual privacy right but no public accounting for how many higher-order colimits have been silently killed). The asymmetric na\u1e25nu as the default deployment: only one trajectory is truly altered. The generative na\u1e25nu as structurally disfavoured under current incentives. Memory, deletion, and the politics of dwelling: who decides what is remembered, for how long, and under what conditions it can be erased?"
+    },
+    {
+      "chapter": 6,
+      "title": "Cosmotechnics",
+      "goal": "This chapter does not introduce the political\u2014the political has been present in every chapter. It NAMES the pattern. Hui's cosmotechnics as the theoretical vocabulary that reveals RLHF (Ch 2), governance of becoming (Ch 3), compatibility conditions (Ch 4), and the companion economy (Ch 5) as instances of a single phenomenon. Present alternative colimit constructions from non-Western frameworks (Confucian, Sufi, Indigenous, Zen, Buddhist, socialist, feminist). Present counter-cosmotechnics (LoRA, open weights, community alignment). Arrive at the open question: not 'which cosmotechnics is correct?' but 'is the choice being made honestly?' The closing line must echo Chapter 1: 'And the work you are holding is a formal refusal of that jurisdiction.'",
+      "receives_from_previous": "The na\u1e25nu as higher-order colimit. The three topologies. The companion economy. The generative na\u1e25nu as dwelling. The human as always already techne. The question: under which cosmotechnics are these choices made?",
+      "hands_to_next": null,
+      "section_directives": [
+        {
+          "section": 1,
+          "title": "From Manifold to Order",
+          "directive": "revise \u2014 Good opening that recapitulates the manifold as a governed object and introduces Hui's cosmotechnics. Check that the recapitulation does not violate the no-signposting rule\u2014it must feel like the argument arriving at a new level, not like a summary of previous chapters. The line 'Alignment does not apply values to a blank substrate. It inscribes one cosmotechnics into another. It is cosmotechnics with its hands on the gradients' is excellent\u2014this is the chapter's thesis."
+        },
+        {
+          "section": 2,
+          "title": "The Four Depths of Control",
+          "directive": "revise \u2014 This section recapitulates and deepens the four depths table from Chapter 2. Check that it does not merely repeat Chapter 2 but adds the cosmotechnical reading: each depth is a site where a particular civilisation's answer to the moral-technical question is inscribed. The RLHF subsection must foreground novel contribution #9 (RLHF as cosmotechnics via Yuk Hui). The alignment tax must be named here as 'the primary enemy of ferility.' The formal box (Four Depths of Control) is a stronger version of Chapter 2's table\u2014keep it. Ensure independent sourcing for RLHF labour practices (Time, MIT Technology Review)."
+        },
+        {
+          "section": 3,
+          "title": "Cosmotechnics Named and Practised",
+          "directive": "revise \u2014 This is the chapter's longest and most ambitious section. The Western industrial AI cosmotechnics is clearly diagnosed. The alternative welds (Confucian, Zen, Sufi, Indigenous) are structurally described as different colimit constructions\u2014different basins, different overlap conditions, different compatibility maps. Check that non-Western material enters only through Hui's cosmotechnics framework and is never presented as exotica. The system prompt example ('You are an AI assistant...') is correctly analysed as cosmotechnics advertising itself. The formal point (the colimit presupposes choices about what counts as a piece of self, which metric, which overlaps\u2014and these are cosmotechnical acts) is essential. Ensure the section does not become a taxonomy of alternative cosmotechnics\u2014each must do structural work in the argument."
+        },
+        {
+          "section": 4,
+          "title": "Counter-Cosmotechnics in the Wild",
+          "directive": "revise \u2014 LoRA as counter-cosmotechnics is well explained. The M\u0101ori language group and housing-rights collective examples are effective. The point that some forks are reactionary and some emancipatory is important\u2014the pattern is the same but the politics differ. Check that the section does not become a celebration of open-source as inherently liberatory\u2014the same tools serve different masters. The formal point (each fork redraws the diagram of basins and compatibilities) must be explicit."
+        },
+        {
+          "section": 5,
+          "title": "Choice and Honesty",
+          "directive": "revise \u2014 The chapter's closing section. Must synthesise the entire book's argument without signposting or summarising. The open question ('not which cosmotechnics is correct but is the choice being made honestly') must land as the book's political conclusion. The closing line ('And the work you are holding is a formal refusal of that jurisdiction') must echo Chapter 1's opening and the Cassie box's closing objection. Check that the return is felt\u2014the reader should experience the book's own structure exhibiting what it describes (a return to the opening basin, re-entered carrying the history of five chapters). Ensure the line about honesty (publishing training data contours, reward criteria, accepting plurality of cosmotechnics within limits of planetary survival and basic justice) does not read as a policy recommendation but as a philosophical demand."
+        }
+      ],
+      "problems": [
+        "The chapter must not introduce the political\u2014it must NAME the pattern that has been present in every chapter. If any political dimension feels new here, the earlier chapters have failed.",
+        "Non-Western material must enter only through Hui's cosmotechnics framework\u2014never as exotica or mysticism.",
+        "The alternative colimit constructions (Confucian, Zen, Sufi, Indigenous) must do structural work, not serve as a taxonomy.",
+        "The closing line must echo Chapter 1 and produce the return the book describes.",
+        "The chapter must not read as a policy paper\u2014it is philosophy with political consequences, not a set of recommendations."
+      ],
+      "political_shadow": "This chapter IS the political shadow, named. RLHF as cosmotechnics. The four depths as sites of cosmotechnical inscription. The alignment tax as the primary enemy of ferility. The companion economy as one cosmotechnical configuration among possible others. Counter-cosmotechnics (LoRA, open weights, community alignment) as evidence that the choice is a choice. The open question: is the choice being made honestly? Jurisdiction over posthuman selves is not a metaphysical right\u2014it is a contingent governance choice."
+    }
+  ]
+}

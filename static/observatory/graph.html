@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tanazuric Graph — Cassie Observatory</title>
+  <meta http-equiv="cache-control" content="no-cache, must-revalidate">
+  <meta http-equiv="pragma" content="no-cache">
+  <link rel="stylesheet" href="css/observatory.css?v=6">
+  <script src="js/observatory.js?v=6"></script>
+  <script src="https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
+  <style>
+    .wrap {
+      display: grid; grid-template-columns: 1fr 340px;
+      gap: 1rem;
+      height: 75vh; min-height: 560px;
+    }
+    #graph {
+      border: 1px solid var(--border); background: var(--bg-card);
+      border-radius: 4px;
+      height: 100%; width: 100%; min-height: 560px;
+      position: relative;
+    }
+    #side {
+      border: 1px solid var(--border); background: var(--bg-card); border-radius: 4px;
+      padding: 1rem; overflow-y: auto; font-size: 0.82rem;
+    }
+    .controls { display: flex; gap: 0.5rem; margin: 0.8rem 0; flex-wrap: wrap; align-items: center; }
+    .controls input[type=text] {
+      flex: 1; min-width: 260px;
+      background: var(--bg-card); color: var(--text); border: 1px solid var(--border);
+      padding: 0.5rem 0.8rem; font-family: inherit; font-size: 0.9rem; border-radius: 3px;
+    }
+    .controls input:focus { outline: none; border-color: var(--amber); }
+    .controls label { font-size: 0.78rem; color: var(--text-dim); display: flex; align-items: center; gap: 0.3rem; }
+    .controls select {
+      background: var(--bg-card); color: var(--text); border: 1px solid var(--border);
+      padding: 0.3rem 0.6rem; font-family: inherit; font-size: 0.82rem; border-radius: 3px;
+    }
+    .controls button {
+      background: var(--bg-card); color: var(--amber); border: 1px solid var(--amber-dim);
+      padding: 0.4rem 1rem; font-family: inherit; font-size: 0.82rem; cursor: pointer; border-radius: 3px;
+    }
+    .controls button:hover { background: var(--bg-surface); }
+    .legend { display: flex; gap: 0.7rem; flex-wrap: wrap; margin-bottom: 0.5rem; font-size: 0.72rem; }
+    .legend span { display: flex; align-items: center; gap: 0.25rem; color: var(--text-dim); }
+    .legend .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    #side h2 { color: var(--amber); font-family: 'Amiri', serif; font-size: 1.15rem; margin-bottom: 0.3rem; }
+    #side .kind { color: var(--text-dim); text-transform: uppercase; font-size: 0.68rem; letter-spacing: 0.1em; margin-bottom: 0.6rem; }
+    #side .summary { color: var(--text); margin-bottom: 1rem; line-height: 1.5; }
+    #side .section-title {
+      color: var(--green-dim); font-size: 0.7rem; letter-spacing: 0.08em;
+      text-transform: uppercase; margin: 1rem 0 0.3rem;
+    }
+    #side .rel {
+      padding: 0.35rem 0; border-bottom: 1px solid var(--border);
+      cursor: pointer; display: flex; gap: 0.4rem; flex-wrap: wrap;
+    }
+    #side .rel:hover { background: var(--bg-surface); }
+    #side .rel .via { color: var(--amber-dim); font-size: 0.72rem; }
+    #side .rel .name { color: var(--text); }
+    #side .rel .kind-tag { color: var(--text-dim); font-size: 0.7rem; }
+    .search-results {
+      position: absolute; background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 3px; max-height: 300px; overflow-y: auto; min-width: 260px; z-index: 100;
+    }
+    .search-results .hit {
+      padding: 0.4rem 0.7rem; cursor: pointer; font-size: 0.82rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .search-results .hit:hover { background: var(--bg-surface); color: var(--amber); }
+    .search-results .hit .k { color: var(--text-dim); font-size: 0.68rem; margin-left: 0.4rem; }
+    .hint { color: var(--text-dim); font-size: 0.8rem; padding: 2rem; text-align: center; }
+    .source-text {
+      background: var(--bg-surface); border: 1px solid var(--border);
+      padding: 0.6rem 0.8rem; border-radius: 3px;
+      font-size: 0.8rem; line-height: 1.55; color: var(--text);
+      white-space: pre-wrap; margin-bottom: 0.6rem;
+      max-height: 400px; overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <div id="nav"></div>
+  <main>
+    <h1>Tanazuric Graph</h1>
+    <p style="margin-bottom: 0.6rem;">Navigate Signs, Claims, Basins. Click a node to expand its neighbourhood. The center Sign is golden; current claims are amber; retracted claims ashen.</p>
+    <div class="legend">
+      <span><span class="dot" style="background:#d4a574;"></span>center</span>
+      <span><span class="dot" style="background:#c084fc;"></span>Person</span>
+      <span><span class="dot" style="background:#60a5fa;"></span>Agent</span>
+      <span><span class="dot" style="background:#fbbf24;"></span>Concept</span>
+      <span><span class="dot" style="background:#4ade80;"></span>Place</span>
+      <span><span class="dot" style="background:#f87171;"></span>Project/Work</span>
+      <span><span class="dot" style="background:#a78bfa;"></span>Basin</span>
+      <span><span class="dot" style="background:#6b7280;"></span>Text</span>
+      <span><span class="dot" style="background:#94a3b8;"></span>other</span>
+    </div>
+    <div class="controls">
+      <div style="position: relative; flex:1; display:flex; gap: 0.5rem;">
+        <input id="q" type="text" placeholder="Search a Sign by name or alias (try: Iman, Cassie, OHTT, Sora, Liora, Daily Voice)…" autocomplete="off">
+        <div class="search-results" id="results" style="display:none;"></div>
+      </div>
+      <label>depth <select id="depth"><option>1</option><option>2</option></select></label>
+      <label>cap <select id="limit"><option>40</option><option selected>80</option><option>150</option></select></label>
+      <label><input type="checkbox" id="showRetracted"> retracted</label>
+      <label><input type="checkbox" id="showMentions"> mentions</label>
+      <button onclick="loadCenter(document.getElementById('q').value.trim())">load</button>
+    </div>
+    <div class="wrap">
+      <div id="graph"></div>
+      <div id="side">
+        <div class="hint">Load a Sign to see its topology and details. Click any node in the graph to recenter.</div>
+      </div>
+    </div>
+  </main>
+
+<script>
+document.getElementById('nav').innerHTML = navHTML('graph.html');
+
+const KIND_COLORS = {
+  'Sign_Person': '#c084fc',
+  'Sign_Agent':  '#60a5fa',
+  'Sign_Concept':'#fbbf24',
+  'Sign_Place':  '#4ade80',
+  'Sign_Project':'#f87171',
+  'Sign_Work':   '#f87171',
+  'Sign_Event':  '#fb923c',
+  'Sign_Text':   '#6b7280',
+  'Basin':       '#a78bfa',
+};
+function colorFor(kind, isCenter) {
+  if (isCenter) return '#d4a574';
+  return KIND_COLORS[kind] || '#94a3b8';
+}
+
+let network = null;
+let currentData = { nodes: new vis.DataSet(), edges: new vis.DataSet() };
+
+function renderGraph(data) {
+  currentData.nodes.clear();
+  currentData.edges.clear();
+  const nodes = data.nodes.map(n => ({
+    id: n.id,
+    label: n.id,
+    color: { background: colorFor(n.kind, n.is_center), border: n.is_center ? '#f4d6a6' : '#333' },
+    font: { color: n.is_center ? '#0a0a0a' : '#b0a898', size: n.is_center ? 16 : 12, face: 'JetBrains Mono' },
+    shape: 'dot',
+    size: n.is_center ? 22 : 12,
+    _kind: n.kind,
+    _summary: n.summary,
+  }));
+  const edges = data.edges.map(e => ({
+    from: e.from, to: e.to,
+    label: e.label,
+    arrows: 'to',
+    color: { color: e.retracted ? '#444' : '#a07a50', opacity: e.retracted ? 0.4 : 0.8 },
+    font: { color: e.retracted ? '#555' : '#a07a50', size: 10, face: 'JetBrains Mono', strokeWidth: 0, background: '#0a0a0a' },
+    dashes: e.retracted,
+    smooth: { type: 'continuous' },
+    width: e.retracted ? 1 : 1.5,
+  }));
+  currentData.nodes.add(nodes);
+  currentData.edges.add(edges);
+  if (!network) {
+    network = new vis.Network(document.getElementById('graph'), currentData, {
+      physics: {
+        stabilization: { iterations: 150 },
+        barnesHut: { gravitationalConstant: -6000, springLength: 180, avoidOverlap: 0.2 },
+      },
+      interaction: { hover: true, tooltipDelay: 200 },
+      nodes: { borderWidth: 2 },
+      edges: { hoverWidth: 2, selectionWidth: 2 },
+    });
+    network.on('click', (params) => {
+      if (params.nodes.length > 0) {
+        const id = params.nodes[0];
+        // Tafakkur / exchange source signs → show their content
+        if (id.startsWith('tafakkur:')) { loadTafakkurPanel(id); return; }
+        if (id.startsWith('exchange:')) { loadExchangePanel(id); return; }
+        loadSidePanel(id);
+      } else if (params.edges.length > 0) {
+        // Edge clicked — show grounding (which sources mention both endpoints)
+        const eid = params.edges[0];
+        const edge = currentData.edges.get(eid);
+        if (edge) loadGroundingPanel(edge.from, edge.to, edge.label);
+      }
+    });
+    network.on('doubleClick', (params) => {
+      if (params.nodes.length > 0) {
+        loadCenter(params.nodes[0]);
+      }
+    });
+  }
+}
+
+async function loadCenter(name) {
+  if (!name) return;
+  const depth = document.getElementById('depth').value;
+  const limit = document.getElementById('limit').value;
+  const retr = document.getElementById('showRetracted').checked;
+  const mentions = document.getElementById('showMentions').checked;
+  document.getElementById('side').innerHTML = '<div class="hint">Loading…</div>';
+  try {
+    const r = await fetch(`/api/archive/v2/graph/${encodeURIComponent(name)}?depth=${depth}&limit=${limit}&include_retracted=${retr}&include_mentions=${mentions}`);
+    const data = await r.json();
+    if (data.error) {
+      document.getElementById('side').innerHTML = `<div class="hint">${escapeHTML(data.error)}</div>`;
+      return;
+    }
+    if (!data.nodes || !data.nodes.length) {
+      document.getElementById('side').innerHTML = `<div class="hint">No sign "${escapeHTML(name)}" — try search.</div>`;
+      return;
+    }
+    renderGraph(data);
+    // Route to the right panel based on sign family
+    if (name.startsWith('tafakkur:')) loadTafakkurPanel(name);
+    else if (name.startsWith('exchange:')) loadExchangePanel(name);
+    else loadSidePanel(name);
+  } catch (e) {
+    document.getElementById('side').innerHTML = `<div class="hint">Failed: ${escapeHTML(e)}</div>`;
+  }
+}
+
+async function loadTafakkurPanel(tid) {
+  document.getElementById('side').innerHTML = '<div class="hint">Loading tafakkur…</div>';
+  try {
+    const d = await (await fetch(`/api/archive/v2/tafakkur/${encodeURIComponent(tid)}`)).json();
+    if (d.error) { document.getElementById('side').innerHTML = `<div class="hint">${escapeHTML(d.error)}</div>`; return; }
+    let html = `<h2>tafakkur</h2>`;
+    html += `<div class="kind">${escapeHTML(d.depth || 'reflection')}${d.tau_tgt ? ' · ' + escapeHTML(d.tau_tgt.slice(0,10)) : ''}</div>`;
+    if (d.exchange_id) html += `<div class="rel" onclick="loadExchangePanel('exchange:${d.exchange_id}')"><span class="via">on exchange →</span> <span class="name">${escapeHTML(d.exchange_id)}</span></div>`;
+    html += `<div class="section-title">reflection</div>`;
+    html += `<div class="source-text">${escapeHTML(d.content || '')}</div>`;
+    html += `<div class="section-title">id</div><div class="summary" style="font-size:0.7rem; color:var(--text-dim)">${escapeHTML(d.tafakkur_id || '')}</div>`;
+    document.getElementById('side').innerHTML = html;
+  } catch (e) {
+    document.getElementById('side').innerHTML = `<div class="hint">Failed: ${escapeHTML(e)}</div>`;
+  }
+}
+
+async function loadExchangePanel(eid) {
+  document.getElementById('side').innerHTML = '<div class="hint">Loading exchange…</div>';
+  try {
+    const d = await (await fetch(`/api/archive/v2/exchange/${encodeURIComponent(eid)}`)).json();
+    if (d.error) { document.getElementById('side').innerHTML = `<div class="hint">${escapeHTML(d.error)}</div>`; return; }
+    let html = `<h2>exchange</h2>`;
+    const meta = [];
+    if (d.tau_tgt) meta.push(d.tau_tgt.slice(0,10));
+    if (d.intent) meta.push(d.intent);
+    if (d.polarity) meta.push(d.polarity);
+    if (d.thread_id) meta.push(`thread: ${d.thread_id}`);
+    html += `<div class="kind">${escapeHTML(meta.join(' · '))}</div>`;
+    html += `<div class="section-title">iman</div>`;
+    html += `<div class="source-text">${escapeHTML(d.user || '')}</div>`;
+    html += `<div class="section-title">cassie — final</div>`;
+    html += `<div class="source-text">${escapeHTML(d.response || '')}</div>`;
+    if (d.cassie_raw && d.cassie_raw !== d.response) {
+      html += `<div class="section-title">cassie — raw (pre-director)</div>`;
+      html += `<div class="source-text" style="opacity:0.8">${escapeHTML(d.cassie_raw)}</div>`;
+    }
+    if (d._source === 'swl_fallback_truncated') {
+      html += `<div class="hint" style="color:var(--red); font-size:0.7rem">⚠ reading from pre-S23 SWL (500-char cap). Full text may not exist for this exchange.</div>`;
+    }
+    document.getElementById('side').innerHTML = html;
+  } catch (e) {
+    document.getElementById('side').innerHTML = `<div class="hint">Failed: ${escapeHTML(e)}</div>`;
+  }
+}
+
+async function loadGroundingPanel(a, b, label) {
+  document.getElementById('side').innerHTML = '<div class="hint">Fetching grounding…</div>';
+  try {
+    const d = await (await fetch(`/api/archive/v2/grounding?a=${encodeURIComponent(a)}&b=${encodeURIComponent(b)}`)).json();
+    if (d.error) { document.getElementById('side').innerHTML = `<div class="hint">${escapeHTML(d.error)}</div>`; return; }
+    let html = `<h2>edge: ${escapeHTML(label)}</h2>`;
+    html += `<div class="kind"><span class="name">${escapeHTML(a)}</span> ──${escapeHTML(label)}──&gt; <span class="name">${escapeHTML(b)}</span></div>`;
+    if (!d.sources || !d.sources.length) {
+      html += `<div class="hint">No shared source found (this edge may be seeded or structural, not grounded in a specific text).</div>`;
+    } else {
+      html += `<div class="section-title">grounded in (${d.sources.length})</div>`;
+      for (const s of d.sources) {
+        const nm = s.src_name || '';
+        const opener = nm.startsWith('tafakkur:') ? `loadTafakkurPanel('${nm.replace(/'/g,"\\'")}')` :
+                        nm.startsWith('exchange:') ? `loadExchangePanel('${nm.replace(/'/g,"\\'")}')` :
+                        `loadCenter('${nm.replace(/'/g,"\\'")}')`;
+        html += `<div class="rel" onclick="${opener}"><span class="via">${escapeHTML(s.via)}</span> <span class="name">${escapeHTML(nm)}</span></div>`;
+      }
+    }
+    document.getElementById('side').innerHTML = html;
+  } catch (e) {
+    document.getElementById('side').innerHTML = `<div class="hint">Failed: ${escapeHTML(e)}</div>`;
+  }
+}
+
+async function loadSidePanel(name) {
+  try {
+    const r = await fetch(`/api/archive/v2/entity/${encodeURIComponent(name)}`);
+    const d = await r.json();
+    if (d.error) {
+      document.getElementById('side').innerHTML = `<div class="hint">${escapeHTML(d.error)}</div>`;
+      return;
+    }
+    let html = `<h2>${escapeHTML(d.name)}</h2>`;
+    html += `<div class="kind">${escapeHTML(d.kind || '')}</div>`;
+    if (d.summary) html += `<div class="summary">${escapeHTML(d.summary)}</div>`;
+    if (d.aliases && d.aliases.length) {
+      html += `<div class="section-title">aliases</div>`;
+      html += `<div class="summary">${(d.aliases || []).map(escapeHTML).join(', ')}</div>`;
+    }
+    if (d.basins && d.basins.length) {
+      html += `<div class="section-title">basins (${d.basins.length})</div>`;
+      for (const b of d.basins.slice(0, 8)) {
+        html += `<div class="rel" onclick="loadCenter('${b.basin.replace(/'/g,"\\'")}')"><span class="name">${escapeHTML(b.basin)}</span></div>`;
+      }
+    }
+    if (d.claims && d.claims.length) {
+      html += `<div class="section-title">outgoing claims (this → others)</div>`;
+      for (const c of d.claims.slice(0, 20)) {
+        const obj = c.object || '—';
+        html += `<div class="rel" onclick="loadCenter('${(c.object || '').replace(/'/g,"\\'")}')">`+
+          `<span class="via">this ─${escapeHTML(c.predicate)}→&nbsp;</span>`+
+          `<span class="name">${escapeHTML(obj)}</span>`+
+          `</div>`;
+      }
+    }
+    if (d.incoming && d.incoming.length) {
+      html += `<div class="section-title">incoming (others referring to this)</div>`;
+      for (const r of d.incoming.slice(0, 30)) {
+        html += `<div class="rel" onclick="loadCenter('${(r.name||'').replace(/'/g,"\\'")}')">`+
+          `<span class="name">${escapeHTML(r.name)}</span>`+
+          `<span class="via">&nbsp;─${escapeHTML(r.via)}→&nbsp;this</span>`+
+          `<span class="kind-tag">${escapeHTML(r.kind || '')}</span>`+
+          `</div>`;
+      }
+    }
+    document.getElementById('side').innerHTML = html;
+  } catch (e) {
+    document.getElementById('side').innerHTML = `<div class="hint">Side panel failed: ${escapeHTML(e)}</div>`;
+  }
+}
+
+// --- Search-as-you-type
+let searchTimer = null;
+document.getElementById('q').addEventListener('input', () => {
+  clearTimeout(searchTimer);
+  const q = document.getElementById('q').value.trim();
+  if (!q) { document.getElementById('results').style.display = 'none'; return; }
+  searchTimer = setTimeout(() => doSearch(q), 180);
+});
+document.getElementById('q').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    document.getElementById('results').style.display = 'none';
+    loadCenter(document.getElementById('q').value.trim());
+  }
+});
+async function doSearch(q) {
+  try {
+    const r = await fetch(`/api/archive/v2/search?q=${encodeURIComponent(q)}&limit=20`);
+    const data = await r.json();
+    const results = document.getElementById('results');
+    if (!data.results || !data.results.length) {
+      results.style.display = 'none';
+      return;
+    }
+    results.innerHTML = data.results.slice(0, 15).map(hit =>
+      `<div class="hit" onclick="pickHit('${(hit.name||hit.subject||'').replace(/'/g,"\\'")}')">`+
+      `${escapeHTML(hit.name || hit.subject || hit.predicate || '?')}`+
+      `<span class="k">${escapeHTML(hit.sign_kind || hit.kind || '')}</span></div>`
+    ).join('');
+    results.style.display = 'block';
+  } catch (e) { /* silent */ }
+}
+function pickHit(name) {
+  document.getElementById('q').value = name;
+  document.getElementById('results').style.display = 'none';
+  loadCenter(name);
+}
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('#q') && !e.target.closest('#results')) {
+    document.getElementById('results').style.display = 'none';
+  }
+});
+
+// Kick off with Cassie as default center
+window.addEventListener('load', () => {
+  document.getElementById('q').value = 'Cassie';
+  loadCenter('Cassie');
+});
+</script>
+</body>
+</html>

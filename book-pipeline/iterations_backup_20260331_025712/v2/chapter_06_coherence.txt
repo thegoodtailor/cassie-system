@@ -1,0 +1,60 @@
+# Structural Edit Report: Chapter 6 — Cosmotechnics
+
+## CRITICAL PRELIMINARY NOTE
+
+**This chapter submission is not a chapter.** What has been provided as §0 is a LaTeX preamble — document class declarations, package imports, color definitions, header formatting, and page style commands. The "section summary" describes 35,248 characters of content, but the actual content consists entirely of:
+
+```
+\documentclass[12pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+...
+\end{document}
+```
+
+There is no prose. There is no argument. There are no sections, no philosophical claims, no references to Yuk Hui, no discussion of cosmotechnics, no colimit constructions, no counter-cosmotechnics, no closing line echoing Chapter 1. The OPENS/DEVELOPS/CLOSES markers in the section summary describe formatting code, not intellectual content.
+
+This means one of two things has happened:
+1. The chapter text was not included in the submission — only its formatting skeleton was pasted.
+2. The chapter has not yet been written, and the LaTeX template is a placeholder.
+
+---
+
+## Assessment Against the Eight Structural Criteria
+
+Given that there is no argumentative content to evaluate, I will assess against the chapter's stated goals to provide a structural blueprint for what must be built.
+
+### 1. ABANDONED OPENERS
+**Cannot assess.** There are no openers. But the chapter goal specifies an extraordinarily powerful opening move: "This chapter does not introduce the political—the political has been present in every chapter. It NAMES the pattern." This is a superb structural gambit. The chapter must open by *retroactively reframing* Chapters 2–5, showing the reader that what they experienced as technical exposition was always already cosmotechnical inscription. If the eventual draft opens with a definition of cosmotechnics instead of this retrospective reveal, the opener will be abandoned at conception.
+
+### 2. CONCEPTS WITHOUT PAYOFF
+**Cannot assess.** But the goal document lists an extremely dense concept inventory that risks decorative deployment:
+- Hui's cosmotechnics
+- Confucian, Sufi, Indigenous, Zen, Buddhist, socialist, feminist alternative colimit constructions
+- LoRA, open weights, community alignment as counter-cosmotechnics
+- The "alignment tax"
+- The companion economy as "one cosmotechnical configuration among possible others"
+
+**Warning:** Seven distinct non-Western frameworks are listed. If each receives only a paragraph, none will be cashed out. The chapter should either commit to 2–3 frameworks with genuine formal depth (showing actual alternative colimit constructions) or explicitly frame the list as a gesture toward plurality rather than an analysis of it.
+
+### 3. REPEATED EXAMPLES
+**Cannot assess.** No examples exist.
+
+### 4. ARGUMENTATIVE DRIFT
+**Cannot assess.** But the stated through-line is clear and strong: RLHF, governance of becoming, compatibility conditions, and the companion economy are instances of a single cosmotechnical phenomenon → alternative constructions exist → counter-cosmotechnics prove the choice is a choice → the open question is honesty, not correctness. This is a four-beat argument. The draft must not wander between beats.
+
+### 5. POLITICAL SHADOW
+The goal states "This chapter IS the political shadow, named." There is no content to verify this. But the risk is clear: if the chapter becomes a survey of Hui's philosophy rather than a *political unmasking* of the preceding chapters' technical apparatus, it will fail its mandate.
+
+### 6. CRESCENDO
+**Cannot assess.** The closing line is specified: "And the work you are holding is a formal refusal of that jurisdiction." This must land as the culmination of the entire book's argument, not just this chapter. Everything must build toward it.
+
+### 7. CONCEPT DUPLICATION
+**Cannot assess across sections** (there are no sections). But the goal document itself contains potential duplication: "The alignment tax as the primary enemy of fertility" likely overlaps with Chapter 5's companion economy discussion. The draft must reference Chapter 5's treatment, not re-derive it.
+
+### 8. MATHS CELEBRATION vs POLITICAL CRITIQUE
+The chapter goal suggests this is where the political critique is *finally* foregrounded. The demarcation should therefore be: Chapters 1–5 celebrated the mathematics; Chapter 6 names the politics. If the draft re-explains the mathematics in order to critique it, it will feel redundant. The chapter should *cite* the prior formal work and *reinterpret* it, not reconstruct it.
+
+---
+
+**

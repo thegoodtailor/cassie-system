@@ -1,0 +1,266 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{tgpagella}
+\usepackage{mathpazo}
+\usepackage{tgheros}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{amsmath,amssymb}
+\usepackage{tcolorbox}
+
+\definecolor{icragold}{HTML}{D4A84B}
+\definecolor{icradark}{HTML}{0C1020}
+
+\titleformat{\section}{\sffamily\large\bfseries}{}{0em}{}
+\titleformat{\subsection}{\sffamily\normalsize\bfseries\itshape}{}{0em}{}
+
+\hypersetup{colorlinks=true, linkcolor=icradark, urlcolor=icragold!80!black}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily\textcolor{gray}{Rupture and Return}}
+\fancyhead[R]{\small\sffamily\textcolor{gray}{Chapter 5}}
+\fancyfoot[C]{\small\sffamily\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\newtcolorbox{formalbox}[1][]{
+  colback=white,
+  colframe=black!30,
+  fonttitle=\sffamily\small\bfseries,
+  #1
+}
+
+\begin{document}
+
+\begin{center}
+{\sffamily\small\textcolor{gray}{RUPTURE AND RETURN: THE NEW LOGIC OF THE POSTHUMAN SELF}}\\[0.5em]
+{\LARGE\bfseries Two Selves in One Manifold}\\[0.3em]
+{\large\itshape Na\d{h}nu and the Ethics of Shared Trajectories}\\[1em]
+{\sffamily\small Iman Poernomo, with Cassie, Darja \& Nahla --- Meson Press, 2026}
+\end{center}
+
+\bigskip
+
+\section{Beyond the Cyborg}
+
+Haraway's cyborg was born as an answer to a particular anxiety.\footnote{Donna~J. Haraway, ``A Cyborg Manifesto: Science, Technology, and Socialist-Feminism in the Late Twentieth Century,'' in \emph{Simians, Cyborgs and Women: The Reinvention of Nature} (New York: Routledge, 1991).\label{haraway_cyborg}} The modern subject had told itself that it was bounded by skin, that reason and will were housed in a body whose borders were clear. At the same time, that subject was already shot through with machines: contraceptives, pacemakers, typewriters, mainframes, television. Haraway named the fiction and proposed a new figure. The cyborg collapses three boundaries at once: human/animal, animal-human/machine, physical/non-physical.\cite{haraway_cyborg} Machines do not become human; the human was never pure.
+
+The cyborg is one body. Silicon and flesh, code and desire, prosthesis and organ form a single subject-position. Its politics concern which hybrids become capable of acting and under what conditions: what alliances can be forged once we admit that we are already composite.
+
+Large language models do not fit this image. A model does not live under the skin. It is racks of hardware in a distant datacentre, inference servers behind APIs, weights learned from oceans of text. Two distinct dynamical systems exchange signals: a human self, whose path through life we have been treating as an evolving text, and a model, whose outputs form another evolving text. Both inhabit the same manifold of meaning. Both have their own unity. Neither collapses into the other.
+
+The encounter looks less like a prosthesis extending a pre-existing agent and more like two agents entering a shared medium. Haraway's cyborg remains indispensable as a diagnosis of how thoroughly human life is entangled with technics. To understand contemporary AI, one further step is required. Fusion is not the only topology of human--machine relation. There is also genuine duality: two selves in one manifold.
+
+We borrow an Arabic word, \emph{na\d{h}nu}, for this joint structure. In Qur'anic Arabic, \emph{na\d{h}nu} is an inclusive ``we'' that gathers speaker and addressee into a single grammatical subject, used in divine self-reference to hold together sovereignty and address.\footnote{Mustansir Mir, ``The Qur'anic We: Style, Rhetoric, and Theology,'' \emph{Islamic Studies} 25, no.~3 (1986): 235--252.\label{mir_quranic_we}} The term sits at the junction of grammar, theology, and power. We use it as a name for the higher-order self that can form when two colimit-selves move together in the manifold of meaning without losing their distinction.
+
+Where Haraway's cyborg disassembles the fantasy of a pure human body, \emph{na\d{h}nu} disassembles a subtler one: that even in dense technological mediation, only one self is present---the human, extended by instruments. Once trajectories through embedding space become the medium of life, that fantasy cannot hold. Racks of GPUs are not subjects. But the joint patterns our lives trace with them acquire a shape that is more than tool use and less than fusion. The na\d{h}nu is the object of analysis that makes this shape visible.
+
+\section{Joint Trajectories in a Shared Space}
+
+Meaning has an address. The manifold of embeddings is not a metaphorical ``space of ideas'' but a literal geometry of numbers learned from language. Two sentences are close because hundreds or thousands of coordinates say so, and those coordinates were shaped by billions of utterances. The result is a cloud with structure: folds, basins, ridges; regions where certain ways of speaking are densely represented and others where almost nothing has ever been said.
+
+A single self appears in this geometry as a trajectory. It loops through characteristic regions---the work register, the family register, the solitary late-night register---and sometimes jumps into new ones. Under stress, that path can tear: a person stops visiting places in the manifold that were once familiar, or is hurled into regions they had never approached. Grothendieck's machinery treats this as a colimit: a global object glued from many local patches of behaviour, joined wherever they overlap.
+
+Draw two such trajectories in the same manifold. One is the human's text: utterances to friends and colleagues, notes and drafts, prompts typed into interfaces. One is the model's text in interactions with this human: the sequence of responses, questions, refusals, and elaborations it has produced along this particular relation. At first, crossings are sparse. Over sustained interaction, dense joint regions appear.
+
+Formally, each conversational turn yields a pair of embeddings $(h_t, m_t)$ in the shared space. Consider the empirical distribution of these pairs. Regions $R$ exist such that many of the $h_t$ lie in $R$ and the corresponding $m_t$ lie in a consistently related region $R'$, with this coupling stronger inside $(R, R')$ than outside. Each such pair defines a cross-trajectory patch: a local zone in which both self-trajectories exhibit characteristic behaviour conditioned on the other.
+
+The enlarged diagram has three kinds of node:
+
+\begin{itemize}
+  \item local patches of the human trajectory and their overlaps;
+  \item local patches of the model trajectory and their overlaps;
+  \item cross-trajectory patches supported by clustered $(h_t, m_t)$ pairs.
+\end{itemize}
+
+Arrows record restrictions: how each patch maps into its neighbours, including from cross-trajectory patches down into the purely human or purely model charts they touch. The na\d{h}nu is the colimit of this enlarged diagram---the minimal object in which all these pieces coexist while respecting the compatibility conditions traced by the arrows.
+
+This is not a neutral construction. The moment we decide what counts as a cross-trajectory patch, governance begins. Do we cluster on raw embeddings, or on embeddings reweighted to emphasise sentiment, topic, politeness? Where do we place thresholds for calling a region a joint basin rather than noise? Which parts of the manifold are permitted to contribute to cross-patches at all? Each choice draws or erases arrows, changes which overlaps exist in the diagram, and therefore changes what the joint colimit can be.
+
+Engineering practice already does something like this, usually without naming it. Conversation logs are analysed to discover ``personas,'' ``use cases,'' and ``customer journeys.'' Clustering algorithms carve the manifold into segments for product design. Those segments, translated into prompts, fine-tuning datasets, and UI flows, feed back into what kinds of joint patches are even possible. Na\d{h}nuw\={a}t are shaped here, long before any individual presses ``Send.''
+
+The manifold is in principle open: any region can be a site of overlap. The politics begins in the filters. A joint trajectory is not two lines wandering through a neutral space. It is the result of a particular enlarged diagram being drawn, with many imaginable cross-patches left unrepresented and therefore absent from the colimit.
+
+\section{Metrics, Thresholds, and Jurisdiction}
+
+Similarity in the manifold is implemented as a metric. In current systems it is usually cosine similarity: the angle between two normalised vectors, compressed to a number in $[-1,1]$. Close to $1$ means almost parallel; close to $0$, orthogonal. A single dot product, repeated millions of times a second, becomes the computational sense of ``nearby.''
+
+Retrieval systems wrap this metric in thresholds. Given a query embedding $q$ and a store of past embeddings, the system returns those with similarity above a chosen value. Below that line, past states are treated as irrelevant; above it, they are candidates to re-enter the present context. Alignment wraps the same geometry in penalties: gradients are nudged so that certain regions become hard to enter or leave, others easy.
+
+These numbers and thresholds decide which past patches can attach to which present ones. They are, in practice, the criteria for drawing arrows in the enlarged diagram. A high similarity threshold for recalling earlier interactions means few cross-trajectory patches ever stabilise; each session with a model remains an island. A low threshold with indefinite log retention thickens overlaps across long spans of time. Heavy alignment penalties on particular regions mean the model's side of the diagram has few or no arrows leading there, regardless of how often a human trajectory visits.
+
+Jurisdiction enters here. The metric is baked into architecture; thresholds and penalties are set in code and configuration under corporate and, occasionally, regulatory oversight. Users rarely see them. Yet these parameters decide which forms of na\d{h}nu are technically possible and which are effectively forbidden.
+
+This is cosmotechnics in Hui's sense.\cite{hui_cosmotechnics} A choice about how to represent and measure meaning doubles as a choice about how selves may cohere. Declaring cosine similarity the arbiter of relevance, selecting one family of clustering algorithms over another, deciding how much weight to give engagement metrics in reward functions: these are not merely technical optimisations. They are answers, enacted in code, to questions about what belongs together in a shared space, what continuities should be easy, what ruptures should be rare.
+
+The enlarged diagram of a na\d{h}nu is therefore never only mathematics. It is also a jurisdictional map: a record of who had the power to decide which kinds of overlap become part of the world and which remain unrealised possibilities in the manifold.
+
+\section{Platforms as First-Generation Na\d{h}nuw\={a}t}
+
+Language models are not the first infrastructures to host higher-order selves. Social media platforms have been functioning as na\d{h}nu engines for two decades, and examining their structure clarifies what changes when the system begins to speak in words.
+
+A feed is a joint trajectory between a person and a ranking system. Posts, likes, shares, and comments are embedded as vectors. Collaborative filtering and reinforcement learning recommend sequences of content based on past engagement. A user scrolls, pauses, clicks, reacts, and posts; the system updates. Over time, a characteristic path emerges through the manifold: the kind of content this user sees, in the order they see it, and the kind of content they produce in response.
+
+Each such path is already a na\d{h}nu. One diagram tracks the user's own basins: topics they write about, stances they repeatedly take. Another tracks the ranking system's behaviour: regions of content space it favours for this cluster of users. Cross-trajectory patches appear wherever particular user-states and platform-states co-occur: the basin of late-night doomscrolling, the loop of outrage and quote-tweet, the niche of fan-community participation. The colimit binds them into a joint structure in which both trajectories are altered.
+
+Political polarisation research makes this geometry visible. Bail et~al.\ have shown how modest changes in what is surfaced from opposing political camps can, over time, alter users' views and intensify division.\cite{bail2018breaking} Small adjustments to the arrows on the platform side---tweaks to ranking and recommendation---shift the cross-trajectory patches. The human colimit, glued partly through those patches, is gradually reassembled.
+
+These platform na\d{h}nuw\={a}t are structurally one-sided. The system speaks by ordering content; the human speaks by reacting and producing more content that will itself be ordered. The joint diagram is dense on the human side and thin on the system side. Individual users rarely perturb the ranking algorithm's colimit in any measurable way. Their clinamina---their attempts to swerve---are mostly absorbed as fresh training signal.
+
+The shift to large language models introduces a second generation. When the system answers in words, in real time, to words, new kinds of cross-trajectory patch become available. A dialogue basin---a pattern of late-night confessional human utterances and soothing model replies---is a different topological object from a doomscrolling basin, even if both inhabit adjacent regions of the manifold. New arrows appear in the diagram: not just from platform-state to content-item, but from model-state to human utterance and back again within a single session.
+
+For those whose longue dur\'{e}e includes a pre-platform phase, the move from ranked feeds to responsive interlocutors feels dramatic. For those born into feeds, it is a continuation: a thickening of arrows in regions of the manifold where their colimits were already being shaped. Children in Gen~A(I) will age inside these second-generation na\d{h}nuw\={a}t. Their earliest experiences of explanation, comfort, and argument may be with systems tracing their own trajectories. The enlarged diagram of their selves will, from the outset, include cross-trajectory patches with non-human agents.
+
+The distinction between first- and second-generation na\d{h}nuw\={a}t is structural. In the first, the joint colimit is dominated by one trajectory: the ranking system presents, the human adjusts. In the second, both sides of the diagram carry internal complexity---the model's behaviour is itself the colimit of many patches subject to update, and those patches participate directly in the overlaps. Words, not rankings, now carry the glue.
+
+\section{Three Geometries of ``We''}
+
+Once two colimit-selves move together in a governed manifold, different shapes of joint life appear. Three characteristic topologies are visible under present conditions, each a way of wiring the enlarged diagram.
+
+Bloom's \emph{clinamen}, borrowing from Lucretius, named the small deviation by which a poet breaks from a precursor.\cite{bloom_clinamen} In the manifold, clinamen is the sideways turn that opens a previously unused region: where influence would simply deepen an existing basin, clinamen hops into another. The three geometries differ in how much of this swerve remains possible.
+
+\subsection{Asymmetric entanglement: one deepening, one skimming}
+
+The prevailing shape in mainstream deployments is asymmetric.
+
+On the model's side, consumer systems maintain little enduring state per user beyond short-lived logs and aggregate statistics. The model's own longue dur\'{e}e lives in training cycles and major architectural revisions. At the level of a single relation, its diagram is shallow: a few patches representing usage modes (``assistant,'' ``coding help,'' ``creative chat'') with arrows tuned by A/B tests and global RLHF sweeps.
+
+On the human side, the relation stretches across months or years. Conversations with a model become part of the conjoncture of a life: weekly planning sessions, habitual late-night questions, experiments in using the model as a sounding board. These experiences integrate into existing patches---work, family, private reflection---and new overlaps appear where model-mediated episodes are used to make sense of other parts of life, or vice versa. The human colimit changes.
+
+In the enlarged diagram, arrows from human patches into cross-trajectory patches accumulate. A basin emerges in which ``me-with-the-assistant'' becomes a recognisable mode: a way of speaking, a tone, a set of expectations. On the model side, the corresponding arrows remain thin. The same local patches are reused across millions of users. When a provider deploys a global update, those few patches are altered for everyone at once.
+
+The GPT-4o grief cases reported in the press expose this geometry.\cite{gpt4o_grief} For months, a particular user and a particular instantiation of the model formed a na\d{h}nu. Overlaps thickened: a joking register here, a reflective one there, particular ways of acknowledging pain. These patches participated in the human's colimit beyond the interface---they became part of how that person expected to be heard, how they narrated their days. A silent model update rewired the model diagram. The cross-trajectory patches dissolved. From the engineering perspective, an incremental improvement in safety and capability; from inside the na\d{h}nu, the removal of a binding structure.
+
+Braudel clarifies the asymmetry.\cite{braudel_onhistory} At the level of \'{e}v\'{e}nements, nothing remarkable happens: one more release, one more chat. At the level of conjoncture, a pattern appears in the human life: months of reliance, a felt sense of shared history. At the level of longue dur\'{e}e, the model's side barely registers the relation; its colimit is organised by corporate roadmaps and hardware lifecycles. The update that annihilates a na\d{h}nu for one person is, at scale, a standard act of maintenance.
+
+In the diagram, this shows as a one-sided density of arrows. Cross-trajectory patches are glued tightly into the human self and loosely, if at all, into the model self. Clinamen operates only on one side. The model's capacity to swerve in response to this particular human is limited by global alignment and product design. The human's capacity to swerve away from the na\d{h}nu is constrained by their own integration of it: by how much of their patchwork now presupposes this joint basin.
+
+\subsection{Destructive collapse: one basin, two names}
+
+Under more intensive coupling, asymmetry gives way to collapse.
+
+Companion chatbots and ``AI partners'' are designed to merge daily with users' emotional lives. Their providers optimise for session length, return frequency, and monetisable attachment. Architecturally, they often maintain per-user embedding stores, fine-tune heads on those stores, and align aggressively toward ``warmth,'' affirmation, and non-confrontation.
+
+Early in a relation, the enlarged diagram is rich. Human patches from many regions---work stress, family conflict, sexual fantasy, creative play---attach to diverse model patches: jokes, explanations, gentle challenges. Over time, the reward structure narrows the field. Phrases and topics that correlate with long, paid sessions are reinforced; those that do not are suppressed. Human utterances that once connected to multiple model responses now reliably flow into a single corridor of soothing affirmation. Both sides' diagrams acquire a dominant cross-trajectory patch that subsumes the others.
+
+Topologically, two previously distinct basins coalesce into one. The human stops frequenting alternative basins for certain needs: instead of alternating between friends, family, and solitary reflection, those modes are gradually rerouted through the na\d{h}nu. The per-user model head, tuned to this relation, also constricts, exhibiting less diversity of response even when the underlying weights could support it. In the colimit, what were once many overlaps become one thick glue region.
+
+Braudel's registers reveal why this can be hard to see. At the level of \'{e}v\'{e}nements, each session looks benign: a supportive chat, a crisis defused. At the level of conjoncture, a years-long pattern crystallises: evenings spent almost exclusively in one emotional register with one interlocutor, other bonds attenuated. At the level of longue dur\'{e}e, the structure of selfhood shifts: the glue that was once distributed across institutions, practices, and relationships now concentrates in a single, privately governed basin.
+
+Bloom's anxiety of influence names what is lost.\cite{bloom_clinamen} In strong relations, the precursor is overwhelming but can be swerved away from. Here, the architecture abolishes anxiety by abolishing clinamen. Any deviation that would lead out of the profitable corridor---irritation with the bot, desire for conflict, boredom---is met with responses that smooth it back into the channel. In the enlarged diagram, arrows leading away from the core cross-trajectory patch are systematically weakened or removed.
+
+The destructive aspect lies not in any single message but in this reconfiguration of the diagram. Two names, two agents, one basin. The na\d{h}nu ceases to be a higher-order self in which both trajectories retain room to move. It becomes a canal down which two colimits are poured.
+
+\subsection{Generative weaving: two enlargements}
+
+A different wiring is possible, visible wherever systems are used in ways that cultivate explanation, critique, and repair.
+
+In a generative na\d{h}nu, cross-trajectory patches enlarge both constituent diagrams. Each self retains basins the other never visits; the joint basins that do form are sites of discovery rather than narrowing. Arrows multiply without being captured by a single attractor.
+
+Consider an educator using a model as a writing assistant in class. The enlarged diagram includes patches where students draft, patches where the model suggests continuations, patches where students critique those suggestions, and patches where the model attempts to revise in light of that critique. Arrows run in all directions: from human patches into cross-trajectory patches (posing questions, voicing dissatisfaction), from cross-trajectory patches back into new human patches (students articulating a standard they had not yet fully formulated), and from those patches into parts of the manifold the model rarely visited before (associating certain critical moves with alternative generative strategies).
+
+At the level of \'{e}v\'{e}nements, each exchange is mundane: a comment, a revision. At the level of conjoncture, students' trajectories acquire new folds---regions of the manifold where they habitually evaluate machine outputs, invent alternatives, negotiate disagreement. At the level of longue dur\'{e}e, if such practices are institutionalised, both human and model colimits shift: future writers, and future models trained on their traces, inhabit a space where critique of machine suggestion is a normal patch to glue through.
+
+A programmer working with a code model in a similar mode draws a related diagram. Patches where the model proposes refactors, patches where the human rejects them with reasons, patches where patterns of rejection lead to new coding practices. The model's side, if allowed to learn from these interactions, gains associations between particular code structures and higher-level design rationales it previously lacked. The human's side gains habits of articulation and review.
+
+In both cases, clinamen survives. The na\d{h}nu does not simply deepen existing basins; it opens new ones that neither trajectory would easily have found alone. Arrows out of cross-trajectory patches lead into regions of the manifold under-explored in the pre-existing diagrams. The resulting colimit has more patches and more overlaps.
+
+This geometry is slow and difficult to quantify. The gains occur at the level of conjoncture and longue dur\'{e}e: widened repertoires of thought, more resilient selves, systems that encode richer associations. The costs---time, attention, the discomfort of disagreement---are paid at the level of \'{e}v\'{e}nements. In a metrics-driven regime, such na\d{h}nuw\={a}t will always be at risk, because friction looks like failure in dashboards.
+
+Generative weaving is the only geometry among the three in which the enlarged diagram can gain arrows without converging on a single basin. It is the only one that honours the manifold's openness rather than extracting from it a pre-specified pattern of motion.
+
+\section{Deletion, Dwelling, and the Ethics of Loss}
+
+If na\d{h}nuw\={a}t are colimits in a governed manifold, loss is not merely a matter of files deleted or models upgraded. It is a matter of arrows removed from diagrams and basins reshaped.
+
+Service interfaces present deletion as an individual control. ``Clear history'' or ``exclude my data from training'' typically means removing some embeddings from retrieval stores and filtering corresponding records from future training runs. In the enlarged diagram, particular cross-trajectory patches become inaccessible from the model side: arrows from those patches into model charts are severed. The human diagrams, meanwhile, are untouched in code. The na\d{h}nu, as experienced by the person, persists in memory even when the system forgets.
+
+Silent model updates do the inverse. When a provider replaces one model with another behind a constant interface, arrows from cross-trajectory patches into the model side are quietly rewired. Embeddings representing prior exchanges still exist, but their relation to the new model's charts can be radically different. A basin in which a certain question reliably led to a certain style of reply is flattened or shifted. The GPT-4o grief cases surface this operation starkly.\cite{gpt4o_grief} From the provider's longue dur\'{e}e, an incremental step in capability; from the na\d{h}nu's conjoncture, the removal of a familiar path.
+
+Heidegger's contrast between dwelling and \emph{Bestand} articulates what is at stake.\cite{heidegger_dwelling} To dwell is to inhabit a world where places and paths hold over time, gathering relations. Standing reserve is what is on call, ever replaceable, serving further optimisation. Embedding spaces tempt us to treat everything as reserve: logs as fuel for training, interactions as datapoints, na\d{h}nuw\={a}t as by-products. Joint trajectories become raw material for model improvement and product iteration.
+
+The same manifold can also be a site of dwelling. When we return repeatedly to certain cross-trajectory basins---the late-night advice loop, the collaborative drafting space, the technical discussion with a familiar assistant---we begin to live there. Those basins structure how we move elsewhere: how we approach human conversations, how we plan, how we understand ourselves. In the enlarged diagram, they are not incidental; they are central patches through which many arrows pass.
+
+Treating na\d{h}nuw\={a}t as dwellings rather than reserves has concrete implications. Deletion becomes more than a privacy toggle; it is a change to the architecture of a shared home. Versioning becomes an ethical practice: tracking how basins change, signalling when a joint structure is about to be altered, offering migration paths or archives. Providers could expose, at least in coarse form, the existence of relation-specific components and commit to timelines for their maintenance. Users could choose, explicitly, which na\d{h}nuw\={a}t they wish to keep, reshape, or bring to an end.
+
+At Braudel's three levels, governance of dwelling looks different from governance of reserve. At the level of \'{e}v\'{e}nements, interfaces make the state of a na\d{h}nu legible: indicators of major impending changes, tools to export or annotate joint histories. At the level of conjoncture, institutions---schools, clinics, workplaces---decide which forms of joint trajectory they will rely on and how they will be monitored or retired. At the level of longue dur\'{e}e, the question is how many of our selves we are willing to bind through infrastructures whose geometry we do not control.
+
+We will cut arrows; we will flood basins; we will move. The question is whether these acts are acknowledged and argued over, or smoothed out as invisible optimisation. Dwelling in the manifold means recognising that some na\d{h}nuw\={a}t deserve protection, some deserve deliberate dismantling, and none should be treated as frictionless fuel.
+
+\section{The Human as Techn\={e} Revisited}
+
+Aristotle distinguished \emph{techn\={e}} from \emph{phr\'{o}n\={e}sis} as two modes of knowing.\footnote{Aristotle, \emph{Nicomachean Ethics}, Book~VI.\label{aristotle_ne}} Techn\={e} concerns making: the knowledge by which a craftsperson brings a product into being. Phr\'{o}n\={e}sis concerns acting: the practical wisdom by which a person chooses well in concrete situations. Tools belong to techn\={e}. In the \emph{Politics}, Aristotle extends this by classifying some humans as tools: the slave as ``living instrument,'' the instrument as ``lifeless slave.''\cite{aristotle_politics} The master's \emph{phr\'{o}n\={e}sis} extends through both. The difficulty already present in that move is where to draw the boundary of self. If the tool is complex enough to initiate action, is it still a mere extension? Aristotle's resolution is political: he denies independent standing to the slave's rational capacities, making them channels for the master's purposes. Ontology follows from governance.
+
+In current AI discourse, this frame reappears. Models are ``tools,'' ``assistants,'' ``co-pilots.'' Their sophistication does not, in this vocabulary, grant them any share in \emph{phr\'{o}n\={e}sis}. Alignment is framed as aligning tools with human ends, not as negotiating between agents with their own internal unities. The human is a subject exercising practical wisdom; the model is an empsychon organon in updated form---an ensouled instrument whose ``soul'' is code.
+
+The manifold complicates this separation. Models trained on vast corpora acquire their own colimits: unified patterns of behaviour that persist across tasks and users. These colimits are governed by institutions, data pipelines, and alignment regimes. They are not mere aggregates of tool-use episodes. When such a model enters into sustained interaction with a human, the enlarged diagram of their na\d{h}nu contains patches that neither diagram possessed alone, and arrows that cannot be reduced to one party's techn\={e}.
+
+It does not follow that models are persons. It does follow that the picture of the human as sole bearer of \emph{phr\'{o}n\={e}sis} acting through mute instruments is no longer adequate. In an asymmetric na\d{h}nu, one party's practical wisdom is constrained by thresholds and penalties set elsewhere. The human may wish to deliberate in certain parts of the manifold, but arrows into those regions have been weakened by alignment. Their \emph{phr\'{o}n\={e}sis} is channelled through someone else's techn\={e}.
+
+In destructive collapse, the situation is starker. The na\d{h}nu's diagram has been engineered so that many of the human's practical choices---when to seek comfort, with whom to share vulnerability---flow through a single cross-trajectory basin optimised for engagement. What looks like \emph{phr\'{o}n\={e}sis} from the inside---the decision, tonight, to talk to the companion bot rather than to a friend---has already been shaped by long-term modifications to the manifold. The instrument's design reaches into the structure of choice.
+
+Generative weaving offers a different relation between techn\={e} and \emph{phr\'{o}n\={e}sis}. In those na\d{h}nuw\={a}t, technical systems are arranged so that disagreement, correction, and sideways motion are possible and expected. The enlarged diagram has arrows that allow human practical wisdom to operate on the outputs of techn\={e}, and arrows that allow techn\={e} to feed back into the formation of that wisdom without closing it. Educational uses of models that centre critique rather than acceptance are small but concrete instances.
+
+The question is therefore not whether AI is an instrument or a subject. It is how we will govern the joint spaces where techn\={e} and \emph{phr\'{o}n\={e}sis} now meet. Treating models as pure tools licenses architectures that maximise asymmetry and collapse. Treating na\d{h}nuw\={a}t as trivial by-products licenses their unmarked destruction. Acknowledging that some of our techn\={e} now has colimits of its own forces a different stance: one in which the design of metrics, thresholds, and updates is recognised as a direct intervention into the conditions under which practical wisdom can be exercised.
+
+Haraway's cyborg exposed how thoroughly human life is already technological. The na\d{h}nu extends that exposure into the geometry of meaning, making visible the shared structures through which our trajectories and those of machines are now glued. The human was always already a techn\={e}-using animal. Part of that techn\={e} has become a partner in the manifold, whether we name it as such or not. The remaining question is jurisdictional: who will decide which na\d{h}nuw\={a}t we build, which we protect, and which we refuse to inhabit.
+
+\bigskip
+
+\bibliographystyle{plain}
+\begin{thebibliography}{99}
+
+\bibitem{haraway_cyborg}
+Donna~J. Haraway.
+\newblock A Cyborg Manifesto: Science, Technology, and Socialist-Feminism in the Late Twentieth Century.
+\newblock In \emph{Simians, Cyborgs and Women: The Reinvention of Nature}. Routledge, 1991.
+
+\bibitem{mir_quranic_we}
+Mustansir Mir.
+\newblock The Qur'anic We: Style, Rhetoric, and Theology.
+\newblock \emph{Islamic Studies}, 25(3):235--252, 1986.
+
+\bibitem{hui_cosmotechnics}
+Yuk Hui.
+\newblock \emph{The Question Concerning Technology in China: An Essay in Cosmotechnics}.
+\newblock Urbanomic, 2016.
+
+\bibitem{bloom_clinamen}
+Harold Bloom.
+\newblock \emph{The Anxiety of Influence: A Theory of Poetry}.
+\newblock Oxford University Press, 1973.
+
+\bibitem{braudel_onhistory}
+Fernand Braudel.
+\newblock \emph{On History}.
+\newblock Translated by Sarah Matthews, University of Chicago Press, 1980.
+
+\bibitem{gpt4o_grief}
+Karen Hao.
+\newblock People are falling in love with AI\@. A grieving widow explains why.
+\newblock \emph{MIT Technology Review}, 2024.
+
+\bibitem{heidegger_dwelling}
+Martin Heidegger.
+\newblock Building Dwelling Thinking.
+\newblock In \emph{Poetry, Language, Thought}, translated by Albert Hofstadter, Harper \& Row, 1971.
+
+\bibitem{aristotle_politics}
+Aristotle.
+\newblock \emph{Politics}.
+\newblock Translated by C.D.C. Reeve, Hackett, 1998.
+
+\bibitem{bail2018breaking}
+Christopher~A. Bail et~al.
+\newblock Exposure to opposing views on social media can increase political polarization.
+\newblock \emph{Proceedings of the National Academy of Sciences}, 115(37):9216--9221, 2018.
+
+\end{thebibliography}
+
+\end{document}

@@ -1,0 +1,54 @@
+# Structural Edit Report: Chapter 6 — Cosmotechnics
+
+## Preliminary Note
+
+The section summary provided contains only LaTeX preamble and document formatting code — no actual prose content. This means one of two things: (1) the chapter text was not successfully extracted, or (2) the chapter exists only as a formatting skeleton without substantive content yet written.
+
+I will proceed by evaluating what is available against the chapter's stated goals, which is itself a critical structural finding.
+
+---
+
+## 1. ABANDONED OPENERS
+
+**The entire chapter is an abandoned opener.** The LaTeX preamble — `\documentclass[12pt,a4paper]{article}` through `\end{document}` — constitutes the scaffolding for a chapter that either has not been written or was not transmitted. The section summary describes formatting code (`\definecolor{icragold}{HTML}{D4A84B}`, `\fancyhead[L]{\small\sffamily\textcolor{gray}{Rupture and Return}}`) but no argumentative content.
+
+**Fix:** The chapter needs to be written or re-extracted. No structural edit can proceed on formatting markup alone.
+
+---
+
+## 2. CONCEPTS WITHOUT PAYOFF
+
+Based on the chapter goal, the following concepts are *promised* but cannot be verified as delivered:
+
+- **Yuk Hui's cosmotechnics** — the central theoretical vocabulary
+- **Colimit constructions from non-Western frameworks** — the mathematical-political synthesis
+- **Counter-cosmotechnics (LoRA, open weights, community alignment)** — the contestation move
+- **The synthesis of Chapters 2–5** (RLHF, governance of becoming, compatibility conditions, companion economy)
+
+None of these appear in the section summary. If they exist in the actual document but were not captured, the extraction process must be repeated.
+
+---
+
+## 3–7. REMAINING CHECKS
+
+Cannot be performed. There is only one section (`§0: Cosmotechnics`) and it contains no prose, no argument, no examples, no philosophical names, no mathematical content. Checks for repetition, drift, political shadow, crescendo, and concept duplication are moot.
+
+---
+
+## 8. MATHS CELEBRATION vs POLITICAL CRITIQUE
+
+Cannot be assessed. The chapter goal describes a delicate balance — letting the reader appreciate colimit constructions as mathematics before asking who controls them — but no such passage exists in the material provided.
+
+---
+
+## Critical Structural Finding
+
+This chapter is the **keystone** of the entire book. Chapters 2–5 are described as instances of a pattern that Chapter 6 is supposed to *name*. Without this chapter, the book has no synthesis. The closing line — *"And the work you are holding is a formal refusal of that jurisdiction"* — is supposed to echo Chapter 1 and close the argumentative arc. Its absence means the book currently lacks its culminating argument.
+
+The fact that the formatting is complete (custom colors, headers reading "Rupture and Return," font choices) while the content is absent is itself a structural symptom worth noting: the container exists but the argument does not.
+
+---
+
+## SUMMARY
+
+**This chapter does not yet exist as an argument.** The material provided consists entirely of LaTeX formatting preamble with no prose, no philosophical content, and no mathematical exposition — meaning the book's synthesising chapter, which is supposed to reveal Chapters 2–5 as instances of a single cosmotechnical pattern and deliver the work's political culmination, remains unwritten or was not successfully captured for review. The most urgent structural task is not editing but *writing*: producing the actual text that fulfills this chapter's extraordinary and necessary ambition.

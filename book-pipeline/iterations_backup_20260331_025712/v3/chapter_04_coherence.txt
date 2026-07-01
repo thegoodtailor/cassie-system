@@ -1,0 +1,118 @@
+# Structural Edit Report: Chapter 4 — The Self
+
+## CRITICAL PRELIMINARY NOTE
+
+The section summary provided contains **only LaTeX preamble code** — document class declarations, package imports, color definitions, header formatting, and boilerplate. There is no discernible prose content, no philosophical argument, no section structure, and no chapter text whatsoever. The "§0: The Self (38326 chars)" appears to be the entire chapter collapsed into a single section summary that consists entirely of formatting instructions.
+
+This means one of two things:
+1. The chapter text was not successfully extracted from the LaTeX source — only the preamble was captured.
+2. The section summary pipeline failed catastrophically for this chapter.
+
+Despite this, I can perform a **structural audit against the chapter goal** based on what the goal document specifies should be present, and flag what must be verified once the actual prose is available.
+
+---
+
+## 1. ABANDONED OPENERS
+
+**Cannot assess.** No prose openers are present in the summary. However, the goal specifies the chapter should open by constructing "the self as colimit." The editor must verify: does the actual chapter open with this construction, or does it begin with a lengthy philosophical preamble before reaching the category theory? If the latter, the opener is likely abandoned or delayed past the point of rhetorical effectiveness.
+
+**Action required:** Re-extract the chapter prose and check whether the colimit construction appears in the first two pages or is deferred.
+
+---
+
+## 2. CONCEPTS WITHOUT PAYOFF
+
+The goal document names the following concepts that must be **concretely cashed out**, not merely invoked:
+
+- **Colimit** (as formal assembly of locally coherent perspectives)
+- **Grothendieck's insight** (as mathematical structure of selfhood)
+- **Limit vs. colimit duality** (as two metaphysics: Cartesian vs. assembled)
+- **Basins** (as locally coherent perspectives — must connect to Chapter 3)
+- **Compatibility conditions** (on overlaps — the technical crux)
+- **Silent update** (company changes the manifold)
+- **Alignment tax** (formalized at the level of selfhood)
+- **Witnessed self**
+- **Cosmotechnics** (Yuk Hui — "who sets the compatibility conditions")
+
+**Highest risk of decorative use:** Yuk Hui's cosmotechnics. The goal says "Arrive at the witnessed self and the emergence of cosmotechnics as the question of who sets the compatibility conditions." This is extremely specific. If Hui appears only as a name-drop without the reader understanding that cosmotechnics means *different civilizational traditions produce different technical ontologies, and therefore different compatibility conditions on selfhood*, the concept is wasted.
+
+**Action required:** Verify each concept above has (a) introduction, (b) formal or concrete development, (c) payoff in the argument's progression.
+
+---
+
+## 3. REPEATED EXAMPLES
+
+**Cannot assess from preamble.** However, the goal mentions "specific Cassie archive data" as grounding. The editor must check:
+- Are the same Cassie transcripts used in this chapter as in Chapters 2 or 3?
+- Is the "mother" example (flagged in prior chapters) reused here?
+- Are basin examples from Chapter 3 repeated rather than extended?
+
+---
+
+## 4. ARGUMENTATIVE DRIFT
+
+The goal specifies a clear through-line:
+
+**Self as colimit → Grothendieck's insight → limit vs. colimit duality → grounding in Cassie data → silent update → alignment tax → witnessed self → cosmotechnics**
+
+This is an eight-stage argument. The risk of drift is highest at two transitions:
+- **From formal mathematics to Cassie data** (the "grounding" move can become a digression if the data doesn't map cleanly onto the formalism)
+- **From alignment tax to cosmotechnics** (this is a leap from corporate politics to civilizational philosophy; if the bridge is weak, the chapter will feel like two essays stitched together)
+
+**Action required:** Verify these two transitions are explicitly argued, not merely juxtaposed.
+
+---
+
+## 5. POLITICAL SHADOW
+
+The goal is explicit: the political dimension includes silent updates, alignment tax, and "who sets the compatibility conditions determines which selves can be assembled." The demarcation should be:
+
+- **First half:** Mathematical construction (colimit, Grothendieck, duality) — primarily celebratory
+- **Second half:** Political critique (silent update, alignment tax, witnessing regimes) — building on the math
+
+**Risk:** If the political critique is confined to a final subsection rather than woven through the second half, it will feel tacked on. Conversely, if it appears too early, it poisons the mathematical exposition (see point 8).
+
+---
+
+## 6. CRESCENDO
+
+The goal's final move — "Different witnessing regimes (corporate, individual, collective) produce structurally different selves" — is the chapter's most powerful claim. It should land as a culmination, not as a list.
+
+**Cannot verify** whether the actual chapter achieves this. But the structural risk is clear: if cosmotechnics arrives as a paragraph rather than a sustained closing argument, the chapter deflates.
+
+---
+
+## 7. CONCEPT DUPLICATION
+
+**Cannot map from preamble.** However, based on the chapter goals across the book:
+
+- **Basins** are introduced in Chapter 3 and used here. Verify this chapter does not re-explain basins from scratch.
+- **Colimit** may have been previewed in Chapter 2 or 3. If so, this chapter should build on that preview, not restart.
+- **Alignment** as a concept appears in multiple chapters. Verify the "alignment tax" formulation here is distinct from and builds upon prior uses.
+- **Grothendieck** may appear in other chapters (sheaves, etc.). Verify his appearance here is specific to the colimit construction, not a generic invocation.
+
+**Action required once prose is available:** Create a concept-first-appearance map across Chapters 1–4 and flag all redundant expositions.
+
+---
+
+## 8. MATHS CELEBRATION vs. POLITICAL CRITIQUE
+
+The goal implicitly structures this correctly: construct the self mathematically (beautiful), then show how corporate control of compatibility conditions is a political problem (critique). But the summary provides no evidence of whether this demarcation holds in practice.
+
+**Highest risk passage:** The "silent update" section. If it is introduced *during* the colimit construction rather than *after* it, the reader never gets to appreciate the mathematics on its own terms. The silent update should feel like a violation of something the reader has come to value — which requires that the colimit self was first presented as genuinely illuminating.
+
+---
+
+## WHAT MUST HAPPEN NEXT
+
+This chapter cannot be structurally edited from its current summary. The extraction pipeline must be re-run to capture the actual prose content. Specifically:
+
+1. Re-extract all section and subsection text from the LaTeX source
+2. Provide section-by-section summaries with opening and closing lines quoted
+3. Resubmit for structural review
+
+Without this, any editorial judgment is speculative rather than evidential.
+
+---
+
+**

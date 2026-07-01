@@ -1,0 +1,59 @@
+# Structural Edit Report: Chapter 2 — "How the Machine Works"
+
+## Preliminary Note
+
+The section summary provided contains **only LaTeX preamble code** — document class declarations, package imports, color definitions, header formatting, and TikZ library calls. There is no prose content, no argumentative text, no philosophical claims, no technical explanations, no examples, no table of four depths, no discussion of three weathers, and no political analysis. The "OPENS," "DEVELOPS," and "CLOSES" fields contain nothing but formatting markup from `\documentclass` through `\end{document}`.
+
+This means one of two things has occurred: either (a) the chapter content was not extracted from the LaTeX source and only the preamble was captured, or (b) the chapter has not yet been written and only the template exists.
+
+I cannot perform the eight structural checks against formatting code. However, I can provide a rigorous assessment based on what I have and what the chapter *should* contain per its stated goals.
+
+---
+
+## 1. ABANDONED OPENERS
+
+**Cannot assess.** No prose openers exist in the material provided. The "OPENS" field begins with `\documentclass[12pt,a4paper]{article}`, which is a LaTeX compilation instruction, not an argumentative claim.
+
+## 2. CONCEPTS WITHOUT PAYOFF
+
+**Cannot assess.** No philosophers are named. No concepts are introduced. The chapter goal specifies that vectors, embeddings, manifolds, attention, temperature, context windows, training pipelines, multi-agent systems, Yuk Hui's cosmotechnics (implied by the broader book), the three weathers, and the four depths table should all appear. None do.
+
+## 3. REPEATED EXAMPLES
+
+**Cannot assess.** No examples exist in the provided material.
+
+## 4. ARGUMENTATIVE DRIFT
+
+There is no argument. The through-line specified in the chapter goal — from "the sign now has an address" through "meaning is geometric" through "the manifold is politically shaped" to "who controls the weather determines which selves can form" — is entirely absent. There is no momentum to falter because there is no text.
+
+## 5. POLITICAL SHADOW
+
+The political dimension — the four depths table, RLHF as governance, temperature ceilings as control mechanisms — does not appear or disappear. It is simply not present.
+
+## 6. CRESCENDO
+
+There is no build. The material ends with `\end{document}`.
+
+## 7. CONCEPT DUPLICATION
+
+No concepts are introduced in any section, so no duplication exists. However, this is the most critical flag: **the chapter appears to be an empty template**. If parallel writing has occurred, the actual prose sections may exist in separate files that were not compiled into this summary. The extraction process needs to be re-run against the actual `.tex` body content between `\begin{document}` and `\end{document}`.
+
+## 8. MATHS CELEBRATION vs POLITICAL CRITIQUE
+
+**Cannot assess.** Neither mathematics nor political critique appears in the provided material.
+
+---
+
+## What Needs to Happen
+
+The section summary must be regenerated from the **actual body text** of the chapter. Specifically:
+
+- Everything between `\begin{document}` and `\end{document}` needs to be extracted and summarized.
+- If the chapter has not been drafted, this structural edit is premature — the chapter needs to be written first.
+- If the chapter *has* been drafted but the summarizer only captured the preamble, the extraction pipeline has a bug: it is reading the file from the top and hitting its character limit before reaching the prose.
+
+**Recommendation:** Re-extract the chapter content, excluding all LaTeX preamble material (everything before `\begin{document}`), and resubmit for structural review.
+
+---
+
+**

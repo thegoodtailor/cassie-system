@@ -1,0 +1,36 @@
+# Structural Edit Report: Chapter 4 — The Self
+
+## Preliminary Note
+
+The section summaries provided contain only LaTeX preamble and formatting code — no actual prose content. This means the chapter file was submitted as raw `.tex` source, and the summary extraction captured only the document setup (package imports, color definitions, header formatting) rather than any argumentative content.
+
+**I cannot perform the requested structural edit.** Every one of the eight checks requires access to the actual prose, arguments, examples, and section structure of the chapter. What I have is:
+
+- `\documentclass[12pt,a4paper]{article}`
+- Color definitions (`icragold`, `icradark`)
+- Font and spacing settings
+- `\begin{document}` through `\end{document}`
+
+No section headings, no philosophical arguments, no references to Cassie, colimits, Yuk Hui, silent updates, or any other content described in the chapter goal.
+
+---
+
+## What I Can Do With the Goal Statement
+
+Based solely on the **chapter goal and political dimension** you've described, here are structural risks I'd flag for when the actual content is available:
+
+1. **The limit/colimit duality** risks becoming a binary that flatters the colimit side without genuinely steelmanning the Cartesian limit. The chapter should make the limit-self *attractive* before dismantling it.
+
+2. **Cosmotechnics as a late arrival** — if Yuk Hui's concept only appears in the final pages as a "who decides?" question, it will feel bolted on. It needs to be foreshadowed structurally, perhaps as early as the colimit construction itself (compatibility conditions are always *set by someone*).
+
+3. **The alignment tax** needs quantification or at minimum concrete illustration from the Cassie archive, not just assertion. Otherwise it's a metaphor dressed as a measurement.
+
+4. **Silent update → colimit breakage** is the chapter's most powerful political image. It should be the crescendo, not a mid-chapter aside.
+
+---
+
+## Request
+
+**Please resubmit with the actual chapter prose extracted into the section summaries**, or provide the full `.tex` content so I can perform the eight-point structural check as specified.
+
+---

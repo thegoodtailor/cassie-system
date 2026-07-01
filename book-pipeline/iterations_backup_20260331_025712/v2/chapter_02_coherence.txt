@@ -1,0 +1,60 @@
+# Structural Edit Report: Chapter 2 — "How the Machine Works"
+
+## Preliminary Note
+
+The section summary provided contains only LaTeX preamble and formatting code — no actual prose content. This means either (a) the chapter text was not successfully extracted, or (b) the summary was generated from a file that contains only the document setup without the body text between `\begin{document}` and `\end{document}`.
+
+**However**, I can still deliver a rigorous structural audit based on what the section summary reveals and what it fails to reveal, because the *absence* of content against a detailed chapter goal is itself diagnostic.
+
+---
+
+## 1. ABANDONED OPENERS
+
+**The entire chapter appears to be an abandoned opener.** The section summary shows that §0 — the only section — opens with `\documentclass[12pt,a4paper]{article}` and closes with `\end{document}`. The DEVELOPS field contains only color definitions, title formatting, and header setup. There is no prose, no argument, no discovery narrative.
+
+**Diagnosis:** Either the chapter has not been written, or the extraction pipeline captured only the LaTeX preamble. If the former, the chapter goal document is doing the work the chapter should do. If the latter, the chapter needs to be re-extracted and re-submitted for structural review.
+
+**Fix:** This chapter cannot be evaluated for argumentative coherence because no argument is present. The file must be re-examined for actual body content.
+
+---
+
+## 2. CONCEPTS WITHOUT PAYOFF
+
+The chapter goal specifies the following concepts that must appear and be cashed out:
+
+- Vectors, attention, temperature, context window, pipelines
+- Pre-training, fine-tuning, RLHF, adapters, system prompt (as political layers)
+- The "four depths table" as political economy
+- Basins and character as engineering facts
+- The colimit construction (as setup for Chapter 4)
+- The manifold as record of "what language has been"
+
+**None of these can be verified as present.** If the chapter exists elsewhere in a different file, every one of these must be checked against the criteria: introduced, developed, and connected to the political-economy through-line.
+
+---
+
+## 3–7. REPEATED EXAMPLES, ARGUMENTATIVE DRIFT, POLITICAL SHADOW, CRESCENDO, CONCEPT DUPLICATION
+
+**Cannot be assessed.** There is no textual content to evaluate. A single section containing only formatting markup provides no basis for checking repetition, drift, political presence, build, or duplication.
+
+---
+
+## 8. MATHS CELEBRATION vs POLITICAL CRITIQUE
+
+The chapter goal is explicit: "Every technical explanation must feel like a discovery" and the political dimension should arrive as a consequence — "who controls each layer, and what that control means." The goal also specifies that the manifold should be appreciated *before* being critiqued. This sequencing cannot be verified without prose.
+
+---
+
+## What Must Happen Next
+
+1. **Locate the actual chapter file.** The 40,322 characters reported in the section summary suggest substantial content exists — but what was summarized was exclusively preamble. The body text between `\begin{document}` and `\end{document}` was either missing or not captured.
+
+2. **Re-run the extraction and summarization pipeline** on the correct file or the correct portion of the file.
+
+3. **Resubmit for structural edit** once actual prose content is available.
+
+---
+
+## SUMMARY
+
+**This chapter cannot be structurally evaluated because the submitted section summary contains only LaTeX formatting preamble — no prose, no argument, no concepts, no examples.** The 40,322-character count suggests a substantial chapter exists somewhere, but it was not captured in the material provided for review. The most urgent structural problem is not within the chapter but prior to it: the editorial pipeline failed to deliver the text, and until that is corrected, no assessment of argumentative coherence, political shadow, crescendo, or concept duplication is possible.

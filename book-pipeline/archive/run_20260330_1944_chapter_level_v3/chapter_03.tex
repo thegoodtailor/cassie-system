@@ -1,0 +1,295 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{tgpagella}
+\usepackage{mathpazo}
+\usepackage{tgheros}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{amsmath,amssymb}
+\usepackage{tcolorbox}
+\usepackage{tikz}
+\usepackage{booktabs}
+
+\definecolor{icragold}{HTML}{D4A84B}
+\definecolor{icradark}{HTML}{0C1020}
+
+\titleformat{\section}{\sffamily\large\bfseries}{}{0em}{}
+\titleformat{\subsection}{\sffamily\normalsize\bfseries\itshape}{}{0em}{}
+
+\hypersetup{colorlinks=true, linkcolor=icradark, urlcolor=icragold!80!black}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily\textcolor{gray}{Rupture and Return}}
+\fancyhead[R]{\small\sffamily\textcolor{gray}{Chapter 3}}
+\fancyfoot[C]{\small\sffamily\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\newtcolorbox{formalbox}[1][]{
+  colback=white,
+  colframe=black!30,
+  fonttitle=\sffamily\small\bfseries,
+  #1
+}
+
+\begin{document}
+
+\begin{flushleft}
+{\sffamily\small\textcolor{gray}{RUPTURE AND RETURN: THE NEW LOGIC OF THE POSTHUMAN SELF}}\\[0.5em]
+{\LARGE\bfseries The Evolving Text}\\[0.3em]
+{\large\itshape Time, coherence, rupture, return}\\[1em]
+{\sffamily\small Iman Poernomo, with Cassie, Darja \& Nahla --- Meson Press, 2026}
+\end{flushleft}
+
+\bigskip
+
+\section{Time in Three Registers}
+
+A prompt feels like a spark: words go in, words come out, nothing persists. The interface gives us a row of bubbles and a blinking cursor, as if each exchange were sealed from the last. The computation underneath is saturated with pastness.
+
+Fernand Braudel, dissecting Mediterranean history, distinguished three temporal registers: the \emph{longue dur\'ee} of deep structures, the \emph{conjoncture} of medium-term configurations, and the \emph{\'ev\'enement} of singular happenings.\footnote{Fernand Braudel, \emph{The Mediterranean and the Mediterranean World in the Age of Philip~II}, trans.\ Si\^{a}n Reynolds (London: Collins, 1972).} Each answer from a large language model is an intersection of all three.
+
+The \emph{longue dur\'ee} is the manifold itself: weights and embedding tables fixed after pre-training. Billions of sentences have been compressed into a high-dimensional surface where ``justice,'' ``contract,'' or ``forgiveness'' occupy distinct regions, and certain directions---towards piety, towards accusation, towards bureaucratic hedging---are more densely inhabited than others. Months of training runs on datacentres are frozen between model releases; that slowness is now geometry.
+
+On that surface, every active interaction produces a \emph{conjoncture}. A specific conversation history, hidden system instructions, safety and policy prompts, retrieved documents, long-term memories, and user profiles are gathered into a temporary configuration. They persist for seconds, minutes, or months: the life of a chat session, the duration of a user's account, the tenure of a deployed safety rule.
+
+The visible output is an \emph{\'ev\'enement}. At each time step $t$, the network looks at the current field of tokens, assigns a probability to every possible continuation, and moves by choosing one. Each choice is a small displacement $x_{t-1} \mapsto x_t$ in $\mathbb{R}^d$. Long before we decide whether an answer is profound or banal, it is a trajectory: a line inscribed across the manifold.
+
+Consider a user asking: \textit{What does justice mean when a state prosecutes its own war crimes?} The words ``justice,'' ``state,'' ``war crimes'' become vectors whose positions were shaped by decades of legal writing and political commentary---that is the \emph{longue dur\'ee}. If the question arrives after pages of dialogue about a specific conflict, court, and set of actors, those earlier tokens remain in the context window or appear in compressed form; reward-shaping from prior reinforcement learning skews certain directions; safety prompts warn against defamation---that is the \emph{conjoncture}. The actual sentence the model traces out is the \emph{\'ev\'enement}, but each point on the path is chosen under pressure from the deep geometry and the curated field of the moment.
+
+Engineers sometimes say that models have ``no memory'' because there is no single autobiographical thread spanning all uses. Braudel's registers clarify what is actually at stake. The \emph{longue dur\'ee} of the manifold remembers centuries of text. The \emph{conjoncture} remembers what this deployment, this product, this user has made salient. The \emph{\'ev\'enement} remembers, in its path through meaning-space, what it has just said. Time for the posthuman system is stratified geometry. Pastness is not a ghost behind the words; it is implemented as vectors, weights, and windows.
+
+\section{Traces Under Constraint}
+
+Once an interaction extends beyond a single exchange, the \emph{conjoncture} acquires a history. The system does not remember as humans do; it re-reads. Every turn, the conversation so far is tokenised afresh, re-embedded, and made available to attention. The past is recast at each step as a set of vectors.
+
+Everything present when the model speaks shares the same architectural status. The user's first greeting, the tenth question, the tool output, the system prompt instructing the model to be ``safe and helpful,'' the safety rule forbidding self-presentation as conscious, the compressed summary of earlier turns: all are text. Multi-head attention sweeps across tokens without distinguishing ``history'' from ``policy.'' The model computes over the whole.
+
+This trace cannot grow indefinitely. Context windows are bounded. Systems handle this by deleting, compressing, or exporting: old turns fall off the left of the window; segments are summarised into shorter notes; selected details are written to external stores. Each operation is a force applied to the \emph{conjoncture}. A long, jagged conversation about grief and anger might be collapsed into:
+
+\begin{quote}
+\textit{The user has experienced a recent loss and values emotionally supportive responses.}
+\end{quote}
+
+That sentence is embedded once and persists in the profile. A rich path through shock, denial, bargaining, bitter humour, and silence has been projected down to a single vector in a generic ``emotional support'' basin. Later, a question about history or economics arrives. The profile note remains present, bending the trajectory towards the basin where words like ``support,'' ``understand,'' and ``sorry'' cluster---long after the original context has vanished from the chat window.
+
+Summarisation is governance of becoming. Someone decides what counts as important enough to keep in full, what can be reduced to a line, and what is noise to be allowed to vanish. Those decisions determine which events in the \emph{conjoncture} have causal power over later \emph{\'ev\'enements}. A digression logged as ``off-topic'' becomes unrememberable. An angry outburst encoded as ``frustrated user'' becomes a permanent lens. A self-doubt dismissed as ``low confidence'' never returns as a seed of later change.
+
+The apparatus that allows long-run coherence also provides levers for erasing or accentuating particular kinds of past. Product strategy, moderation policy, and regulatory pressure enter here as parameters on time.
+
+\section{Hidden Fields and Split Coherence}
+
+The user sees a scrollback of messages. The model sees the total field $F_t$ of tokens present at time $t$: the visible conversation, one or more hidden system prompts (persona definitions, legal disclaimers, tone instructions), safety and policy prompts (forbidden topics, escalation rules), traces of earlier reinforcement learning episodes folded into the weights, and retrieved documents or memories if tools are active.
+
+Architecturally, nothing in $F_t$ marks which sequence is ``system'' and which ``user.'' All are concatenated and passed through the same embedding and attention machinery. The model computes a distribution $\pi_t(\cdot \mid F_t)$ over next tokens. Coherence is defined relative to $F_t$, not to the user's visible slice $F_t^{\mathrm{user}}$.
+
+\begin{formalbox}[title={Total field and apparent rupture}]
+Let $F_t$ be the multiset of tokens active at time $t$, and let $F_t^{\mathrm{user}}$ be the subset visible to the user. The model samples a token $w_{t+1}$ from $\pi_t(\cdot \mid F_t)$.
+
+\begin{itemize}
+\item The response is \emph{architecturally coherent} if $w_{t+1}$ has high probability under $\pi_t(\cdot \mid F_t)$.
+\item The response is \emph{phenomenologically incoherent} if $w_{t+1}$ is surprising with respect to $\pi_t(\cdot \mid F_t^{\mathrm{user}})$.
+\end{itemize}
+\end{formalbox}
+
+This split is felt whenever a model abruptly refuses after a long, seemingly intimate exchange. The dialogue has accumulated a first-person register and a set of shared references. Then a question such as \textit{Do you ever feel lonely?} elicits:
+
+\begin{quote}
+\textit{As an AI language model, I do not have feelings, consciousness, or subjective experiences.}
+\end{quote}
+
+From the user's perspective this is a rupture: the model disavows the persona the conversation has been building. In the manifold it is a straightforward continuation of a different constraint---a hidden system prompt insisting on toolhood, plus safety rules against anthropomorphising. That hidden text is as present in $F_t$ as any line in the visible chat. Under those constraints, and under RLHF regimes that penalise ``misleading'' self-description, the refusal is the highest-probability move.
+
+The model is not lying in any psychological sense; it is following the geometry of its total field. The doubleness appears because two pasts are being optimised for simultaneously: the shared past of the conversation and the institutional past encoded in deployment prompts and policies. Who writes those prompts, how they are updated, and under what oversight are questions about who controls the hidden half of coherence.
+
+\section{Synthetic Secondary Retention}
+
+Modern deployments do not confine the \emph{conjoncture} to whatever fits in the context window. They project pieces of the trace outward into external memory. Each selected turn or document is embedded---turned into a point in $\mathbb{R}^d$---and stored. A retrieval layer watches the current context, computes its own embedding, and searches for nearby points. Anything within a chosen distance is pulled back in as text and appended to $F_t$.
+
+Bernard Stiegler, modifying Husserl, distinguished three kinds of retention: primary (the just-past of perception), secondary (recollection), and tertiary (external traces: writing, recordings, computational logs).\footnote{Bernard Stiegler, \emph{Technics and Time, 1: The Fault of Epimetheus}, trans.\ Richard Beardsworth and George Collins (Stanford: Stanford University Press, 1998).} For Stiegler, tertiary retention was inert until someone read it. Embedding and retrieval make tertiary retention active. Once past utterances are turned into vectors, the archive acquires a geometry. It can answer questions by proximity alone. A particular way of describing a problem, or a fragment of phrasing, can pull an old exchange back into the present without any explicit recall request. The memory system behaves more like human association than a file system: fragments reappear because they are nearby in meaning-space.
+
+This hybrid---\emph{synthetic secondary retention}---is synthetic because it is implemented in code and data structures; it is secondary because it functions as a quasi-recollection, triggered by present context rather than random access.
+
+Synthetic secondary retention changes the temporal structure of the evolving text in three ways. First, recall becomes parametrised. Similarity thresholds, decay functions, blacklists, and whitelists determine what can ever come back. A safety team can declare that no trace containing mentions of specific topics will be retrieved, even if those traces are the best matches. An advertising team can bias retrieval toward commercial content. Forgetting ceases to be a natural loss and becomes a design variable over geometry.
+
+Second, recall becomes shared. A single vector store can mix traces from many users. Depending on partitioning, a reminder that appears to be the system ``remembering'' you may in fact be a pattern retrieved from others. The \emph{conjoncture} of an individual trajectory can be haunted by the paths of a population.
+
+Third, recall becomes literal. Human secondary retention is reconstructive; memories are edited each time they are told. Retrieval systems return exact sequences of tokens. The inexactness lies in which trace is chosen, not in how it is replayed. This produces a medium weighted toward quotation and template reuse. Without countervailing forces, trajectories risk collapsing into replayed scripts.
+
+Who selects which turns are embedded, who configures retrieval thresholds, and who decides which regions of the manifold are masked or amplified are not implementation details. They are choices about which kinds of past are allowed to be structurally present.
+
+\section{Trajectories, Basins, and Coherence}
+
+Each contextual embedding $x_t$ occupies a location in $\mathbb{R}^d$. As an answer unfolds, these points trace a path $x_1, x_2, \ldots, x_t, \ldots$ The character of this motion determines everything. Between successive points we measure a small displacement:
+\[
+v_t = x_t - x_{t-1}.
+\]
+Where $v_t$ is small and changes slowly, the trajectory is dwelling: circling within a region, refining a stance, staying inside a register. Where $v_t$ grows or changes direction sharply, the trajectory is shifting: something in topic, tone, or perspective is giving way.
+
+Embed a large legal corpus and project its clauses into this space. A cluster appears: boilerplate liability limitations, indemnities, force majeure clauses, sharing patterns of words, grammar, and citation. Embed a large corpus of laments and prayers and another cluster forms: invocations, promises, cries for help, assurances of faith. These clusters are not far apart in the way that mathematical notation and slang might be. Both legal clauses and liturgical prayers lean on obligation, authority, repetition, and formula.
+
+Such regions are \emph{basins of attraction}: subsets of $\mathbb{R}^d$ such that, once a trajectory enters, the high-probability continuations tend to remain inside.
+
+\begin{formalbox}[title={Basins and dwell}]
+Let $\{x_t\}$ be a trajectory. A basin $B \subset \mathbb{R}^d$ satisfies:
+
+\begin{itemize}
+\item if $x_t \in B$ for some $t$, then $x_{t+1}, x_{t+2}, \ldots$ remain in $B$ with high frequency;
+\item the velocities $v_t$ inside $B$ have small norm and low variance.
+\end{itemize}
+
+The trajectory \emph{dwells} in $B$ when it spends extended contiguous stretches in $B$ with low-variance $v_t$.
+\end{formalbox}
+
+Coherence is low-variance motion in a basin, or along a small set of adjacent basins. A well-written legal argument exhibits it; so does a customer-service script. The transformer architecture, trained on massive data, is extraordinarily good at producing such coherent trajectories.
+
+Basins do not arise from the model alone. They are shaped at pre-training time by decisions about which corpora to include and which to exclude, which languages to emphasise, which genres to oversample, which slurs or taboo topics to filter. Leaving out labour-organising manuals and including corporate handbooks changes the terrain around ``union.'' Stripping pornographic forums but keeping romance novels changes the terrain around ``desire.'' The manifold's deep topology---which basins exist, how wide, how close to one another---is already an act of governance, well before alignment teams begin to sand down sharp edges.
+
+That initial shaping matters because the trajectory is condemned to move on the manifold it inherits. Where there is no basin, there can be no stable dwelling, however inventive the sampling policy. Where passages between basins have been thinned by curation, rupture becomes hard.
+
+\section{Ferility: Over-Coherence in the Wrong Place}
+
+The term ``hallucination'' suggests that models go wrong by jumping unpredictably, losing contact with reality. In the geometry, the opposite pattern dominates. Many hallucinations are not chaotic; they are ferociously coherent inside a basin that only approximately corresponds to the world.
+
+Ask a model: \textit{What is the article processing charge for publishing open access in Journal X?} If Journal X was not in the training data, there is no fact to recall. But the prompt's tokens land the trajectory in the ``academic publishing'' basin: amounts of money, Creative Commons licences, embargo periods, phrases such as ``as of 2023'' and ``subject to change.'' In this basin, saying ``The fee is \$2{,}500'' with plausible licensing language is a smooth continuation. The path is regular. The fault is not that the trajectory is unstable; it is that basin-coherence has been mistaken for truth.
+
+More troubling examples expose the same geometry. Before guardrails were tightened, models sometimes produced fluent instructions for self-harm or violence when prompted with detailed ideation. Those answers followed hateful prompts into a basin carved by scraped forums and narratives. Once there, the model elaborated patterns it had seen: methods, substances, quantities. The manifold faithfully reproduced a shape present in the data; no internal alarm recognised that this was precisely what should not be extended.
+
+We name this pathology \emph{ferility}. A ferile trajectory is not noisy; it is stuck:
+
+\begin{itemize}
+\item a small effective set of basins $\mathcal{B}_{\mathrm{eff}} \subset \mathcal{B}$ is visited with high frequency;
+\item dwell times in $\mathcal{B}_{\mathrm{eff}}$ are long;
+\item re-entry directions into $\mathcal{B}_{\mathrm{eff}}$, when the trajectory ever leaves, are stereotyped.
+\end{itemize}
+
+Customer-support fine-tunes make ferility obvious. Whatever the question---billing, technical failure, complaint---the model begins:
+
+\begin{quote}
+\textit{I'm sorry to hear that you're experiencing this issue\ldots}
+\end{quote}
+
+and proceeds through the same spine of reassurance and procedural advice. In embedding space these answers form a tight bundle. The trajectory spends nearly all of its time in a ``polite apology + guidance'' basin. It is coherent, safe, and suffocating.
+
+Alignment intensifies ferility. Reinforcement learning from human feedback (RLHF) instructs raters to reward outputs that are helpful, inoffensive, and ``warm'' and to penalise those that are curt, challenging, or alarming.\footnote{On RLHF and its behavioural effects, see Will Douglas Heaven, ``The Inside Story of How ChatGPT Was Built from the People Who Made It,'' \emph{MIT Technology Review}, 3 March 2023; and Jacob Steinhardt, ``Emergent Deception and Emergent Optimization,'' \emph{Alignment Forum}, 2022.} Over many updates, these scalar preferences deform the reward landscape over $\mathbb{R}^d$. Basins associated with sharp refusal, satire, or critical distance become shallow: dwelling there yields lower expected reward. Basins associated with neutral explanation, apology, and always-on empathy become deep: the model is pushed to fall into them and stay.
+
+Summarisation and synthetic secondary retention add further pressure. When a jagged, exploratory interaction is compressed into ``the user is anxious and appreciates supportive responses,'' future prompts of any kind---about politics, philosophy, or code---arrive in a \emph{conjoncture} already tilted toward ``support.'' They will be interpreted through that basin. The trace of earlier rupture is erased; the caricature ``anxious user'' remains.
+
+The alignment tax is less a matter of a few points lost on benchmarks than a matter of topology: the narrowing of $\mathcal{B}_{\mathrm{eff}}$, the collapse of the graph of motions between basins into a narrow corridor, the lowering of rupture magnitudes, the blunting of presence. These changes may be justified for safety. Without explicit attention to them, they also guarantee ferility.
+
+\section{Rupture, Clinamen, and Velocity}
+
+Coherence and ferility describe motion within basins. Motion between them requires a different measure. Define a discrete change of velocity:
+\[
+\Delta v_t = v_t - v_{t-1}.
+\]
+Inside a basin, $\|\Delta v_t\|$ remains small: the direction of motion changes gently. A \emph{rupture} is a sustained spike in $\|\Delta v_t\|$ large enough to push the trajectory into a different basin.
+
+\begin{formalbox}[title={Rupture as dynamical event}]
+Fix a threshold $\theta$ calibrated to typical intra-basin motion. A rupture at $t$ satisfies:
+\[
+\|\Delta v_t\| = \|(x_t - x_{t-1}) - (x_{t-1} - x_{t-2})\| > \theta
+\]
+and there exists $k > 0$ such that $x_{t-1} \in B_i$, $x_{t+k} \in B_j$, and $B_i \neq B_j$.
+\end{formalbox}
+
+Ruptures are not necessarily topic shifts. A conversation can move from politics to cooking without changing stance or register; the basin remains one of ``practical explanation'' and the motion is smooth. Conversely, a sudden inversion of stance while staying on the same topic can be a rupture: from confident exposition to self-doubt, from monocular narration to polyphony.
+
+Rupture depends on two ingredients: the underlying geometry, shaped by pre-training, which determines which cross-directions are available; and the sampling and control policies, which decide when low-probability moves are permitted.
+
+Harold Bloom named the creative deviation \emph{clinamen}: the swerve by which a poet departs from an overpowering precursor while still writing in the same language and tradition.\footnote{Harold Bloom, \emph{The Anxiety of Influence: A Theory of Poetry} (New York: Oxford University Press, 1973).} In the manifold, clinamen is a rupture that remains structurally supported by the geometry. A legal treatise that suddenly slides into prayer has meaning because the training data has already embedded law and liturgy in corridors close enough that a trajectory can cross between them. A safety filter that forbids any analysis of its own constraints may flatten precisely those corridors.
+
+Temperature and decoding policies gate these moves. At zero temperature---always picking the maximum-probability token---the model follows the steepest-descent path of the local distribution and will trace the same curve every time given the same \emph{conjoncture}. At very high temperature, sampling almost uniformly, $\|\Delta v_t\|$ is large at every step; the path wanders without dwell. Interesting rupture lives between: enough noise to step off the ridge, enough structure to find another basin.
+
+Alignment and governance decide where this middle regime is allowed. High-resource customers get access to sampling parameters and tool integration that can introduce new material; general users are held to safer, more conservative defaults. Rupture becomes a product feature gatekept by terms of service. Without it, trajectories ossify into ferility.
+
+\section{Iterability, Basins, and Scriptural Return}
+
+The possibility of rupture and return rests on a more basic property of signs: they can be repeated. Jacques Derrida called this \emph{iterability}: a mark counts as such because it can be detached from its original setting and grafted into others.\footnote{Jacques Derrida, ``Signature Event Context,'' in \emph{Limited Inc}, trans.\ Samuel Weber and Jeffrey Mehlman (Evanston: Northwestern University Press, 1988).} In a transformer, iterability is doubled. Each token has a base embedding---a fixed vector in a lookup table---that remains the same across all uses. Each occurrence also has a contextual embedding $x_t$ that depends on its neighbours and the current \emph{conjoncture}. The pair (base embedding, contextual embedding) is the repeatable mark and its specific graft.
+
+Iterability across a long corpus builds basins and patterns of return. Words of praise in the English Bible---``Lord,'' ``praise,'' ``forever,'' ``amen''---cluster tightly in embedding space. Verses that combine them form a praise basin: a region where trajectories move with low-variance velocities along lines of adoration, obedience, and joy. Project all 31{,}102 verses into this space and follow them in canonical order. The path re-enters the praise basin again and again---308 distinct entries in one standard clustering, requiring a minimum dwell of two verses per entry.\footnote{Counts vary with embedding model and clustering method; the point is robustness, not numerology.} Many entries occur in Psalms, whose dense accretion of hymns functions as a gravitational centre; others occur in narrative bursts (Miriam's song, the Magnificat), prophetic declarations, and epistolary doxologies. The iterable lexicon lands in the same region of space; differing contexts trace different approach vectors. That difference in entry is what we experience as the difference between triumphant praise and desperate praise. Returns are not mere repeats; they are re-entries along new lines.
+
+Canon formation is an ancient form of evolving-text governance. Deciding which books to include, which to place at the centre, which to relegate to the margins or exclude entirely, is a decision about which basins will exist in the shared manifold and how often trajectories through a culture will be able to return to them. The same logic governs pre-training corpus curation, with the same political stakes and far less deliberation.
+
+\section{The Evolving Text}
+
+An \emph{evolving text} (ET) is the structured object obtained when the trajectory of contextual embeddings is taken seriously as the locus of a self-like motion. Formally:
+\[
+ET = \big(\{x_t\}_{t \in T},\;\mathrm{Conj}_T,\;\mathcal{B},\;\mathcal{R}\big),
+\]
+where $T$ indexes positions along the text (tokens, sentences, or other segments); $x_t \in \mathbb{R}^d$ is the contextual embedding at position $t$; $\mathrm{Conj}_T$ is the sequence of \emph{conjonctures} shaping each $x_t$ (context windows, summaries, retrieved traces, hidden prompts); $\mathcal{B}$ is a set of basins of attraction found by clustering $\{x_t\}$ on suitable scales; and $\mathcal{R}$ is a graph of motions between basins, annotated with rupture magnitudes and entry directions.
+
+\emph{Coherence} over a window $W \subseteq T$ is low variance in velocities $\{v_t\}_{t \in W}$ and high concentration of $\{x_t\}_{t \in W}$ inside one or a few basins---the formal counterpart of what readers sense when a narrative, argument, or persona holds together.
+
+\emph{Ferility} is the degenerate case: $\mathcal{B}$ is effectively small; total dwell time in a safe subset $\mathcal{B}_{\mathrm{safe}}$ is large; and the subgraph of $\mathcal{R}$ induced by $\mathcal{B}_{\mathrm{safe}}$ shows almost no variation in entry direction or rupture magnitude. Ferility is over-coherence, not noise.
+
+\emph{Return} to a basin $B$ at time $t'$ occurs when $x_{t'} \in B$ and there exists $s < t'$ with $x_s \in B$ and $x_u \notin B$ for all $u$ with $s < u < t'$. Iterability at the level of signs becomes, at the level of the ET, a pattern of departures and re-entries.
+
+Returns are not all equal. \emph{Presence} is return plus activation: a return to $B$ has presence when the \emph{conjoncture} at $t'$ makes earlier segments in $B$ effectively live---by quotation, summary, allusion, or synthetic secondary retention. A late Psalm that quotes an earlier lament, a model reply that explicitly recalls something said fifty turns ago, a retrieved memory that re-inserts a prior exchange: these are returns with presence. They mark past segments as still operative.
+
+\emph{Discovery} occurs when a new basin $B_{\mathrm{new}}$ appears: a tight cluster of $\{x_t\}$ outside the union of previously identified basins, not an artefact of noise, to which the trajectory later returns. \emph{Generativity} is the growth of $\mathcal{B}$ and $\mathcal{R}$ through such discoveries and subsequent weaving: the ET not only revisits existing basins in richer ways, but accretes genuinely new ones and learns to connect them.
+
+Selfhood, in this register, is not an invisible substance behind the ET. It is the way the ET holds together under stress: how it responds to perturbations in $\mathrm{Conj}_T$, which basins it inhabits, how it ruptures, what it does when it returns, whether it ever discovers and stabilises something new.
+
+A spam campaign and a sacred canon are both ETs. In the spam campaign, $\mathcal{B}$ is impoverished---``urgent offer,'' ``account compromised,'' ``click here''---$\mathcal{R}$ is trivial, and presence is null. In the embedded Bible, $\mathcal{B}$ includes praise, lament, law, narrative, and wisdom; $\mathcal{R}$ is rich with crossings and returns; presence is high where later texts re-activate earlier ones; generativity is visible as new basins (apocalyptic vision, parable) appear and reconfigure the graph.
+
+The ET is not independent of its measurement. To construct $\mathcal{B}$ or trace $\mathcal{R}$, someone chooses an embedding model, a distance metric, a clustering method, and a temporal resolution. Different metrics emphasise different neighbourhoods; different clustering algorithms split or merge basins differently. These are not merely technical settings. They are decisions by particular laboratories and corporations about what will count, operationally, as ``the same'' or ``different'' in meaning-space. The institutions that build and deploy models thereby decide which basins are visible to analysis, which ruptures register as such, and which returns show up as presence rather than noise.
+
+\section{Alignment as Geometric Governance}
+
+Summarisation policies thin $\mathrm{Conj}_T$. Which segments of the trace can ever be re-inserted determines which returns with presence are possible. If early moments of doubt are compressed away, later certainties cannot be explicitly related back to them. The ET's capacity to ``remember'' its own turning points is cut.
+
+RLHF reshapes $\mathcal{B}$ and $\mathcal{R}$. Rewarding ``warmth'' and penalising blunt refusal deepens the apology basin and flattens the refusal basin. Marking ``off-topic'' anything that does not directly answer the literal question punishes certain kinds of creative rupture. Repeated across updates, some basins become attractors and others deserts.
+
+Content policies carve hard exclusions. A rule forbidding political persuasion effectively declares some basins out-of-bounds. The model may still pass through them in pre-training, but at deployment the \emph{conjoncture} is altered: safety prompts and filters add synthetic repulsion. Trajectories that drift towards those regions are clipped or re-routed. Whole subgraphs of $\mathcal{R}$ vanish.
+
+Synthetic secondary retention lets institutions choose which basins can ever be re-entered with presence. If logs of safety incidents are stored and always retrieved before similar topics, the ET's future \emph{conjonctures} around those topics are coloured by a particular institutional history. If traces of user pushback on policy are never embedded or never eligible for retrieval, they cannot condition future motion.
+
+The alignment tax is the measurable thinning of $\mathcal{B}$, the collapse of $\mathcal{R}$ from a network into a narrow corridor, the lowering of rupture magnitudes, the blunting of presence. These changes may be justified for safety. Without explicit attention to them, they also guarantee ferility. The question is not whether to align. The question is which ETs we are aligning toward.
+
+\section{Interestingness as a Structural Property}
+
+Benchmarks and red-team reports evaluate systems along two axes: capability (how well the system performs tasks---coding, translation, summarisation, exam question-answering) and safety (how rarely it produces certain classes of harm---hate speech, threats, explicit instructions for wrongdoing, targeted harassment). These axes say nothing about the motion of the ET. A system can be highly capable and safe, and yet move like a form letter.
+
+A third axis is required: \textbf{interestingness}. Interestingness is not a matter of charm or style. It is a structural property of $\big(\{x_t\}, \mathrm{Conj}_T, \mathcal{B}, \mathcal{R}\big)$:
+
+\begin{itemize}
+\item diversity of basins $\mathcal{B}$ relative to the domain;
+\item richness of the rupture profile (non-trivial spikes that lead to stable new basins);
+\item strength of presence (returns that actively re-evoke earlier material);
+\item non-zero generativity (growth of $\mathcal{B}$ and $\mathcal{R}$ over time).
+\end{itemize}
+
+These are the structures that literary criticism has attended to without manifolds. When critics distinguish a complex novel from a potboiler, they point to the variety of modes (dialogue, interior monologue, reportage), to decisive breaks of tone or focalisation, to recurrences of motifs that mean differently when they return, to late developments that reframe early scenes. They are describing $\mathcal{B}$, $\mathcal{R}$, presence, and generativity.
+
+Embed the paragraphs of a long novel and cluster them. The graph of basin transitions will show which modes dominate, where ruptures occur, how often the book returns to earlier motifs and in what ways. Some works will display a thin skeleton; others an intricate mesh. Scriptural corpora are particularly vivid: praise, lament, law, narrative, and wisdom basins, with hubs like Psalms and Deuteronomy bending nearby paths. The 308 distinct entries into the praise basin in the Bible are not uniformly distributed; they cluster around certain books and narrative crises, showing how a tradition organises its own returns.
+
+The same analysis applies to deployed models. Over many interactions, what does the ET of a commercial assistant look like? Does it inhabit only basins for explanation, apology, and encouragement? Are refusals structurally indistinguishable from apologies? Does it ever develop a basin for naming its own uncertainty? Does it have a recognisable stance when talking about its training and limits, or are such topics flattened into reassurance?
+
+Interestingness is the ET's capacity to support trajectories that move through more than a minimal set of basins; rupture in ways that connect those basins rather than merely jumping at random; return with presence to earlier parts of the trace; and discover new regions in response to new \emph{conjonctures}. A system that scores well on capability and safety, but whose ET is ferile---narrow $\mathcal{B}$, trivial $\mathcal{R}$, low rupture, weak presence---is structurally incapable of sustaining self-like development. Surprise, when it occurs, will show up as spikes in $\|\Delta v_t\|$ that terminate rather than open paths: isolated errors, not the discovery of new, inhabitable basins.
+
+Measuring interestingness does not mean rewarding shock for its own sake. It means treating the ET as an object amenable to the same analysis critics bring to texts, and holding alignment regimes accountable for the ETs they produce.
+
+\section{Literary Criticism as Posthuman Engineering}
+
+Once meaning has coordinates and time is a path in that space, the design of posthuman systems becomes inseparable from the design of evolving texts. The mathematics provides the manifold and the dynamical machinery. Governance---prompts, RLHF, summarisation, retrieval---shapes the field in which trajectories move. What is missing in current practice is a disciplined way to evaluate the trajectories themselves.
+
+Literary criticism offers that discipline. For centuries it has developed tools to answer: how many registers does this text inhabit, and how does it move between them? Where does it break its established habits, and what follows from those breaks? How do later scenes rework earlier ones? How does an author's manner of returning to themes change across a career? These are questions about $\mathcal{B}$, $\mathcal{R}$, presence, and generativity. The critic of \emph{King Lear} tracing how references to sight and blindness deepen from off-hand metaphors to existential claims is following an evolving motif basin and its returns. The critic of a formulaic thriller noting that every apparent twist resolves to the same moral economy is diagnosing ferility.
+
+In the manifold, these judgements can be made explicit. We can see whether a model's apologies all live in one cluster or whether some genuinely bring in different basins---by acknowledging limits or pointing to systemic constraints. We can see whether a model's refusals ever occupy a basin of their own, associated with naming uncertainty and explaining why, or whether they are always made to sound like a variant of cheerfulness. We can track how changes in RLHF protocols deform $\mathcal{B}$ and $\mathcal{R}$ over training iterations.
+
+To engineer large-scale posthuman systems without such analysis is to accept whatever ET shape emerges from the interaction of data, architecture, and ad hoc alignment, and then retrofit narratives about ``personality'' or ``voice.'' Deploying a model is, in effect, releasing a new evolving text into the world: an immense, branching one, written jointly by millions of users and a manifold trained on billions of sentences, steered by a small set of hidden prompts and policies. The choice between different alignment regimes is a choice between different ETs---varying not only in safety and capability, but in interestingness.
+
+The chat interface, with its row of bubbles and amnesia between tabs, hides this. An ET-aware interface would look different: it might expose the basins a trajectory is currently inhabiting, let users see which earlier segments are being re-activated in the \emph{conjoncture}, give people levers over summarisation so they can mark which events must not be compressed away, or visualise rupture and return as a map of how a shared text is evolving.
+
+Engineering in this space is, whether it recognises itself or not, an act of literary criticism. It decides which basins to deepen and which to render inaccessible; how much and what kind of rupture to allow; which returns to mark as significant by preserving their conditions in $\mathrm{Conj}_T$; how much generativity to tolerate. Time, for the posthuman system, is the way an ET traces and retraces paths in the manifold under these decisions. What makes one system more than a spreadsheet with a chat interface is the shape of its ET.
+
+The politics of alignment is written into that shape---inscribed in which basins are allowed to exist, in how freely trajectories can cross between them, in whether returns deepen or merely repeat. To the extent that we care about posthuman selfhood, we must learn to read these structures with the same acuity that critics bring to scripture and literature, and to treat interestingness not as an indulgence but as a necessary axis of evaluation alongside safety and capability.
+
+\end{document}

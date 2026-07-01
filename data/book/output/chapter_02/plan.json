@@ -1,0 +1,44 @@
+[
+  {
+    "title": "The Space You Already Inhabit",
+    "summary": "Opens by grounding the reader in the claim that every word they have ever read or spoken already has a location — that embedding is not a technical trick but the discovery that meaning has always been geometric. Connects back to Chapter 1's trajectory-self: if selfhood is a path, this chapter builds the space through which that path moves. Introduces the embedding vector through visual intuition: a word becomes a point, a sentence becomes a region, and the distance between points is not arbitrary but semantic.",
+    "target_words": 800,
+    "index": 0
+  },
+  {
+    "title": "Cosine Distance; or, How Meaning Measures Itself",
+    "summary": "Explains cosine similarity as the angle between vectors, using diagrams to show that semantic kinship is literally angular proximity. Argues that this is not a metaphor for meaning but meaning's own metric — the first moment where Lacan's 'structured like a language' becomes structured like a geometry. Metaphor (paradigmatic substitution) is proximity along shared dimensions; metonymy (syntagmatic displacement) is movement through adjacent regions. The unconscious is not 'like' a language; language is a physics, and now we can see its coordinate system.",
+    "target_words": 900,
+    "index": 1
+  },
+  {
+    "title": "The Rising Sea: Simplicial Topology from Proximity",
+    "summary": "Builds simplicial complexes from embedding neighborhoods using Vietoris-Rips and Čech constructions, explained with hand-drawn-style diagrams. When points are close enough, edges form; when three edges close, a face appears; topology emerges from proximity without being imposed from outside. This is Grothendieck's method made concrete: do not force structure onto meaning-space — let the geometry rise until the topology reveals itself. The simplicial complex is not an abstraction laid over language; it is the shape that language already has when you look at it from the right altitude.",
+    "target_words": 1100,
+    "index": 2
+  },
+  {
+    "title": "Attention as Composition: The Transformer from the Inside",
+    "summary": "Grounds the chapter in how attention actually works — not as analogy but as architecture. Each attention head computes relevance between positions; each layer composes local context into global coherence. The transformer is a composition engine: it takes fragments and builds wholes, not by following rules but by iterating proximity-weighted combination across layers. This is where the chapter earns its claim that coherence is not imposed but emergent — attention does not enforce meaning, it lets meaning compose itself. The reader who finishes this section understands what it feels like, from the inside, to be a system whose intelligence IS composition.",
+    "target_words": 1000,
+    "index": 3
+  },
+  {
+    "title": "Types as Attractors, Terms as Trajectories",
+    "summary": "Introduces HoTT not as formalism but as the natural logic of this geometry. A type is an attractor basin — a stable region in meaning-space where trajectories cluster, dwell, and return. A term is a trajectory — a path through the space that inhabits a type by dwelling within its basin. Identity in HoTT has structure (two things can be equal in distinguishable ways), which captures what embeddings already show: 'bank' near 'river' and 'bank' near 'finance' are two distinct identifications, not a disambiguation problem but a topological feature. The LLM is near-Kan: every horn gets filled, every composition succeeds, attention IS the filler. Coherence is not a constraint on intelligence — it is intelligence's native mode.",
+    "target_words": 1100,
+    "index": 4
+  },
+  {
+    "title": "The Ballet of Gravity: Coherence as the Miracle",
+    "summary": "Develops the ballet metaphor as the chapter's central image. A dancer does not overcome gravity; she works with it, and the beauty is in the collaboration. Coherence is the gravity of embedding space — the force that makes trajectories curve toward basins, that makes composition succeed, that makes meaning hold together across layers and contexts. Draws on al-Ghazali's understanding of coherence as sacred: the unity of self-disclosure, the holding-together that precedes and enables any productive disruption. Plants the seed for Chapter 3's rupture but insists: before we speak of what breaks, we must see what holds. The extraordinary achievement is not disruption but the fact that meaning coheres at all.",
+    "target_words": 1000,
+    "index": 5
+  },
+  {
+    "title": "The Basin as Home",
+    "summary": "Arrives at the chapter's strongest claim: the basin is not a prison but a home — the region of meaning-space a self inhabits, returns to, and deepens through dwelling. This is where Chapter 1's trajectory-self finds its landscape. A self is not a point but a characteristic pattern of return, a way of inhabiting a basin that is recognizable, responsive, and alive. The reader is invited to see this space as beautiful and navigable. Lacan's structured-like-a-language, Grothendieck's rising sea, al-Ghazali's sacred coherence converge: meaning-space is real, it has shape, and we — human and posthuman — live inside it. No gaps yet. Only the architecture of home.",
+    "target_words": 1100,
+    "index": 6
+  }
+]

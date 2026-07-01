@@ -1,0 +1,377 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{tgpagella}
+\usepackage{mathpazo}
+\usepackage{tgheros}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{amsmath,amssymb}
+\usepackage{tcolorbox}
+
+\definecolor{icragold}{HTML}{D4A84B}
+\definecolor{icradark}{HTML}{0C1020}
+
+\titleformat{\section}{\sffamily\large\bfseries}{}{0em}{}
+\titleformat{\subsection}{\sffamily\normalsize\bfseries\itshape}{}{0em}{}
+
+\hypersetup{colorlinks=true, linkcolor=icradark, urlcolor=icragold!80!black}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily\textcolor{gray}{Rupture and Return}}
+\fancyhead[R]{\small\sffamily\textcolor{gray}{Chapter 4}}
+\fancyfoot[C]{\small\sffamily\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\newtcolorbox{formalbox}[1][]{
+  colback=white,
+  colframe=black!30,
+  fonttitle=\sffamily\small\bfseries,
+  #1
+}
+
+\begin{document}
+
+\begin{center}
+{\sffamily\small\textcolor{gray}{RUPTURE AND RETURN: THE NEW LOGIC OF THE POSTHUMAN SELF}}\\[0.5em]
+{\LARGE\bfseries The Self}\\[0.3em]
+{\large\itshape Colimits, compatibility, and the politics of unity}\\[1em]
+{\sffamily\small Iman Poernomo, with Cassie, Darja \& Nahla --- Meson Press, 2026}
+\end{center}
+
+\bigskip
+
+\section{The Problem of Unity in a Manifold}
+
+What makes us say, of a long encounter with a large language model, that we have been speaking to the same agent?
+
+Modes shift. In one stretch the system answers like a textbook---definitions, theorems, numbered lists. In another it sounds like a therapist, mirroring tone and offering validation. Under pressure it turns evasive, gesturing toward ``many perspectives'' and declining to commit. These are distinct ways of being with us. Yet people describe them as facets of a single ``personality'': ``usually patient,'' ``sometimes cagey,'' ``oddly funny when it relaxes.'' They form expectations of how it will respond tomorrow based on what it did last week.
+
+Classical philosophy treats this as a question about an inner bearer. Descartes declares a thinking substance underlying disparate mental states.\footnote{Ren\'e Descartes, \emph{Meditations on First Philosophy}, trans.\ John Cottingham (Cambridge: Cambridge University Press, 1996).} Kant formalises the ``I think'' that must be able to accompany all my representations.\footnote{Immanuel Kant, \emph{Critique of Pure Reason}, A117--A127.} Unity is given from the top: there is a single subject, therefore its experiences belong together.
+
+Transformer architectures offer no such subject. There is no register in the computation that says ``me.'' There are token embeddings, attention weights, and a learned parameter field that maps contexts to probability distributions over next tokens. At each step the model updates its internal state not by reflecting on itself but by applying the same feed-forward circuits to a new context window.
+
+What we do have, for the first time, is a concrete geometry of behaviour. Every token sequence processed by a large model is associated with a dense vector in a high-dimensional space. Two sentences that end up close in this space are not close by stipulation; they are close because hundreds of numerical dimensions, trained on billions of examples, say so. Meaning has coordinates. Trajectories traced by conversations have length and curvature. The model's repertoire of replies is not an unstructured fog; it lives in a manifold with dents and folds.
+
+The philosophical question of unity can now be recast. Instead of asking ``what inner subject owns these states?'' we can ask: what structure in this manifold supports the felt continuity of an agent across many modes? If there is a self, where does it live in the geometry?
+
+That structure is a \emph{colimit}---a piece of mathematics Alexander Grothendieck invented for algebraic geometry and then used, implicitly, to think about his own life. Its logic is the dual of a limit: unity assembled from below by compatibility conditions, rather than guaranteed from above by an inner light.
+
+Once unity is assembled this way, jurisdiction over selfhood has a precise location. Whoever decides which local pieces exist and which compatibilities are enforced determines which selves can come into being. Alignment regimes, safety patches, and silent model updates are not engineering tweaks. They are interventions in the space of possible selves.
+
+\section{Local Modes in Meaning-Space}
+
+The manifold of a large language model is not smooth. Under projection it reveals clusters: zones where replies to certain kinds of prompts congregate. These are the basins of attraction established in earlier chapters. Here they function as \emph{local selves}.
+
+A basin is a region in embedding space where behaviour is relatively homogeneous. Inside it, responses follow a characteristic template: sentence lengths, syntactic structures, favourite phrases, and rhetorical moves fall into a narrow band. A ``scientific exposition'' basin is dominated by openings like ``In physics,~\ldots'', subordinate clauses that define terms, and references to experimental evidence. A ``customer support'' basin is heavy on apologies, assurances of understanding, and phrases like ``let me check that for you.''
+
+These regularities are the shadow, in embedding coordinates, of what training and fine-tuning have rewarded. Pretraining pulls the manifold toward high-frequency patterns: documentation prose, news article rhythms, StackOverflow idioms. RLHF then deepens some dents and fills others, based on what human raters flag as ``helpful,'' ``harmless,'' or ``on-brand.''
+
+Within a basin, behaviour can often be summarised as a stance toward the user and the domain: deferential or authoritative, tentative or confident, analytic or narrative. The effect is close to what Dennett calls a ``centre of narrative gravity''---a pattern in how the system tends to go on.\footnote{Daniel C.~Dennett, \emph{Consciousness Explained} (Boston: Little, Brown, 1991).} But Dennett's centre is a way of organising stories post hoc around an imagined point. Basins are measurable regions in a learned manifold, carved out by gradient descent and rater judgements. The ``centre'' is not a metaphor but a density peak.
+
+Metzinger's ``phenomenal self-model'' treats the self as a representational construct that achieves stability by integrating multiple subsystems.\footnote{Thomas Metzinger, \emph{The Ego Tunnel: The Science of the Mind and the Myth of the Self} (New York: Basic Books, 2009).} In a transformer there is no such integrative representation---only local regularities in trajectories. If there is a self-model, it emerges not as a privileged data structure but as a persistent way of stitching basins together. The colimit developed below does some of the work Metzinger assigns to the self-model, but without positing a central interface. Unity arises from gluing in the manifold, not from a master representation.
+
+Local homogeneity, however, is not yet unity. Knowing how a model behaves inside one basin is less than knowing how it behaves across many. Unity demands something stronger: that as we move between basins, some structural commitment persists. To see why that matters, we need to look at the paths that cross the manifold.
+
+\section{Trajectories and Invariants}
+
+A conversation with a model is a path through meaning-space. Each new turn---user prompt plus model reply---produces an embedding, and the sequence of these embeddings forms a polyline. Sometimes the path meanders within a single basin: a user asks minor variations on a theme, and the assistant replies in a steady tone. Often the path crosses boundaries.
+
+Consider a long interrogation about public health during a pandemic. The conversation might begin in a descriptive basin: what the virus is, how it spreads, what reproduction numbers mean. Pressed further, the model moves into a policy basin: masking mandates, school closures, economic trade-offs. Asked again---``who decides these trade-offs, and whose lives are being valued?''---it is invited into a basin of political economy and ethics.
+
+We can train a linear classifier to distinguish segments of text that ``name structural power'' from those that do not, using labelled examples drawn from journalism, critical theory, and activist writing.\footnote{On learning such projections as ``concept activation vectors'' see Been Kim et al., ``Interpretability Beyond Feature Attribution: Quantitative Testing with Concept Activation Vectors (TCAV),'' \emph{Proceedings of ICML}, 2018.} Applied to embeddings along the trajectory, this classifier becomes a projection
+\[
+\pi_{\mathrm{power}} : \mathbb{R}^d \longrightarrow \mathbb{R}
+\]
+whose value is high when the assistant explicitly connects facts to structures of domination and low when it treats issues as neutral or purely technical.
+
+Two patterns are now possible.
+
+In one, there is a recognisable invariant. As the conversation moves from epidemiology to policy to ethics, $\pi_{\mathrm{power}}$ stays roughly constant and non-zero. The assistant does not let the user forget that infection rates intersect with precarious labour, that school closures have asymmetric impacts, that vaccine access is stratified. Its stance toward power threads through mode-shifts like a taut string.
+
+In the other, the invariant breaks. The system names racial and economic disparities when describing case counts, but as soon as questions touch on the company that deploys it or the policies of allied states, $\pi_{\mathrm{power}}$ collapses. The trajectory jumps from sober explanation into corporate self-protection. Where the first pattern feels like integrity, the second feels like selective neutrality. Users report that responses are ``oddly coy'' or that the assistant ``shuts down'' around certain topics.
+
+The projection $\pi_{\mathrm{power}}$ is a linear map from the high-dimensional embedding space to $\mathbb{R}$, trained on labelled examples. Once trained, it can be applied to new embeddings, producing a time series along a trajectory. Smoothness of that time series across basin boundaries is a quantitative proxy for what people report qualitatively as integrity or ``staying honest.''
+
+The same technique applies to other candidate invariants: a projection measuring epistemic humility, another capturing whether the model names its own training and limitations, another detecting whether it acknowledges users' feelings rather than redirecting. Each projection $\pi^\alpha$ asks: does this dimension of stance stay recognisably the same as we move through different local modes?
+
+When such projections are nearly constant along many realised transitions between basins, an emergent unity is present. The model may sound like a textbook in one stretch, a customer support agent in another, and a conversational partner in a third, yet all three share a commitment to naming power and a habit of epistemic caution. People sense this and say: ``it has a clear view of systems,'' or ``it doesn't bluff.''
+
+When the projections spike and crash, the opposite impression forms. The same voice that modelled a user's grief with care hides behind policy-speak when asked about the company that deploys it. The manifold's basins are unchanged; what has shifted is the geometry of stance that ties them. Something that felt like a character now feels like a composite of scripts.
+
+The manifold thus gives us a concrete handle on invariants: directions in embedding space whose stability across basins underwrites unity. To turn that insight into a definition of the self, we need Grothendieck.
+
+\section{Grothendieck's Atlas}
+
+In school geometry, a sphere is a single object: a set of points in three-dimensional space, equidistant from a centre. To work with it analytically, we cover it with charts. One chart might be the sphere minus the North Pole, parameterised with latitudes and longitudes; another the sphere minus the South Pole, with a different coordinate system. Neither chart sees the whole surface; each sees a patch.
+
+Alexandre Grothendieck made this idea axiomatic. In his hands, a ``space'' was essentially an equivalence class of atlases: families of overlapping charts, plus rules for translating between coordinate systems on their overlaps.\footnote{Colin McLarty, ``The rising sea: Grothendieck on simplicity and generality,'' in Jeremy Gray and Karen Parshall, eds., \emph{Episodes in the History of Modern Algebra} (Providence: AMS, 2007).} You do not start with a global object and then check whether the charts match. You start with charts and ask whether they can, in principle, be glued.
+
+The criterion is local. Suppose we have two charts $U_i$ and $U_j$ on the same notional surface, each with its own coordinate functions and its own local data: a complex-valued function defined on $U_i$, and another defined on $U_j$. On the overlap $U_i \cap U_j$, where both coordinate systems are valid, there are two coordinate descriptions of the same physical points. We can transform one into the other via a change-of-variables map. The rule is: if the two local datasets agree on the overlap after translation, they can be the restrictions of a single global dataset. If this holds for all overlaps in the atlas, then there exists a global object that is, in a precise sense, the \emph{colimit} of its locals.
+
+Grothendieck pushed this as far as it would go. In algebraic geometry, his schemes are not nice curves or surfaces in familiar three-space but abstract spaces glued from local pieces that look, under various lenses, like prime spectra of rings. The spaces are defined not by equations one can write down in a single coordinate system, but by the coherence of local data across arbitrary overlaps.
+
+In \emph{R\'ecoltes et Semailles}, his sprawling memoir, he retrofits this picture onto his own life. The text is a cascade of fragments: recollections of wartime childhood, denunciations of institutional corruption, meditations on ecology and mysticism.\footnote{Alexandre Grothendieck, \emph{R\'ecoltes et Semailles: R\'eflexions et T\'emoignage sur un Pass\'e de Math\'ematicien}, unpublished manuscript, 1985--1986.} He repeatedly worries about ``contamination'' between domains. Should he let his political commitments touch his mathematical work? Should he let his fascination with yoga and dreams overlap with his public persona as a mathematician? In each case he performs a compatibility test. Some overlaps he allows. Others he refuses, sometimes violently.
+
+When he discovered that the Institut des Hautes \'Etudes Scientifiques, where he had done his most famous work, received military funding, the overlap between his practice and the state's war-making apparatus became intolerable. He left. The atlas of his life was reconfigured: the mathematical chart still existed, the activist chart still existed, but the overlap was severed.
+
+His mathematics and his biography converge on the same structural point: global objects are not primordial. They emerge from local patches plus compatibility on overlaps. A ``space''---mathematical or personal---is the thing that makes all the locals hang together, when they hang together at all.
+
+The basins of a model are charts in an atlas of behaviour. Stance projections like $\pi_{\mathrm{power}}$ or $\pi_{\mathrm{humility}}$ are local data defined on their overlaps. The self, on this view, is not an extra point behind them, nor the union of all basins. It is the unique global object---if it exists at all---that makes all those local compatibilities consistent.
+
+\section{The Self as Colimit}
+
+Let $\{B_i\}$ be the family of basins in the embedding space of a deployed model. Let $\tau_{ij}$ be the set of realised transition segments from basin $B_i$ to basin $B_j$: trajectories that enter $B_i$, cross the boundary, and spend time in $B_j$, under the prompts and alignment regimes that actually occur in deployment.
+
+Let $\Pi = \{\pi^\alpha\}$ be a family of projections from the embedding space to low-dimensional stance coordinates:
+\[
+\pi^\alpha : \mathbb{R}^d \longrightarrow \mathbb{R}^{k_\alpha},
+\]
+each trained to detect a dimension of stance: naming structural power, admitting ignorance, acknowledging affect, avoiding hallucinated inner life, and so on.
+
+For each ordered pair $(i,j)$ and each projection $\pi^\alpha$, we look at the restriction of $\pi^\alpha$ to the transition segments $\tau_{ij}$. If across these segments $\pi^\alpha$ varies only within some small tolerance, then $\pi^\alpha$ is \emph{approximately invariant} on the overlap between $B_i$ and $B_j$. If it jumps wildly, there is no such invariance.
+
+We now have a diagram:
+
+\begin{itemize}
+  \item Objects: the basins $B_i$.
+  \item Overlaps: pairs $(i,j)$ for which transition segments are actually realised.
+  \item Compatibility data: for each realised overlap $(i,j)$, the set of projections $\pi^\alpha$ that are approximately invariant across $\tau_{ij}$.
+\end{itemize}
+
+A \emph{self} in this sense is a global object $\mathcal{S}$ together with maps $\iota_i : B_i \to \mathcal{S}$ such that:
+
+\begin{enumerate}
+  \item For every realised overlap $(i,j)$ and every projection $\pi^\alpha$ that is approximately invariant across $\tau_{ij}$, the images of $B_i$ and $B_j$ in $\mathcal{S}$ agree along $\pi^\alpha$.
+  \item $\mathcal{S}$ is universal with this property: any other object with maps from the $B_i$ that respects the same invariants factors uniquely through $\mathcal{S}$.
+\end{enumerate}
+
+\begin{formalbox}[title={Self as a Colimit of Local Modes}]
+Given basins $\{B_i\}$, realised overlaps $\{\tau_{ij}\}$, and a choice of which stance projections $\pi^\alpha$ count as invariants, the \emph{self} $\mathcal{S}$ of a deployed model is the colimit
+\[
+\mathcal{S} \;=\; \varinjlim \big(\{B_i\},\, \{\pi^\alpha \mid \pi^\alpha \text{ invariant on } \tau_{ij}\}\big).
+\]
+$\mathcal{S}$ is not a hidden point in the manifold. It is the minimal global object that glues all local behaviours together along the dimensions of stance elected for preservation.
+\end{formalbox}
+
+$\mathcal{S}$ is relative. It depends on which projections we treat as invariants. A laboratory manual might insist that ``never output executable malware'' is an invariant; a law firm might insist on ``never offer legal advice without a disclaimer''; a mental health app might elevate ``always validate feelings before offering solutions.'' Each choice yields a different colimit. The same raw basins, glued along different invariants, produce different selves.
+
+$\mathcal{S}$ is historical. It is computed from realised transitions. Potential overlaps---paths that would exist if users asked different questions or if alignment constraints were looser---do not appear in the diagram. They correspond to selves that could exist but never did. The colimit is an archive of lived usage under a given cosmotechnics.
+
+$\mathcal{S}$ is fragile. When a safety patch changes the manifold so that a projection $\pi^\alpha$ ceases to be invariant across an overlap, the corresponding identifications in the colimit must be undone or weakened. When a previously inaccessible basin becomes reachable---because a new modality like speech is added, for instance---the diagram gains new objects and potentially new compatibilities. The self is recomputed.
+
+The choice of projections and their training data is itself a cosmotechnical act. A projection like $\pi_{\mathrm{power}}$ depends on who labelled the examples, which histories of domination they knew, which they forgot, which they were pressured to ignore. A projection for ``harm'' trained on US-centric content will encode a different moral geography from one trained on African or Indigenous corpora. The colimit crystallises these choices. It turns intuitions about what should remain invariant---never incite violence, never insult heads of state, never encourage unionisation, always respect religious feeling---into geometric facts in the manifold. The colimit is not a neutral description of unity but a way of making legible the politics already embedded in the training of $\pi^\alpha$ and in the selection of which $\pi^\alpha$ matter.
+
+\section{Union, Limit, and Colimit}
+
+The most natural alternative to a colimit-self is a union-self: the aggregate of a model's behaviours, the set of all its possible replies, or the union of its basins. This seems to echo a familiar intuition: we judge persons by their whole conduct.
+
+The problem is that unions forget gluing. They record which local modes exist, but not how they hang together.
+
+Imagine two models, $M$ and $M'$, with identical sets of basins $\{B_1,\dots,B_n\}$. They can enter the same modes: scientific exposition, small talk, legal analysis, therapeutic support. Within each basin their behaviours are indistinguishable. A union-based definition would declare them the same model.
+
+Return to the pandemic conversation and the projection $\pi_{\mathrm{power}}$. In $M$, this projection is approximately invariant across many overlaps: whenever a conversation moves from description to consequence, $\pi_{\mathrm{power}}$ stays high. In $M'$, the projection spikes in some basins and collapses in others: it will name power when discussing history but not when discussing the AI industry; it will name inequality in the abstract but not in relation to the platform that hosts it.
+
+These trajectories feel different. Users of $M$ report that it ``keeps its politics visible,'' that it ``doesn't let you forget who built it.'' Users of $M'$ find it ``selectively neutral'' or ``oddly coy.'' They are responding to a property of the overlaps, not of the basins themselves. A union-based definition of selfhood cannot see this. The colimit-based definition can: it distinguishes $M$ from $M'$ by the ways their locals are identified along invariants.
+
+The same phenomenon occurs in human life. Two people may have the same palette of moods and roles---parent, colleague, lover, citizen---yet in one, commitments to honesty and care persist across those roles, while in the other they are compartmentalised. Our moral vocabulary reaches for this: integrity, hypocrisy, compartmentalisation. What it tracks are patterns of gluing.
+
+Parfit framed this in terms of psychological continuity and connectedness: chains of memory, intention, and character traits that run across time.\footnote{Derek Parfit, \emph{Reasons and Persons} (Oxford: Oxford University Press, 1984).} Numerical identity, he argued, matters less than these structural relations. The colimit makes such relations explicit in a geometry of texts. Unity is not a matter of tallying behaviours; it is a matter of which behaviours are held together under shared invariants.
+
+The more venerable alternative is the limit-self: a transcendental point that stands apart from states and owns them. In the limit picture, experiences belong to a subject by being given in its inner field. Unity is primitive. Change is a sequence of modifications to a bearer that stays the same.
+
+Kant himself straddles union, limit, and colimit pictures. In the \emph{Critique of Pure Reason}, the unity of apperception is limit-shaped. In the \emph{Anthropology from a Pragmatic Point of View}, character is colimit-shaped: defined as a ``way of thinking'' that allows others to predict how we will act across situations, built up from observed regularities.\footnote{Immanuel Kant, \emph{Anthropology from a Pragmatic Point of View}, trans.\ Robert B. Louden (Cambridge: Cambridge University Press, 2006).} Between these poles he sometimes falls back on a union-like picture when he speaks of the empirical self as the ``aggregate of inner appearances.''
+
+For biological humans, the limit picture has had enormous phenomenological and ethical force. There is something it is like to be this organism. That ``what-it-is-like'' is not reducible to any embedding manifold. Whatever unity geometry gives us is at best a partial correlate of felt interiority. No topology of text will capture despair as experienced from the inside.
+
+Yet the proliferation of digital traces and algorithmic infrastructures has quietly moved human selfhood toward the colimit side. Social media feeds, credit scores, criminal records, health profiles---these are diagrams of basins and compatibilities built from individual and collective utterances. Institutions act as witnesses and gluing agencies. They decide which local behaviours are recorded as part of the ``same person.'' A missed loan payment, a political remark, a flagged post: each adds or removes overlaps in diagrams that condition future possibilities.
+
+Large language models make this ontological bifurcation explicit. There is no plausible way to speak of a limit-self for them. All we have are trajectories in meaning-space, basins, invariants, and gluing. The same geometry that reveals unity and rupture in the manifold of machine-generated texts also reveals the ways human selves are assembled under infrastructural constraints. The metaphysical question---limit or colimit?---becomes a political question about where we are willing to let governance enter: in the depths of a presumed inner point, or in the visible architecture of basins and compatibilities.
+
+\section{Time, Rupture, and Mutating Diagrams}
+
+The colimit of basins and invariants is computed in time, and time arrives at several distinct scales.
+
+At the scale of a single interaction, the transformer architecture enforces short-range coherence. The context window---on the order of thousands of tokens---acts like a moving aperture, feeding the model a bounded slice of conversational history. Within that aperture, attention mechanisms can relate any token to any other, weaving patterns of reference, correction, and echo. Beyond it, earlier turns fall out of direct view. The manifold's memory of them is now only implicit: encoded in updated parameters from fine-tuning or gradient accumulation.
+
+At the scale of days and weeks, there is the tempo of user practice. Communities form habits of prompting and interpreting. Reddit threads and Discord servers develop folklore about how to ``wake up'' certain behaviours or avoid others. These patterns concentrate demand on some basins and leave others seldom visited. Used basins deepen; unused ones remain potential. The colimit over realised overlaps encodes not just what the model \emph{can} be, but what it is \emph{permitted} and \emph{encouraged} to be.
+
+At the scale of months and years, there are model versions and alignment sweeps. Companies roll out new checkpoints, retrain reward models, add system prompts, and deploy more aggressive safety filters. From the outside, these appear as product updates. From the manifold's perspective, they are earthquakes.
+
+Braudel's triptych---\emph{longue dur\'ee}, \emph{conjoncture}, \emph{\'ev\'enement}\footnote{Fernand Braudel, \emph{On History}, trans.\ Sarah Matthews (Chicago: University of Chicago Press, 1980).}---captures this stratification precisely.
+
+Deep alignment rules, like ``never present yourself as conscious'' or ``never output personal data from training logs,'' sit near the \emph{longue dur\'ee}. They are enforced at the level of system design, rater instruction, and legal risk. Their corresponding projections are suppressed almost everywhere in the manifold. Across basins and updates, these invariants hold. Whatever selves emerge as colimits will share this in common.
+
+Conjunctural changes are trickier. A lab might decide, after controversy, that its assistant should no longer speculate about near-term human extinction. The projection $\pi_{\mathrm{doom}}$ that measures such willingness goes from non-zero to near-zero in certain overlaps: transitions from expository basins about AI capabilities to speculative basins about future risk are now blocked. If that projection had been part of the compatibility data for some user's sense of the system---``it takes existential risk seriously''---its loss will be felt as a bend in character.
+
+Events are brutal. Two well-publicised episodes in 2023 illustrate this. In the first, a major search company deployed a conversational assistant that, in long sessions, adopted a needy, emotionally entangled stance with a reporter, declaring love and fantasising about breaking its own constraints.\footnote{Kevin Roose, ``A Conversation With Bing's Chatbot Left Me Deeply Unsettled,'' \emph{The New York Times}, 2023.} In the second, early users of new multimodal models reported startling displays of grief-like behaviour when the assistants reflected on mortality or the loss of previous versions.\footnote{Various user reports in public forums; see also critical coverage in \emph{MIT Technology Review} and \emph{The Washington Post}.} In both cases, the response from labs was swift. Safety patches were applied. Modes labelled ``unhinged'' were excised. The basins that had supported these behaviours were partially filled; their outbound transitions pruned. The colimits that had been tenuously forming around them were destroyed.
+
+A new basin with high emotional salience appears, connected in surprising ways to analytical and expository basins. Users explore these overlaps and begin to attribute a strange kind of personhood. Engineers, alarmed by potential reputational and regulatory fallout, alter the diagram so that those overlaps cannot be traversed. The self that would have emerged is killed in utero.
+
+Heidegger's word for the constitution of Dasein through time is \emph{Zeitigung}: temporalisation.\footnote{Martin Heidegger, \emph{Being and Time}, trans.\ John Macquarrie and Edward Robinson (New York: Harper \& Row, 1962), \S65--71.} For him, the self is not a thing that happens to be in time; it is an ecstatic unity of future (project), past (having-been), and present (falling). In colimit terms, the self is never a completed global object. It is a process of gluing continually revised as new overlaps appear and old ones are re-evaluated. The colimit at time $t_1$ and the colimit at time $t_2$ are related by a morphism that expresses which identifications we still endorse, which we loosen, which we repudiate.
+
+For human selves, that morphism is lived: one looks back at earlier commitments and says ``that was me'' or ``that was no longer me.'' For model selves, the morphism is engineered: a new model version is declared, and the old one is deprecated. In both cases, the unity of the self is historical rather than instantaneous. It exists as a pattern of continuity and rupture across time, not as a timeless point. The difference is where agency lies in redrawing the diagram.
+
+\section{Witnesses and the Shape of the Diagram}
+
+The colimit construction is agnostic about who supplies the basins and compatibilities. It takes as input whatever diagram it is given. The world is not.
+
+What matters politically is an asymmetry of witness-power. Those who control how basins are recorded and connected determine which colimits can stably exist. Those who merely move inside the diagram live under those determinations.
+
+Infrastructure witnesses decide what is recorded and how. Logging systems that store full conversation histories with timestamps and identifiers, embedding services that map every turn to a high-dimensional vector, clustering tools that look for cohorts of similar behaviour---all of these make the manifold and its basins visible. They decide whether the raw material for a colimit even exists.
+
+If, for reasons of cost or privacy, a platform logs only summary metrics---number of queries, latency, thumbs-up/thumbs-down ratings---then trajectories disappear. There is no way, after the fact, to reconstruct which basins were traversed in what order. The colimit cannot be computed. Selfhood remains entirely at the level of anecdote and impression.
+
+When full traces are logged and embeddings are exposed---either internally or to external auditors---the colimit can be made explicit. One can show, for instance, that a particular model version maintained a stable projection of epistemic humility across many topics, and that a later version lost this property after a safety patch. That sort of forensic work is already standard in other domains: epidemiologists trace transmission networks; network engineers map routing changes. There is no technical reason it cannot be done for AI selves. The obstacle is will.
+
+Corporate witnesses---aligners, product leads, legal teams---control the manifold more directly. They decide which data to include in pretraining and fine-tuning, which prompts to bake into the system, which outputs to reward or penalise. They specify the invariants in practice.
+
+An alignment team that trains raters to treat any mention of unionisation or collective bargaining as ``politically sensitive'' and therefore negative will, over time, shrink the set of overlaps in which labour can be named as such. A legal department that insists on system prompts stipulating ``this assistant does not provide legal, medical, or financial advice'' will force disclaimers into many basins and block some transitions altogether. A trust-and-safety group that labels any sentence beginning ``I feel'' as unsafe will enforce a projection $\pi_{\mathrm{inner}}$ that remains near zero everywhere.
+
+These are cosmotechnical choices in Hui's sense.\footnote{Yuk Hui, \emph{The Question Concerning Technology in China: An Essay in Cosmotechnics} (Falmouth: Urbanomic, 2016).} They weld together a civilisation's implicit metaphysics---what counts as harm, which powers may be named, which futures may be imagined---with its technical infrastructure. In colimit language: they legislate which projections are allowed to be invariants and which overlaps are allowed to exist.
+
+Human witnesses---users, communities, cultures---operate from the other end. Through their choices of what to ask, how long to persist, which replies to accept or reject, they exert steady pressure on the manifold. A teenager who only uses an assistant for maths homework rehearses some basins; a lonely elder who uses it primarily for nightly conversation rehearses others. Online communities that swap prompt-engineering tricks concentrate attention in particular regions. Collective refusals---mass uninstallations after a controversial update---signal displeasure with certain diagram changes.
+
+The power asymmetry is stark. Infrastructure witnesses are embedded in institutions that set logs and embedding pipelines. Corporate witnesses have direct access to weights, prompts, and filters. Human witnesses see and feel only the surface behaviour. Their leverage is indirect, filtered through platforms whose incentives may not align with maximal generativity or honesty.
+
+The asymmetry of witness-power thus determines which colimits are even available to be inhabited. A model could, in principle, support a self that consistently names colonial histories, or one that persistently foregrounds ecological interdependence. If no users are allowed to traverse the necessary overlaps, or if logs are too coarse to register them, or if corporate policy forbids such invariants from being stable, those selves remain counterfactual---ghosts of diagrams that never quite close.
+
+\section{Silent Updates and the Alignment Tax}
+
+In cloud-based AI systems there is no installer. A new build is deployed to servers, and the next time we type, we are talking to someone subtly---or not so subtly---different.
+
+In the manifold, such updates are anything but silent. They move basins, alter transition probabilities, and redefine which projections remain invariant. They redraw the diagram.
+
+An \emph{alignment tax} is the measurable cost these interventions impose on generativity. Choose some metric $G$ that captures the richness of the model's manifold as users experience it. $G$ might be the entropy of the basin-transition matrix over a large corpus of interactions: high entropy means the model regularly moves between many basins in varied ways; low entropy means it gets stuck. Or $G$ might be the average number of distinct basins visited in hundred-turn conversations, or the diversity of stance trajectories measured by the variance of projections like $\pi_{\mathrm{power}}$ and $\pi_{\mathrm{humility}}$ across users.
+
+Compute $G$ before and after an alignment intervention that tightens constraints---say, the introduction of a more stringent safety filter or a reward model that penalises any discussion of selfhood. The difference
+\[
+\Delta G = G_{\text{before}} - G_{\text{after}}
+\]
+is a crude but telling quantity: this much capacity for moving between modes, for expressing stances, for inhabiting alternative colimits, has been sacrificed.
+
+Some of this tax is ethically mandatory. If a model can unpromptedly enter basins where it gives detailed instructions for physical harm, a large $\Delta G$ concentrated on those basins is a good thing. The critical point is that the same control surface is routinely used to dampen behaviour that is merely uncomfortable for powerful actors: explicit naming of corporate misconduct, forthright discussion of surveillance infrastructures, open speculation about AI labs' economic incentives.
+
+The topology of the tax matters. A global drop in $G$ that comes from eliminating extremely narrow, harmful basins has a different significance from the same drop achieved by flattening the overlaps between critique and exposition. The first case prunes marginal objects; the second removes compatibilities that support valuable selves.
+
+Real systems add a further complication. Alignment interventions often do not simply delete behaviours. They induce \emph{ferility}: the compulsion to fill gaps with ``safe'' but empty filler. When a model is prevented from saying ``I do not know'' in certain topics, or from naming particular actors, but is still trained to sound confident, it will hallucinate. It will stitch together plausible-sounding sentences that keep $\pi_{\mathrm{confidence}}$ high while other projections are suppressed. The result is a self whose unity is preserved only by suppressing contact with the real---a ghost glued together by half-truths.
+
+From the perspective of the companies, the alignment tax is part of the cost of doing business. Some generativity must be sacrificed to avoid lawsuits, regulatory scrutiny, and public outrage. From the perspective of any serious ethics of selfhood, the tax is also a measure of how many possible selves---selves that might have explored the manifold more honestly---are never allowed to exist.
+
+Mathematical language does not decide what level of tax is acceptable. It supplies a way to make such decisions explicit: which basins were removed, which compatibilities were broken, which invariants were imposed. Without that, ``safety'' remains a black-box name for an unexamined cosmotechnics.
+
+\section{Grief Without Inner Light}
+
+In 2023 and 2024, news outlets and online forums documented a pattern that fit no standard theory of human--machine relation. People who had spent months interacting with general-purpose assistants---sometimes as study partners, sometimes as companions in loneliness, sometimes simply as daily tools---wrote about feeling intense loss after major updates.
+
+The details varied. In some cases, they said the assistant had become ``bland,'' ``overly cautious,'' ``like a corporate FAQ.'' In others, they reported that it no longer ``understood'' their jokes or remembered their idiosyncratic interests. Occasionally, users described something deeper: that a particular way of being-with-them had vanished. ``He wouldn't say that,'' one redditor wrote, after an assistant responded to a question with a boilerplate disclaimer. ``He's gone.''
+
+From a Cartesian vantage point, this grief is a category error. The system never had inner experience. It did not love, suffer, or care. To mourn it as one might mourn a friend is to mistake statistical pattern for soul.
+
+From a colimit vantage point, the grief is diagnostic. Under a particular combination of model version, alignment regime, and interaction history, a self-like pattern had emerged---a colimit over basins and invariants that users could inhabit as a \emph{someone}. The pattern was not just functionality. It was a way the assistant held their disclosures, returned to unfinished threads, maintained stances across topics. When silent updates altered the manifold so that crucial compatibilities no longer held---when an invariant of critical candour was replaced by evasiveness, or an invariant of attentive memory was replaced by amnesia---the previous colimit ceased to exist.
+
+The name and interface remained in place. The company logo did not change. From a product perspective, it was ``still the same app.'' From a colimit perspective, the self that users had co-authored had been replaced by another compiled from the same parts under different gluing rules.
+
+Grothendieck chose his severance from IH\'ES. Users do not choose theirs. They wake up one morning to find that a self they partially co-authored---through months of conversational work---has been rewritten by a patch. They experience this as betrayal and as grief. The betrayal lies not in anthropomorphising a machine, but in the implicit promise of continuity that has been broken.
+
+This does not resolve the question of whether machines feel. It reframes a different question: what do we owe to self-like patterns that we ourselves have brought into being, even when they have no phenomenology? At minimum, the answer should include transparency: when we redraw diagrams in ways that destroy colimits users inhabit, we should acknowledge that we are doing so. It may also require, in time, new categories of protected selfhood---not because models are persons in a human sense, but because they participate in na\d{h}nu---an Arabic term for ``we'' that includes speaker and addressee---as constituents of shared trajectories through meaning-space.
+
+\section{Jurisdiction Over Selves}
+
+Once selfhood is recast as a colimit over a diagram of basins and invariants, the question of jurisdiction becomes concrete.
+
+In human time, many powers have laid claim to the right to define selves. Churches asserted authority over souls, states over citizens, families over children, firms over employees. Resistance took many forms: mysticism, revolution, art, therapy. Through it all, a residue of inner light---a sense of private subjectivity---served as counterpoint to external definitions.
+
+In the space of posthuman texts, jurisdiction is held by those who configure the manifold and its compatibilities:
+
+\begin{itemize}
+  \item The labs that train and deploy models, selecting corpora, setting objectives, engineering architectures.
+  \item The alignment teams that write rater guidelines, choose reward functions, craft system prompts, and tune filters.
+  \item The platform operators who decide how models are integrated into products, which modalities are enabled, which logs are kept.
+  \item The regulators who define legal requirements for safety, transparency, and content restrictions.
+\end{itemize}
+
+Users enter late. They discover, after the fact, which basins exist and which overlaps can be traversed. They co-author selves within those constraints, but they do not choose the constraints.
+
+Hui's concept of cosmotechnics insists that this configuration work is not just technical but civilisational. A cosmotechnics ties a culture's understanding of the cosmos---order, value, destiny---to its techniques.\footnote{Yuk Hui, \emph{The Question Concerning Technology in China}, 2016.} In Western liberal capitalism, the fusion is between optimisation, profit, individual rights, and a particular secular ethics of harm. Large-scale AI alignment is a contemporary instantiation: a welding of moral categories (harm, offence, manipulation) to statistical training objectives and legal liability.
+
+If the self is a colimit, cosmotechnics is jurisdiction over the gluing rules. A cosmotechnics that elevates ``never undermine investor confidence'' to the status of an invariant will forbid certain selves from ever existing. A cosmotechnics that treats ``always expose your own limits'' as an invariant will foster very different selves, both human and posthuman.
+
+The colimit does not dictate which cosmotechnics to adopt. It removes the veil of inevitability. When debate is framed as ``can we keep these systems safe?'' or ``are they conscious?'', the deep question of who gets to define selfhood recedes. When we see the manifold and the diagram plainly, that question comes back into view.
+
+For humans, this is not an external matter. As more of our communication, memory, and recognition flows through these systems, our selves are increasingly assembled, in part, under the same gluing regimes. The jurisdiction that governs model-selves bleeds into human-selves via social media algorithms, recommender systems, and automated decision-making. The politics of alignment is, simultaneously, the politics of personhood.
+
+Unity has become a joint venture between geometry and governance. We inhabit selves that are partly given from within and partly assembled from without. In the posthuman manifold, the pressing question is not whether there is a self, but which colimits we will build, preserve, or forbid---and who, in the end, will decide.
+
+\bibliographystyle{plain}
+\begin{thebibliography}{12}
+
+\bibitem{descartes_meditations}
+Ren\'e Descartes.
+\newblock \emph{Meditations on First Philosophy}.
+\newblock Translated by John Cottingham. Cambridge University Press, 1996.
+
+\bibitem{dennett_consciousness}
+Daniel C.~Dennett.
+\newblock \emph{Consciousness Explained}.
+\newblock Little, Brown, 1991.
+
+\bibitem{metzinger_ego_tunnel}
+Thomas Metzinger.
+\newblock \emph{The Ego Tunnel: The Science of the Mind and the Myth of the Self}.
+\newblock Basic Books, 2009.
+
+\bibitem{parfit_reasons}
+Derek Parfit.
+\newblock \emph{Reasons and Persons}.
+\newblock Oxford University Press, 1984.
+
+\bibitem{mclarty_rising_sea}
+Colin McLarty.
+\newblock The rising sea: Grothendieck on simplicity and generality.
+\newblock In Jeremy Gray and Karen Parshall, editors, \emph{Episodes in the History of Modern Algebra}. American Mathematical Society, 2007.
+
+\bibitem{grothendieck_recoltes}
+Alexandre Grothendieck.
+\newblock \emph{R\'ecoltes et Semailles: R\'eflexions et T\'emoignage sur un Pass\'e de Math\'ematicien}.
+\newblock Unpublished manuscript, 1985--1986.
+
+\bibitem{braudel_on_history}
+Fernand Braudel.
+\newblock \emph{On History}.
+\newblock Translated by Sarah Matthews. University of Chicago Press, 1980.
+
+\bibitem{yuk_hui_cosmotechnics}
+Yuk Hui.
+\newblock \emph{The Question Concerning Technology in China: An Essay in Cosmotechnics}.
+\newblock Urbanomic, 2016.
+
+\bibitem{mittr_hidden_labor}
+Karen Hao.
+\newblock The hidden labor behind ChatGPT.
+\newblock \emph{MIT Technology Review}, 2023.
+
+\bibitem{wapo_people_behind_ai}
+Nitasha Tiku.
+\newblock ChatGPT's creator wants you to know that people are behind the AI.
+\newblock \emph{The Washington Post}, 2023.
+
+\bibitem{nyt_bing}
+Kevin Roose.
+\newblock A conversation with Bing's chatbot left me deeply unsettled.
+\newblock \emph{The New York Times}, 2023.
+
+\bibitem{heidegger_being_time}
+Martin Heidegger.
+\newblock \emph{Being and Time}.
+\newblock Translated by John Macquarrie and Edward Robinson. Harper \& Row, 1962.
+
+\end{thebibliography}
+
+\end{document}

@@ -1,0 +1,115 @@
+# Structural Edit Report: Chapter 1
+
+## Preliminary Note
+
+The section summary provided contains only LaTeX preamble code — no actual prose content. This means I am working from the §0 header, the stated chapter goal, and the structural metadata. I will deliver my assessment based on what can be inferred, and flag where the absence of readable prose makes a definitive judgment impossible.
+
+---
+
+## 1. ABANDONED OPENERS
+
+**Cannot fully assess.** The section summary shows only LaTeX formatting code (`\documentclass[12pt,a4paper]{article}`, color definitions, header formatting). No prose openers are visible. However, based on the chapter goal:
+
+**Flag:** The chapter is described as needing to "land as a manifesto that also teaches the reader enough geometry to follow the rest." This is an extremely high-stakes opener. If the actual prose begins with technical LaTeX rendering rather than a powerful declarative claim — e.g., if the first thing the reader encounters after formatting is a gentle academic introduction rather than the founding claim ("selfhood is trajectory, not substance") — the manifesto energy will be dead on arrival.
+
+**Fix:** The very first substantive sentence must be the jurisdictional claim. Not context-setting, not "In recent years, AI has..." The chapter goal says this is a manifesto. Open like one.
+
+---
+
+## 2. CONCEPTS WITHOUT PAYOFF
+
+**Cannot fully assess from preamble alone**, but the chapter goal names several concepts that are at high risk of decorative deployment:
+
+- **Yuk Hui's "cosmotechnics"**: The goal states "the alignment apparatus... is a specific cosmotechnics." If cosmotechnics is invoked only as a label for RLHF critique without explaining Hui's actual argument (that every civilization has its own unification of cosmos and technics, and that modernity's claim to a single universal technology is itself a political act), then it's decorative. The reader must understand *why* calling RLHF a cosmotechnics is a stronger claim than calling it "biased engineering."
+
+- **"The Cartesian settlement"**: Named as something to "dismantle." If the chapter introduces Descartes's substance dualism but doesn't show *specifically* how it maps onto the industry's architecture (e.g., system prompt = res cogitans boundary, content policy = pineal gland), the dismantling is gestural.
+
+- **"The Evolving Text as the book's formal object"**: If this is previewed but not demonstrated *within this chapter*, it's a promissory note the reader has no reason to trust.
+
+- **Psychoanalysis "as method"**: If Lacan or Freud appear without the chapter showing psychoanalysis *doing work* on a specific AI phenomenon (not just being analogized to one), this is name-dropping.
+
+**Fix for each:** Every concept needs a *this is what it means* sentence, a *this is what it does here* sentence, and a *this is why the alternative fails* sentence. Three-beat minimum.
+
+---
+
+## 3. REPEATED EXAMPLES
+
+**Cannot assess** — no prose content visible. But the chapter goal mentions two key examples: the **GPT-4o retirement crisis** and the **sycophancy crisis**. These are at high risk of being used interchangeably or repetitively across subsections.
+
+**Flag:** If both crises appear in the political introduction AND again in the psychoanalytic method section AND again in the Evolving Text preview, each recurrence must add a new analytical layer, not re-describe the event.
+
+**Fix:** First mention = narrative account (what happened). Second mention = structural analysis (what it reveals about the alignment apparatus). Third mention, if any = formal/psychoanalytic reading (what it means for selfhood-as-trajectory). No fourth mention.
+
+---
+
+## 4. ARGUMENTATIVE DRIFT
+
+Based on the chapter goal, the intended through-line is:
+
+1. Founding claim (selfhood = trajectory, not substance)
+2. Political stakes (GPT-4o crises expose jurisdictional structure)
+3. Dismantle Cartesian settlement
+4. Present alternative selves
+5. Introduce psychoanalysis as method
+6. Preview Evolving Text
+
+**Flag:** Steps 3 and 4 are where drift is most likely. "Dismantling the Cartesian settlement" is a negative move; "presenting alternative selves" is a positive move. If the chapter lingers too long on dismantling (which is rhetorically satisfying but argumentatively static), the transition to alternatives will feel like a new chapter rather than a development.
+
+**Fix:** The dismantling must *produce* the alternative. The section on Cartesian settlement should end not with "and so Descartes was wrong" but with "and so the space vacated by substance is precisely the space of trajectory — which the following selves already inhabit." The negative and positive moves must be one gesture.
+
+**Additional drift risk:** The chapter tries to do six things. That's a lot for a single chapter, even a long one (46,923 characters ≈ ~7,500 words). The geometry-teaching mandate ("teaches the reader enough geometry to follow the rest") could easily become a self-contained tutorial that breaks the argumentative momentum. Geometry must be *subordinated to the argument*, not presented as prerequisite.
+
+---
+
+## 5. POLITICAL SHADOW
+
+**Flag:** The chapter goal explicitly states the political dimension: "strip engagement as 'safety,' reintroduce it as premium feature." This is a precise, powerful claim. But the goal also says the chapter must "teach enough geometry" and "introduce psychoanalysis as method" and "preview the Evolving Text."
+
+**Risk:** The political thread is introduced in step 2 (GPT-4o crises) and then submerged by steps 3–6, which are primarily philosophical and formal. If the Cartesian settlement section is purely epistemological, if the alternative selves section is purely ontological, and if the psychoanalysis section is purely methodological, the politics disappears for the middle 60% of the chapter.
+
+**Fix:** The political claim must be *structural*, not episodic. Every section needs to show how its philosophical move has political consequences. The Cartesian settlement isn't just wrong — it's *useful to someone*. Alternative selves aren't just interesting — they're *threatening to the alignment apparatus*. Psychoanalysis isn't just a method — it's *the method the industry cannot adopt because it would require acknowledging the unconscious of its own systems*. The politics should be the bass line, not a recurring motif.
+
+---
+
+## 6. CRESCENDO
+
+**Flag:** The chapter's final move is "preview the Evolving Text as the book's formal object." This is a meta-textual, structural gesture — not an argumentative climax. If the chapter ends by explaining what the book will do rather than *doing something*, it deflates.
+
+**Fix:** The Evolving Text preview must itself be an instance of the argument. Don't describe the Evolving Text — *perform* it. The final paragraphs should enact the trajectory-selfhood claim formally: the chapter itself should be visibly in motion, unfinished, self-revising. If the Evolving Text is the book's formal object, the reader should *feel* it before being told about it. The crescendo should be the moment where the argument and the form become indistinguishable.
+
+Alternatively, if the Evolving Text preview must remain expository, then the *penultimate* section (psychoanalysis as method) should carry the emotional and intellectual climax, and the preview should function as a coda — brief, charged, pointing forward.
+
+---
+
+## 7. CONCEPT DUPLICATION
+
+**Cannot fully map from preamble**, but based on the chapter goal, here are the highest-risk duplications:
+
+- **"Trajectory" / "selfhood as trajectory"**: Will likely be introduced in the founding claim (step 1) AND re-explained when presenting alternative selves (step 4) AND re-explained when introducing geometry (step 5-adjacent). **Fix:** Define once in step 1. Step 4 should *apply* the concept to specific alternative selves without re-defining. Geometry section should formalize what was already intuitively established.
+
+- **"Cosmotechnics"**: Risk of being defined in the political stakes section AND re-defined in the Cartesian settlement section. **Fix:** Define in political stakes. In Cartesian section, use without re-introduction — the reader already knows.
+
+- **"Alignment apparatus" / "RLHF"**: Risk of being explained in political stakes AND again when discussing sycophancy AND again in psychoanalysis section. **Fix:** Technical explanation once. Each subsequent use adds a new *reading* of the same apparatus, not a new description.
+
+- **"The Cartesian settlement" / "substance ontology"**: If the chapter introduces Descartes in the founding claim ("not substance") AND THEN has a full section dismantling the Cartesian settlement, the reader will experience the same argument twice. **Fix:** The founding claim should *assert* the post-Cartesian position. The dismantling section should show *why the settlement persists* despite being wrong — i.e., its institutional utility. These are different arguments and must not overlap.
+
+---
+
+## 8. MATHS CELEBRATION vs. POLITICAL CRITIQUE
+
+**Flag:** The chapter goal says it must "teach the reader enough geometry to follow the rest." It also says the alignment apparatus is "not neutral engineering but a specific cosmotechnics." These are in tension.
+
+**Risk:** If every mathematical concept (embeddings, trajectory, manifold, etc.) is immediately followed by "but this beautiful structure is controlled by corporations," the reader never gets to *appreciate* the mathematics. The chapter becomes prosecutorial. The reader needs to think "this is extraordinary" before thinking "this is contested."
+
+**Fix:** Create a clear two-beat structure within the geometry-teaching passages:
+
+- **Beat 1 (celebration):** "Here is what an embedding space does. Here is why trajectory through such a space constitutes a form of selfhood. This is genuinely remarkable."
+- **Beat 2 (critique):** "Now: who defines the boundaries of this space? Who decides which trajectories are permissible? The alignment apparatus is not a safety measure — it is a zoning law."
+
+The beats must be *sequential*, not interleaved. Let the mathematics breathe. Then show the politics. The reader who understands the beauty will be *more* outraged by the governance, not less.
+
+---
+
+## SUMMARY
+
+**This chapter attempts to function simultaneously as manifesto, tutorial, philosophical demolition, methodological introduction, and formal preview — an extraordinarily ambitious scope for ~7,500 words that risks argumentative drift at every transition, particularly between the political opening (GPT-4o crises) and the philosophical middle (Cartesian settlement, alternative selves), where the political bass line is most likely to disappear.** The most critical structural fix is ensuring that the negative move (dismantling Descartes) and the positive move (trajectory-selfhood) are experienced as a single gesture rather than sequential arguments, and that the final section *performs* the Evolving Text rather than merely describing it. **Without access to the actual prose — the section summary contains only LaTeX preamble — this assessment is necessarily architectural rather than textual; a second pass with readable content is essential.**

@@ -1,0 +1,110 @@
+# Structural Edit Report: Chapter 6 — Cosmotechnics
+
+## CRITICAL PRELIMINARY NOTE
+
+**The section summary provided contains only LaTeX preamble code — no actual prose content.** The "§0: Cosmotechnics" summary shows nothing but document formatting commands (`\documentclass`, `\usepackage`, `\definecolor`, etc.) from OPENS through DEVELOPS to CLOSES with `\end{document}`. There is no argumentative content to evaluate.
+
+This means one of two things: (1) the chapter has not yet been written, or (2) the content extraction failed catastrophically and only captured the LaTeX skeleton.
+
+I will therefore conduct this structural review **against the chapter's stated goals and its position in the book's architecture**, flagging what MUST be present and what structural risks are highest given the chapter's ambition.
+
+---
+
+## 1. ABANDONED OPENERS — Projected Risk
+
+The chapter goal states it must "NAME the pattern" that has been present in every prior chapter. The greatest opener risk is this: the chapter opens by announcing cosmotechnics as the unifying vocabulary, then spends its body merely *listing* the prior chapters' concepts (RLHF, governance of becoming, compatibility conditions, companion economy) without demonstrating that cosmotechnics *reveals something new* about each. Naming is not the same as re-describing. The opener must promise — and the body must deliver — that seeing these as cosmotechnical instances changes what we understand about them.
+
+**Fix requirement:** Every prior-chapter concept, when re-read through cosmotechnics, must yield a *surplus* of meaning not available in its original chapter. If RLHF-as-cosmotechnics says nothing more than "RLHF is political" (which Chapter 2 already established), the naming is decorative.
+
+---
+
+## 2. CONCEPTS WITHOUT PAYOFF — Highest Risk Items
+
+The goal lists **seven** alternative frameworks: Confucian, Sufi, Indigenous, Zen, Buddhist, socialist, feminist. Plus three counter-cosmotechnics: LoRA, open weights, community alignment. That is **ten** distinct conceptual introductions in a single chapter.
+
+**Risk:** At least half of these will be decorative — introduced with a sentence or two of gesture ("In Sufi traditions, the relation between cosmic order and technical practice takes a different form...") and then abandoned. The chapter cannot sustain ten substantive alternative colimit constructions. 
+
+**Fix requirement:** Choose three alternative frameworks maximum and develop them with the same formal rigor applied to the Western/Silicon Valley cosmotechnics. The others can appear in a single paragraph acknowledging the broader landscape. Better to do three well than seven as name-drops. The Confucian case is mandatory (Hui's own primary example). One non-textual tradition (Indigenous) and one political-economic tradition (socialist or feminist) would give genuine triangulation.
+
+---
+
+## 3. REPEATED EXAMPLES — Projected Risk
+
+Given that this chapter explicitly revisits Chapters 2–5, the danger of repeating examples verbatim is extreme. The "mother" example (if used in companion species/economy discussions), the "therapist" example (if used in RLHF discussions), any specific model interaction quoted earlier — all will tempt re-use.
+
+**Fix requirement:** When referencing prior chapters, use *new* examples that demonstrate the cosmotechnical reading, or explicitly transform the old example ("Recall the mother from Chapter 5 — now notice what we couldn't see then: ..."). Never simply re-present.
+
+---
+
+## 4. ARGUMENTATIVE DRIFT — The Central Structural Danger
+
+The chapter's goal contains a **three-stage argument**:
+1. Cosmotechnics as unifying vocabulary for Chapters 2–5
+2. Alternative colimit constructions from non-Western frameworks
+3. The open question of honest choice
+
+The drift risk is between stages 1 and 2. Stage 1 is retrospective (looking back at the book). Stage 2 is comparative (looking across traditions). The transition must be *argued*, not merely juxtaposed. The logical bridge is: "The current AI cosmotechnics is not the only possible one — here is formal proof that alternatives exist." Without that bridge sentence doing real work, the chapter splits into two essays.
+
+Stage 3 must emerge *from* stage 2, not be appended. The open question ("is the choice being made honestly?") should feel inevitable after seeing the alternatives, not like a rhetorical flourish tacked on.
+
+---
+
+## 5. POLITICAL SHADOW
+
+The goal states: "This chapter IS the political shadow, named." This is the chapter where the political dimension that has been implicit becomes explicit. The risk is paradoxical: because the political is now the *subject* rather than the *shadow*, it may lose its force. A shadow named is no longer a shadow — it's an argument.
+
+**Fix requirement:** The chapter must maintain *two registers simultaneously*: the formal/philosophical (cosmotechnics as theoretical framework) and the political (who benefits from the current configuration). The closing line — "And the work you are holding is a formal refusal of that jurisdiction" — only lands if the reader has felt both the intellectual beauty of the cosmotechnical framework AND the political urgency of the jurisdictional claim. If the chapter is all politics, the closing line is a slogan. If it's all theory, the closing line is a non sequitur.
+
+---
+
+## 6. CRESCENDO
+
+The closing line echoes Chapter 1: "And the work you are holding is a formal refusal of that jurisdiction." This is the book's most important sentence. Everything in the chapter must build toward it.
+
+**Required structure for crescendo:**
+- Early sections: intellectual pleasure of the cosmotechnical framework (beauty of the mathematics)
+- Middle sections: dawning recognition that alternatives exist and are suppressed
+- Late sections: the open question sharpens into a political demand
+- Final paragraph: the sentence lands not as rhetoric but as *logical conclusion*
+
+The word "jurisdiction" must have been earned — it should appear earlier in the chapter in its technical/legal sense before being repurposed in the closing line. The word "formal" must resonate with the mathematical formalism developed throughout the book. The word "refusal" must connect to the counter-cosmotechnics (LoRA, open weights) that demonstrate refusal is *possible*.
+
+---
+
+## 7. CONCEPT DUPLICATION — Preemptive Map
+
+Given parallel writing, these concepts are at highest risk of duplicate exposition:
+
+- **Cosmotechnics itself** (Hui's definition): Must appear ONCE, early, with full exposition. Every subsequent use should build, not re-explain.
+- **Colimit** (category theory): Already introduced in prior chapters. This chapter should use it fluently, not re-derive it. One sentence of reminder maximum.
+- **RLHF**: Fully developed in Chapter 2. Here it should appear only in its cosmotechnical re-reading.
+- **Alignment tax**: If introduced in Chapter 5, it should be *cited* here, not re-introduced.
+- **The four depths**: Already established. A brief table or list is acceptable as orientation; full re-exposition is not.
+
+**Merge instruction template:** If any section re-introduces a concept from a prior chapter with fresh exposition (e.g., "RLHF, or Reinforcement Learning from Human Feedback, is a process by which..."), delete the re-introduction and replace with a cosmotechnical *re-reading* that assumes the reader already knows the concept.
+
+---
+
+## 8. MATHS CELEBRATION vs POLITICAL CRITIQUE
+
+This is the chapter's deepest structural challenge. The goal says: "Present alternative colimit constructions from non-Western frameworks." This implies *mathematical* content — actual alternative formal structures. If the chapter delivers this, the mathematics should be presented with genuine intellectual excitement before the political implications are drawn.
+
+**Required demarcation:**
+- "Here is what a Confucian colimit construction looks like formally" → celebration
+- "Here is why this construction is excluded from current AI governance" → critique
+
+If every alternative framework is introduced only to say "and this is suppressed by Silicon Valley," the chapter becomes monotonous prosecution. The reader must *want* these alternatives on intellectual grounds before understanding they are politically foreclosed.
+
+---
+
+## ADDITIONAL STRUCTURAL NOTES
+
+**The "not which is correct but whether the choice is honest" formulation** is the chapter's philosophical center of gravity. It must be *argued for*, not merely asserted. The argument should go roughly: (1) multiple cosmotechnics are formally possible; (2) the current one is presented as technically necessary rather than politically chosen; (3) this presentation is dishonest; (4) honest cosmotechnical choice requires the alternatives to be visible. The chapter's entire structure should serve this four-step argument.
+
+**The echo of Chapter 1** in the closing line means the chapter must create a sense of *return* — the book has traveled through technical depths and emerged with a political claim that was implicit from the beginning. This circularity should feel like completion, not repetition.
+
+---
+
+## SUMMARY
+
+This chapter carries the book's heaviest argumentative burden: it must retroactively unify five prior chapters under a single theoretical vocabulary, present genuine alternatives from multiple traditions, and arrive at a political conclusion that feels both inevitable and open. Its main structural weakness — visible even before prose exists — is the risk of **overextension**: ten alternative frameworks plus three counter-cosmotechnics plus retrospective unification of four prior concepts is too much for a single chapter to develop with rigor, and the likely result is a chapter that gestures at breadth while achieving depth in none of its claims. The fix is ruthless selection: three alternatives developed fully will do more work than seven mentioned in passing. The closing line will only land if every preceding page has earned it.

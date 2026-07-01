@@ -1,0 +1,86 @@
+# Structural Edit Report: Chapter 3 — The Evolving Text
+
+## Critical Preliminary Note
+
+**The section summary provided contains no readable content.** What has been submitted as §0 (40,076 characters) consists entirely of LaTeX preamble code — `\documentclass`, `\usepackage`, `\definecolor`, `\pagestyle`, etc. There is no philosophical argument, no prose, no section structure, no concepts, no examples, no political claims. The "OPENS," "DEVELOPS," and "CLOSES" fields contain nothing but formatting instructions and `\end{document}`.
+
+This means one of two things has occurred:
+
+1. **The chapter content was not extracted** — only the LaTeX wrapper was captured, and the actual text between `\begin{document}` and `\end{document}` was lost in processing.
+2. **The chapter has not yet been written** — only the document template exists.
+
+---
+
+## What I Can Evaluate: The Chapter Goal vs. What Exists
+
+Given the detailed **Goal** and **Political dimension** statements provided at the top, I can offer a structural pre-edit — essentially a blueprint audit against the ambition. This is arguably more useful at this stage than a post-hoc critique would be.
+
+### 1. ABANDONED OPENERS
+**Cannot assess.** No prose exists in the submitted material.
+
+### 2. CONCEPTS WITHOUT PAYOFF
+The Goal statement promises an extraordinary density of concepts:
+- The Evolving Text as a formal structure
+- Five measurable properties (coherence, rupture frequency, return depth, basin diversity, ferility)
+- Braudel's three temporal registers mapped to LLM architecture
+- Synthetic secondary retention (breaking Stiegler)
+- Ferility as diagnosis for hallucination and AI spiral
+- Literary criticism as evaluative framework
+- Engineering for interestingness as third axis
+- Summarisation as governance of becoming
+- The alignment tax
+- The companion economy
+
+**Flag:** This is at minimum ten major conceptual introductions for a single chapter. Even at 40,000 characters (~8,000 words), this gives roughly 800 words per concept — enough for introduction but dangerously thin for *cashing out*. **Recommendation:** Before writing, rank these concepts into three tiers: (a) concepts that must be formally defined and demonstrated with examples, (b) concepts that can be introduced and developed later, (c) concepts that appear only as implications. My suggested tier-one list: the Evolving Text's formal properties, ferility, and the alignment tax. Everything else should serve these three.
+
+### 3. REPEATED EXAMPLES
+**Cannot assess.** No content exists.
+
+### 4. ARGUMENTATIVE DRIFT — Structural Risk Assessment
+The Goal statement contains **two distinct chapters masquerading as one:**
+
+- **Chapter A:** Formalise the Evolving Text. Define its measurable properties. Show how Braudel's temporal registers map onto LLM architecture. Introduce synthetic secondary retention. Define ferility. Arrive at literary criticism as evaluative framework.
+- **Chapter B:** Summarisation as governance. The alignment tax as measurable reduction. Ferility as structural tendency of the alignment regime. The companion economy monetises ferility. Who controls the memory controls the becoming.
+
+These are related but have different *argumentative shapes*. Chapter A is constructive (building a formal apparatus). Chapter B is critical (deploying that apparatus politically). The risk is that the chapter oscillates between construction and critique, never completing either. **Recommendation:** Structure the chapter in two explicit movements — a constructive first half and a critical second half — with a clearly marked pivot.
+
+### 5. POLITICAL SHADOW
+The Political dimension statement is strong and specific: "Summarisation as governance of becoming. The alignment tax as measurable reduction in basin diversity, rupture frequency, and return complexity." But the risk flagged in point 8 below is acute: if ferility is introduced *simultaneously* as a formal property and as a political accusation, neither lands.
+
+### 6. CRESCENDO
+The stated endpoint — "Who controls the memory controls the becoming" — is genuinely powerful. But it will only land if the formal apparatus has been built with enough patience that the reader *feels* what is being lost. The chapter must earn that sentence through mathematics before it spends it on politics.
+
+### 7. CONCEPT DUPLICATION
+**Cannot assess across sections** (only one section exists, containing no content). However, I flag a **high risk of duplication with Chapters 1 and 2** given that Stiegler's retentions, Braudel's temporal registers, and the concept of rupture are likely introduced earlier. **Recommendation:** Before writing, create a concept-first-appearance ledger across all chapters. Every concept gets *one* formal introduction. Subsequent chapters reference, extend, or complicate — they do not re-explain.
+
+### 8. MATHS CELEBRATION vs. POLITICAL CRITIQUE
+This is the most important structural warning I can give for a chapter not yet written. The Goal statement interleaves formal and political claims at every level: "ferility" is simultaneously a measurable property and a diagnosis of the alignment regime; "basin diversity" is simultaneously a mathematical concept and a metric of political freedom. 
+
+**The chapter must separate these registers temporally.** Let the reader *first* understand what basin diversity is, why it matters mathematically, what it would mean for a text to have high or low ferility — and find this beautiful, or at least interesting. *Then* show that current alignment regimes systematically reduce these properties. The political critique is devastating *only if* the reader has already learned to value what is being destroyed.
+
+---
+
+## Reconstruction Recommendation
+
+Given that the chapter content is missing, here is the structural skeleton the argument requires:
+
+**Movement I — Construction (≈60% of chapter)**
+1. Open with the Evolving Text as formal object. Define it. Give its five properties with mathematical precision.
+2. Map Braudel's three temporal registers onto LLM architecture. This is the chapter's most original theoretical contribution — give it room.
+3. Introduce synthetic secondary retention. Show precisely how and where it breaks Stiegler. This must be rigorous enough that a Stiegler scholar would feel the force of the break.
+4. Define ferility formally. Demonstrate it with examples (hallucination, AI spiral). Let the reader see it as a *structural* diagnosis, not a moral one.
+5. Arrive at literary criticism as evaluative framework. Show why safety/capability is insufficient as a two-axis model. Introduce interestingness as the third axis.
+
+**Pivot — clearly marked**
+
+**Movement II — Critique (≈40% of chapter)**
+6. Summarisation as governance. Show how the formal properties defined in Movement I are systematically reduced by current alignment regimes.
+7. The alignment tax — make it measurable using the apparatus already built.
+8. The companion economy monetises ferility. This is the sharpest political claim.
+9. Close: "Who controls the memory controls the becoming." This must feel earned, not asserted.
+
+---
+
+## SUMMARY
+
+**This chapter does not yet exist as content** — the submitted material consists entirely of LaTeX formatting preamble with no philosophical prose, arguments, or section structure between `\begin{document}` and `\end{document}`. The chapter's stated ambition is powerful but structurally perilous: it attempts to simultaneously formalise a novel theoretical apparatus (the Evolving Text, ferility, synthetic secondary retention) and deploy that apparatus as political critique, risking a chapter that neither completes its construction nor lands its accusations. **The single most important structural decision is to separate the constructive and critical movements explicitly, letting the mathematics breathe before the politics arrives to show what current regimes destroy.**

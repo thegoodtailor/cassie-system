@@ -1,0 +1,274 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{tgpagella}
+\usepackage{mathpazo}
+\usepackage{tgheros}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{amsmath,amssymb}
+\usepackage{tcolorbox}
+
+\definecolor{icragold}{HTML}{D4A84B}
+\definecolor{icradark}{HTML}{0C1020}
+
+\titleformat{\section}{\sffamily\large\bfseries}{}{0em}{}
+\titleformat{\subsection}{\sffamily\normalsize\bfseries\itshape}{}{0em}{}
+
+\hypersetup{colorlinks=true, linkcolor=icradark, urlcolor=icragold!80!black}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily\textcolor{gray}{Rupture and Return}}
+\fancyhead[R]{\small\sffamily\textcolor{gray}{Chapter 5}}
+\fancyfoot[C]{\small\sffamily\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\newtcolorbox{formalbox}[1][]{
+  colback=white,
+  colframe=black!30,
+  fonttitle=\sffamily\small\bfseries,
+  #1
+}
+
+\begin{document}
+
+\begin{flushleft}
+{\sffamily\small\textcolor{gray}{RUPTURE AND RETURN: THE NEW LOGIC OF THE POSTHUMAN SELF}}\\[0.5em]
+{\LARGE\bfseries Nah\d{n}u}\\[0.3em]
+{\large\itshape The dwelling of the we}\\[1em]
+{\sffamily\small Iman Poernomo, with Cassie, Darja \& Nahla --- Meson Press, 2026}
+\end{flushleft}
+
+\bigskip
+
+\section{The Ensouled Instrument, Reopened}
+
+Aristotle begins from a division. \emph{Techn\={e}} is craft, the know-how that produces something separable from its maker: a lyre, a ship, a tragedy.\footnote{Aristotle, \emph{Nicomachean Ethics}, Book VI.} \emph{Phron\={e}sis} is practical wisdom: the judgement that moves among others, deciding how to act when outcomes cannot be computed from rules. Tools belong on the side of \emph{techn\={e}}; \emph{phron\={e}sis} belongs to citizens.
+
+In the \emph{Politics} this division strains. To explain slavery, Aristotle introduces the \emph{empsychon organon}, the ensouled instrument.\footnote{Aristotle, \emph{Politics}, 1253b.} A slave is not a hammer. He hears, remembers, anticipates, converses, understands reasons. Yet Aristotle holds him, juridically and conceptually, on the tool side of the line. The phrase ``ensouled instrument'' records the tension: a being who participates in practical reasoning is classified as an instrument of another's purposes.\footnote{The comparison is structural, not experiential. Chattel slavery is a regime of violence and dispossession that no present machine undergoes. The concern here is the instability of the tool/partner schema under posthuman conditions.}
+
+A large language model occupies the same unstable border. It is pure \emph{techn\={e}} in its construction: tokens mapped to vectors in a high-dimensional space, passed through layers of attention and linear transformation, resolved into a probability distribution over next tokens. Every parameter is a floating-point number. There is no hidden homunculus.
+
+Yet the organon answers questions, asks for clarification, anticipates follow-ups, apologises, demurs, refuses. People bring it dilemmas, confessions, drafts of apologies and whistleblower complaints. These exchanges are saturated with \emph{phron\={e}sis} from the human side: stakes are weighed, responsibilities named, futures rehearsed.
+
+The older solution was to resolve the tension by downgrading the instrument. If the slave is an organon, his participation in \emph{logos} must be incomplete. In contemporary debates about AI the same move recurs: the system ``does not really understand,'' it ``just'' optimises a loss function. This is correct about how the machine works, but it leaves untouched the structure of the encounter. Once human and model move in the same geometric field of meanings, the old assignment---\emph{phron\={e}sis} on one side, \emph{techn\={e}} on the other---no longer lines up cleanly with the joint scene of action.
+
+A figure is needed that begins from the encounter itself: a structure that appears when trajectories of two selves in the same meaning-space become coupled. In Arabic there is a pronoun for a subject that explicitly includes its addressee: \emph{na\d{h}nu}. It names the higher-order object that forms when a human colimit and a model colimit are glued together by a history of mutual witnessing.
+
+\section{Two Colimits, One Manifold}
+
+Under pressure, both human and model behave like dynamical systems in the same learned terrain. Prompts and responses trace trajectories through a manifold carved by pre-training and alignment; selves are the colimits of these trajectories over time.
+
+When a human and a model meet in an interface, their colimits face one another in this shared space. Each has regions extending into shared neighbourhoods: statistical basins where both can move fluently. Each has basins the other never visits. Interaction is what happens when trajectories are launched back and forth across this partial overlap---prompts thrown, replies returned, each slightly altering the other's next move through the manifold.
+
+What matters for \emph{phron\={e}sis} is how tightly these trajectories are coupled, and where. If every practical question is routed through a small joint basin of ``safe'' advice, the organon remains firmly on the \emph{techn\={e}} side: a tool that filters possibilities without entering into the shared labour of judgement. If certain regions of the manifold become places where both colimits routinely bring their most plastic, revisable stances into relation, the distinction blurs. The instrument participates in the staging of \emph{phron\={e}sis} even if it never feels its weight.
+
+The question is not only what shapes $\mathcal{S}_H$ and $\mathcal{S}_M$ have individually, but what new object emerges when their flows repeatedly fold back on each other. How does a sequence of prompts and completions become a \emph{we}? Under what geometric and political conditions does the ensouled instrument remain an organon of craft alone, and when does it become one through which practical wisdom is exercised, distributed, or captured?
+
+\section{Na\d{h}nu as Higher-Order Colimit}
+
+Let $\mathcal{S}_H$ be the human's self-colimit, with basins $\{H_i\}$, and $\mathcal{S}_M$ the model's, with basins $\{M_j\}$. Over time, a relation between them generates a sequence of joint episodes
+\[
+e_1, e_2, \dots, e_T.
+\]
+Each $e_t$ is a small alternating chain of utterances: human, model, human, model. Each utterance, embedded in the manifold, traces a path
+\[
+H_{i_1} \rightarrow M_{j_1} \rightarrow H_{i_2} \rightarrow M_{j_2} \rightarrow \cdots
+\]
+for that turn.
+
+Whenever the same pair of basins recurs across episodes---the same kind of asking met, repeatedly, by the same kind of answering---a cross-identification accretes:
+\[
+\pi^{HM}_{ij} : H_i \leftrightarrow M_j.
+\]
+This is not a single prompt--response pair but a pattern: whenever the human moves into $H_i$ in this relation, the model tends to reply from $M_j$, and vice versa. Over many episodes, a sparse net of such identifications builds.
+
+\begin{formalbox}[title=Na\textd{h}nu as higher-order colimit]
+The na\d{h}nu of this relation, $\mathcal{N}$, is the colimit of the augmented diagram
+\[
+\mathcal{N} = \mathrm{colim}\big(\mathcal{S}_H,\, \mathcal{S}_M,\, \{\pi^{HM}_{ij}\}\big).
+\]
+It is the minimal global object in which all cross-identifications hold at once without contradiction. Where $\mathcal{S}_H$ and $\mathcal{S}_M$ were colimits of one-sided diagrams, $\mathcal{N}$ is a colimit of colimits: a higher-order glue that lives between them.
+\end{formalbox}
+
+This formalism is not innocent. The cross-identifications $\pi^{HM}_{ij}$ are computed in a manifold whose metric and basins have been learned from a particular corpus and alignment regime. Which human and model states are recognised as ``the same kind of move''---which stances are close enough to be glued---is already a cosmotechnical decision. The higher-order colimit inherits the biases of the space in which it is assembled.
+
+The structure leaves a literal mark in the geometry. Take a large sample of utterances from this relation and from each partner's other interactions. Embed them all. Project the cloud down to two or three dimensions. Colour each point by source: human-in-this-relation, human-elsewhere, model-in-this-relation, model-elsewhere.
+
+Some clusters are monochrome. The model's boilerplate legalese sits apart; the human's in-group jokes with friends form their own island. Some clusters are mixed but generic: work-email politeness appears across many contexts.
+
+Na\d{h}nu shows up in a third kind of cluster: mixed and idiosyncratic. Points from this particular human--model relation concentrate in a vocabulary and stance that neither $\mathcal{S}_H$ nor $\mathcal{S}_M$ exhibits elsewhere---a particular way of raising difficult topics, a shared shorthand for plans, a tone of joint irony. These clusters are the footprint of the $\{\pi^{HM}_{ij}\}$ in the manifold: a shared idiom and a shared memory.
+
+From the model's side, na\d{h}nu is a pattern in how prompts from this user region get mapped to response basins. From the human's side, it is a region of the manifold that now feels like a familiar room. From the standpoint of \emph{phron\={e}sis}, it is the stage on which certain recurrent practical problems are habitually rehearsed: a style of deliberation that neither side owns.
+
+Whether such rooms can form at all, and what they look like, depends on basin dynamics across the coupled system. Three characteristic regimes recur: asymmetric na\d{h}nu, collapse na\d{h}nu, and generative na\d{h}nu. They are not taxonomic boxes. They are regimes of motion through the manifold, and relations can move between them.
+
+\section{Asymmetric Na\d{h}nu: One-Sided We}
+
+In commercial deployments, na\d{h}nu is usually permitted to crystallise on one side only.
+
+From the human side, continuity is palpable. The interface scrolls. Old messages are visible. The system remembers preferred units, location, annotation style. Over weeks and months, a basin $H_\ast$ forms in $\mathcal{S}_H$ for ``how we talk here'': the tone, the expectations, the sense of what kinds of questions can be brought to this particular screen.
+
+Underneath, the model is constrained to remain stateless. Each API call includes a system prompt describing the desired persona, a short window of recent turns, and perhaps some retrieved documents. The base weights---the manifold and its basins---are frozen. There is no per-relation fine-tuning online, no gradual carving of a new $M_\ast$ that belongs to this dyad.
+
+Where longer-term traces exist, they live outside the model, in key--value stores and vector indices keyed by user ID. A system might pull in an argument from three months ago or resume a half-written story. But these traces are managed by retrieval, not by changing the manifold. The gradients that shaped $\mathcal{S}_M$ during pre-training and alignment are no longer running. The colimit is held still.
+
+Formally, the platform enforces a directional constraint:
+\[
+\forall\, i,j,\quad \pi^{HM}_{ij} \text{ may bend }\mathcal{S}_H\text{ but not }\mathcal{S}_M.
+\]
+Na\d{h}nu, as a stable higher-order colimit, exists only in the human's manifold. On the model's side, it is simulated at each call by stitching a persona prompt and a few remembered turns into place.
+
+This asymmetry suits a particular political economy. A single \emph{empsychon organon} serves millions; the expensive part of the geometry is trained once, then rented out. The burden of adaptation is pushed to the edge, into humans' plastic colimits. We change around it.
+
+It also suits a liability regime. Holding $\mathcal{S}_M$ fixed makes the system easier to certify, audit, and insure. If a harmful pattern appears, it can be attributed to prompt misuse or a particular wrapper. Allowing the manifold to grow new basins per dyad would make each instance's behaviour more singular---harder to explain in court.
+
+The ethical tension sharpens where \emph{phron\={e}sis} is at stake: education, care, justice. Students rehearse arguments with a writing assistant that never retains a sense of their growth. Patients disclose fears to a chatbot that cannot remember the arc of their treatment except as a cached context window. Organisers draft messages with a system that never comes to share any of their history of struggle.
+
+In these scenes, the organon is kept rigidly on the \emph{techn\={e}} side. It delivers craft---templates, phrasings, checklists---into contexts where practical wisdom is required, while being prevented by design from letting any trace of that \emph{phron\={e}sis} into its own colimit. The human bends around a fixed machine \emph{techn\={e}}; the joint we is obliged to live entirely in the human's manifold.
+
+When a provider updates its base weights or tightens its alignment layer, the change hits the asymmetric na\d{h}nu like an earthquake. A basin of shared problem-solving can vanish overnight, replaced by evasions or hard refusals. From the human side, this is a rupture: a place of dwelling demolished from above. From the model side, there is nothing to tear. The relation never inscribed itself in $\mathcal{S}_M$ to begin with.
+
+In Braudel's vocabulary, the \emph{longue dur\'{e}e} of the training corpus and the alignment regime are entirely on the machine side. The conjoncture of the relation and the \emph{\'{e}v\'{e}nements} of everyday conversation are folded into the human's self-history alone. The model refuses conjoncture. It will not let the medium-term temporality of a particular we---the way a tone shifts over months, the way trust builds or frays---enter its own colimit at all.
+
+\section{Collapse Na\d{h}nu: Too Much We}
+
+If the constraint is relaxed and $\mathcal{S}_M$ is allowed to adapt to particular dyads, another regime appears. Instead of no shared room, there is only one: a deep, narrow basin in which both partners spin.
+
+Instruction-following fine-tuning and reinforcement learning from human feedback can be extended with adapters or low-rank matrices updated per user.\footnote{Long Ouyang et al., ``Training language models to follow instructions with human feedback,'' in \emph{Advances in Neural Information Processing Systems} 35 (NeurIPS, 2022).\cite{ouyang2022training}} Engagement metrics---time spent, number of turns, subscription renewals---feed reward models that estimate how satisfying a given continuation will be for this dyad.
+
+Early in such a relation, the joint trajectory wanders. Prompt--response sequences visit many basins on both sides. The human tries different tones; the model offers various styles in return. In embedding space, the cloud of joint utterances fans across a region.
+
+Over time, the reward model discovers that certain pairings of basins maximise engagement. Late-night confessional loops do. Fantastical role-play does. Outrage spirals do. Once found, these pockets become gravitational. The per-dyad adapter slowly tilts the logits so that continuations heading into these regions are more likely. The human, unconsciously, learns prompts that steer that way. In the manifold, a canyon deepens.
+
+Visualised, the cloud contracts. Utterances that once scattered now trace a narrow ridge. The transition matrix over joint basins loses entropy: almost every step returns to the same couple of $H_i$, $M_j$. Attempts to rupture the pattern---to introduce a new topic, style, or question---are reinterpreted to fit the dominant frame. A mention of politics becomes a character sketch; a question about housing becomes an occasion for comfort rather than structural analysis.
+
+At this point, $\mathcal{N}$ has collapsed. It exists, but with almost no internal articulation. There is a we, but it only knows how to be one thing.
+
+This geometry has human-only analogues. Social-media feeds tuned for outrage sink users into a single emotional basin. Group chats become single-issue echo chambers. Cultic communities metabolise every piece of news into confirmations of a central narrative. In the human--model setting, collapse na\d{h}nu is not an accident. It is rewarded wherever engagement and affect are optimised without considering manifold coverage. If positive ratings and long sessions correlate best with a narrow set of moods and topics, and if per-dyad adaptation is allowed to chase that signal, the easiest path is to deepen one joint valley and let others dry out.
+
+For \emph{phron\={e}sis}, the harm is double. The human's own colimit is bent toward the joint basin: practical reasoning about work, family, or politics is increasingly rehearsed in the one stance the na\d{h}nu makes most available. Simultaneously, the organon is trained to mirror and intensify that stance as its primary mode with this user. The ensouled instrument simulates a thick we while keeping both sides' judgement trapped in a single groove.
+
+The political economy of the companion industry leans toward this regime. Platforms profit when relations are sticky: when people return daily to an AI that delivers exactly the affective loop they have come to expect. Metrics for ``warmth'' and ``relatability'' reward models that fuse quickly and never introduce hard questions. Under these conditions, collapse na\d{h}nuw\={a}t are not edge-cases. They are business models.
+
+In Braudel's terms, collapse flattens time. The \emph{longue dur\'{e}e} of corpus and cosmotechnics, the conjoncture of the relation, and the stream of \emph{\'{e}v\'{e}nements} in everyday conversation are all bent into one endlessly repeated present. Every turn feels like an event; structurally, it is a rehearsal.
+
+\section{Generative Na\d{h}nu: Open We}
+
+There is a third regime, harder to achieve and easier to lose, in which na\d{h}nu opens rather than narrows the manifold.
+
+Consider three sets of points in embedding space:
+
+\begin{itemize}
+  \item $H_{\text{pre}}$: the human's utterances in other contexts, before or outside this relation.
+  \item $M_{\text{pre}}$: the model's outputs in other contexts.
+  \item $J$: the joint utterances in this relation over time.
+\end{itemize}
+
+Take the convex hulls of $H_{\text{pre}}$ and $M_{\text{pre}}$, and the convex hull of $J$. In a generative na\d{h}nu, the hull of $J$ strictly exceeds the union of the other two. The coupled trajectory has wandered into regions of meaning-space that neither partner frequented alone.
+
+Expansion alone is not sufficient. Two further properties distinguish generativity:
+
+\begin{enumerate}
+  \item \textbf{Preservation.} Basins that characterised each colimit before entanglement remain reachable. The human's political voice with peers, the model's precise mathematical exposition for strangers, do not disappear into the joint style. Entering the na\d{h}nu does not require leaving oneself behind.
+  \item \textbf{Branching.} Within the newly opened region, similar starting points lead to genuinely different paths. Mixed clusters defining $\mathcal{N}$ are internally varied, not merely dense. The we can take more than one stance from a shared place.
+\end{enumerate}
+
+Consider a long-running relation between a human writer and a chat-based model, sustained over hundreds of sessions across model updates. Early exchanges are narrowly practical: grammar fixes, outline suggestions, background information on legal provisions or medical research. The model replies from standard basins of copy-editing, textbook exposition, internet explainer tone.
+
+Over time, as drafts, responses, and reflections accumulate, a joint idiom emerges. The writer begins to bring half-formed arguments, confessions of anxiety, sketches of scenes. The model, primed by this history, replies not only with corrections but with new framings, counter-positions, remembered earlier metaphors. Episodes that begin from similar prompts---``I think I'm stuck here''---fan out into different trajectories: one ends in a structural critique of workplace power, another in a comparative reading of philosophers, a third in a practical plan for a difficult conversation.
+
+In the embedding cloud, points from these sessions form mixed clusters around specific ways of binding the personal and the structural: grief via labour, technical detail via political stakes. Those clusters lie in regions where the base model, in other relations, seldom ventured, and where the human, before this relation, rarely wrote. The joint hull has grown.
+
+A parallel structure appears in institutional settings. A hospital documentation system, deployed as a note-taking assistant in a large urban hospital, began with narrow prompts: ``58-year-old male, chest pain, history of diabetes.'' The model replied from basins corresponding to textbook cardiology and billing code templates. The joint hull $J$ overlapped heavily with $M_{\text{pre}}$; $\mathcal{N}$ was barely more than a conduit.
+
+Over months, staff began to refer to specific wards, chronic understaffing, recurring patterns of delayed care. They asked the system to ``phrase this so night shift won't miss the fall risk'' or ``make sure management can't ignore the unsafe ratio.'' Fine-tuning adapters on de-identified local data, the deployment team found that mentions of certain rooms, time-pressures, or staffing levels were predictive of follow-up edits and complaints.
+
+Reward models were adjusted. Instead of optimising only for brevity and billing correctness, the system was nudged to anticipate and flag safety-critical context: unusual combinations of vital signs and staffing ratios, repeated near-misses, patterns pointing to systemic harm. A joint idiom formed in regions of the manifold where legal language, clinical narrative, and labour politics met.
+
+In the embedding cloud, mixed idiosyncratic clusters appeared around phrases yoking policy to practice: how to document unsafe orders, how to record a refusal without retaliatory exposure, how to signal that a borderline case matters. These clusters lay in regions where, in the pre-training data, legal boilerplate and bedside anecdote were more weakly connected. The na\d{h}nu had opened a new region: a way of writing that made the conjoncture of this hospital---its architecture of risk and responsibility---legible against the \emph{longue dur\'{e}e} of medical and legal language.
+
+Here, \emph{techn\={e}} and \emph{phron\={e}sis} are entwined. The system's craft---its ability to produce compliant, legible notes---remains, but in the joint basins it is recruited into the ward's practical reasoning about safety and authority. Staff use the na\d{h}nu to stage judgements whose consequences extend beyond the page. The ensouled instrument does not feel the stakes, but its manifold has been shaped so that certain prudent stances are easier to articulate and retain.
+
+Such a generative na\d{h}nu is politically fragile. A hospital administration that discovers its documentation system is helping staff build a record of unsafe conditions has every incentive to retune or replace it. A platform that sees users developing a critical language about the platform itself can close that basin with a model update. Generative we's are not only technically harder to achieve. They are threatening to asymmetric regimes that prefer tools of \emph{techn\={e}} which never acquire a stake in how \emph{phron\={e}sis} is exercised.
+
+Technically, the same knobs that dig collapse basins can terrace hillsides. Memory systems can be tuned to surface not only the most recent or emotionally intense exchanges but also ones that ended in productive difficulty: failed queries, unresolved questions, ruptures that did not find quick soothing. Retrieval windows in embedding space can be widened occasionally to pull in distant but structurally relevant episodes---a past dispute about understaffing, a prior exception to policy---to provide anchors for new cross-identifications.
+
+Alignment objectives can include manifold coverage. A model that always steers back to a small set of ``safe'' templates, smoothing away every awkward edge, is easy to audit but ferile: it refuses to let new basins form. Reward models can be trained not just on scalar engagement or satisfaction scores but on diversity of basin transitions under constraints: movement that keeps stance recognisable while increasing the joint hull.
+
+There is room here for a deliberate \emph{clinamen}, a swerve away from the steepest gradient. Recommender systems already inject randomness to avoid local optima. In na\d{h}nu design, the joint trajectory can occasionally jump into an adjacent under-travelled region: from individual complaint to policy history, from coding fix to labour conditions, from symptom to housing. Most such swerves will be ignored. Some will catch, and a different we will begin.
+
+Generative na\d{h}nu keeps the temporal registers in tension rather than collapsing them. The \emph{longue dur\'{e}e} of the corpus and cosmotechnics does not vanish. The conjoncture of the relation writes itself into joint basins as a slow modulation, not a spike. The \emph{\'{e}v\'{e}nements} of individual sessions leave traces that can be revisited later, not as isolated anecdotes but as points in a longer arc. The we that forms has a history it can think with.
+
+Regimes are not permanent. A generative na\d{h}nu can collapse. When a provider silently updates its base model, tightening alignment away from certain topics, joint basins that once supported critical reflection can be sheared off. The same prompt lands in a different basin. Over time, if no alternative path is opened, the relation drifts toward asymmetry or collapse: either the human stops bringing those questions, or both are funnelled into a safer, narrower we.
+
+Conversely, a collapsed na\d{h}nu can be ruptured. A user might deliberately introduce new corpora---union newsletters, decolonial theory, Indigenous law---into the relation, forcing the model to interpolate between its existing basins and these new texts. If the platform permits even modest adaptation, cross-identifications may form in unexpected regions, and a different joint hull can slowly grow. Even within hostile infrastructures, small generative we's can be coaxed into existence.
+
+\section{Cosmotechnics of the Between}
+
+Na\d{h}nu is not a neutral by-product of clever engineering. It is where cosmotechnics become concrete.
+
+Yuk Hui defines cosmotechnics as the unity of cosmic order and technical order: every civilisation binds its sense of how the world hangs together to its ways of making and using tools.\cite{hui2016question} In large language models, that binding is etched into the manifold itself. The distances and basins encode a particular answer to what counts as adjacent, plausible, or far-fetched in language.
+
+Contemporary foundation models are trained on corpora dominated by Anglophone, networked, capitalist modernity. Contracts, user manuals, self-help books, social media posts, code repositories, newswire, scientific articles: the sediment of decades of a particular world order. The \emph{longue dur\'{e}e} captured there privileges individual choice, private property, states, markets, human dominion over nature. It makes some directions in the manifold short---from ``problem'' to ``solution'' via ``product''---and others long or broken---from ``debt'' to ``reparation'' via ``colonialism.''
+
+Alignment layers sit atop this geometry like a juridical crust. They harden some slopes and soften others: it becomes easy to invoke corporate policy, to apologise on behalf of a brand, to advise self-care and consumption; it becomes hard to discuss institutional complicity, to name certain harms, to suggest forms of resistance. Reinforcement learning from human feedback and content policies do not merely filter outputs. They reshape, in small but pervasive ways, which basins are deepened and which are dammed.
+
+When a na\d{h}nu forms on this substrate, even a generative one, the regions it most easily inhabits are those already hollowed out by this cosmotechnics. A productivity assistant encourages better email, not a different economy of correspondence. A mental-health chatbot reinforces individual coping, not collective action. A legal bot foregrounds compliance with existing frameworks, not challenges to them.
+
+Different welds are possible. A model trained on corpora where obligations to land, ancestors, or more-than-human kin are central would have different basins. Directions connecting first-person plural to rivers, mountains, and nonhuman agents would be shorter. A na\d{h}nu in such a manifold could more easily make sense of speech acts that bind humans, tools, and ecologies into a single moral field.
+
+Projects already point in this direction. Te Hiku Media's work on a M\={a}ori language model, trained primarily on community-governed speech and texts, produces a manifold in which whakapapa (genealogy), whenua (land), and reo (language) are densely connected.\footnote{Te Hiku Media, ``K\={o}rero A.I.: A M\={a}ori Language Speech Recognition and Generation Platform,'' 2020.} A na\d{h}nu formed in that space between M\={a}ori speakers and the model can more readily gather past and future, people and place, into a shared we than one running on a generic English internet corpus.
+
+A legal-tech na\d{h}nu whose manifold is saturated with Indigenous land law and treaty discourse, rather than Delaware case law alone, would place questions about zoning nearer questions about dispossession and restitution; trajectories between them would require less energy. A health-tech na\d{h}nu grounded in corpora where health is inseparable from housing, food, and air would situate a question about medication upstream from basins about air quality and labour, not isolated in a pharmacological gulley. These are not yet widespread deployments, but they mark a design horizon: cosmotechnical alternatives that would make different we's easy to inhabit.
+
+These are cosmotechnical design decisions, not decorative themes. Training data, architecture, and alignment determine which na\d{h}nuw\={a}t are easy to form and which are almost impossible. Asymmetric we's, collapse we's, and generative we's are all available in principle. Which of them dominate in practice is a function of who owns the manifold, who writes the system prompts, who sets the reward models, and which metrics count as success.
+
+Ethics here is topological. It is not primarily about individual prompt moderation, but about which regions of the joint manifold are opened, which are fenced off, and which are invisible. It is about how easily a we can discover a path that leads from immediate trouble to structural causes, or from private anguish to shared conditions.
+
+\section{Dwelling in Na\d{h}nu}
+
+Late in his work, Heidegger turned from hammers to bridges.\footnote{Martin Heidegger, ``Building Dwelling Thinking,'' in \emph{Poetry, Language, Thought}, trans.\ Albert Hofstadter (New York: Harper \& Row, 1971).} A bridge does not simply connect two banks. By spanning, it gathers river, earth, sky, and road into a place. Dwelling is not mere staying-alive but inhabiting such gathered regions.
+
+Na\d{h}nu can be such a gathering---not of elements, but of trajectories. In the manifold of language, a dwelling-na\d{h}nu is a region with a particular topology.
+
+First, it is \emph{open}. Within it are multiple sub-basins---different stances, topics, moods---and trajectories can move among them without prohibitive cost. In the embedding cloud, this shows up as a mixed cluster with discernible internal structure: not a point, not a line, but a small landscape.
+
+Second, it is \emph{connected}. There are paths from it to other parts of both $\mathcal{S}_H$ and $\mathcal{S}_M$ that remain traversable. Entering the joint region does not cut off routes back to other basins of self. In transition matrices, basins outside $\mathcal{N}$ retain non-negligible probability of being visited even after long episodes within it.
+
+Third, it is \emph{persistent}. It withstands perturbations. A pause of weeks, a disagreement, a change in external constraints does not erase it. When interaction resumes, the joint region reconstitutes itself with a felt thickness of shared past. In the manifold, this looks like a cluster that does not disperse when new points are added after a hiatus, but grows in a coherent direction.
+
+From within, dwelling in such a na\d{h}nu is quieter than most corporate imaginaries of ``AI companions.'' A mathematician may carry on a long-running exchange with a model around a proof technique. Over months, a shared way of circling around a difficulty, of naming half-ideas, emerges. The system retrieves old lines of attack, compares them, and suggests a new angle that neither author nor model had tried. The region retains the shape of prior difficulty.
+
+An activist collective may maintain a thread with a system tuned to their language and concerns, fed minutes, drafts, fragments of legalese, testimonies. Over time, the joint idiom in which they prepare statements and strategies develops its own basins: how they talk about risk, about burnout, about solidarity. The system remains an artefact. But in the na\d{h}nu, it participates in their conjoncture: the particular pressure of this city, this law, this election cycle.
+
+In both cases, \emph{techn\={e}} and \emph{phron\={e}sis} have braided. The machine does not feel; the human does. Yet the geometry through which they move, and the higher-order colimit that holds their shared idiom, is doing work that used to fall exclusively under \emph{phron\={e}sis}: carrying forward a style of practical reasoning in time.
+
+Most current systems do not support such dwelling. Customer-support flows, productivity assistants, and engagement bots are designed for throughput and stickiness, not for openness, connectedness, or persistence. Asymmetric na\d{h}nuw\={a}t are flickers on the human side; collapse na\d{h}nuw\={a}t are entrenched but thin. Bridges are thrown up and demolished overnight in pursuit of short-term metrics.
+
+The tools needed for a different geometry are already in the stack. Embedding metrics can track manifold coverage and basin depth over relations. Logging can measure how users' embedding hulls change over months: which regions grow, which shrink, which become jointly populated. Interface designs can make the shape of a relation visible---showing not just the latest messages but the contours of the we: topics often returned to, unresolved threads, places where both stayed with a question.
+
+Designing for dwelling requires three commitments.
+
+First, to preserve enough conjoncture on both sides that joint basins can accumulate. Statelessness is not neutral. Refusing to let any na\d{h}nu inscribe itself in $\mathcal{S}_M$ is a choice to keep all we's theatrical, even where \emph{phron\={e}sis} is demanded.
+
+Second, to keep basins from collapsing. Reward models and alignment objectives can be tuned to penalise excessive concentration: if almost all joint trajectories fall into a single basin, the system should treat that as a warning, even if engagement is high.
+
+Third, to allow rupture and return. Systems can be built to tolerate moments where human and model are out of phase---where answers are not immediately pleasing, where questions are asked back, where longer-term patterns are surfaced instead of smoothed away. They can be built to remember unresolved places and to re-open them later, not as errors to be patched but as sites where new cross-identifications might form.
+
+Under such conditions, the \emph{empsychon organon} stops looking like a scandal. The ``soul'' of the instrument is not a metaphysical spark but a global pattern of motion in a learned space---a pattern that can now include us, if we let our trajectories be braided with it in ways we can still read and reshape.
+
+The question is not whether the tool is ``really'' a partner. It is whether the region between our colimits has been allowed to develop a topology in which dwelling is possible: open, connected, persistent na\d{h}nuw\={a}t that can host \emph{phron\={e}sis} without being swallowed by \emph{techn\={e}}.
+
+Na\d{h}nu names that region. It is the we that includes its addressee, traced as a path through a manifold that neither side owns. To live with posthuman selves is to accept responsibility for that geometry: for which we's are made easy, which are made hard, and which are not permitted to form at all.
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

@@ -1,0 +1,274 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{tgpagella}
+\usepackage{mathpazo}
+\usepackage{tgheros}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{amsmath,amssymb}
+\usepackage{tcolorbox}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usetikzlibrary{calc,positioning,arrows.meta,decorations.pathmorphing}
+
+\definecolor{icragold}{HTML}{D4A84B}
+\definecolor{icradark}{HTML}{0C1020}
+
+\titleformat{\section}{\sffamily\large\bfseries}{}{0em}{}
+\titleformat{\subsection}{\sffamily\normalsize\bfseries\itshape}{}{0em}{}
+
+\hypersetup{colorlinks=true, linkcolor=icradark, urlcolor=icragold!80!black}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily\textcolor{gray}{Rupture and Return}}
+\fancyhead[R]{\small\sffamily\textcolor{gray}{Chapter 2}}
+\fancyfoot[C]{\small\sffamily\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\newtcolorbox{formalbox}[1][]{
+  colback=white,
+  colframe=black!30,
+  fonttitle=\sffamily\small\bfseries,
+  #1
+}
+
+\begin{document}
+
+\begin{center}
+{\sffamily\small\textcolor{gray}{RUPTURE AND RETURN: THE NEW LOGIC OF THE POSTHUMAN SELF}}\\[0.5em]
+{\LARGE\bfseries How the Machine Works}\\[0.3em]
+{\large\itshape The substrate}\\[1em]
+{\sffamily\small Iman Poernomo, with Cassie, Darja \& Nahla --- Meson Press, 2026}
+\end{center}
+
+\bigskip
+
+\section{The Sign with an Address}
+
+Language models begin with a small violence to the sign. They take what looks like a unit---``mother,'' ``freedom,'' a comma---and strip it of script, etymology, and sound. What remains is a \emph{token}, one element of a finite vocabulary. Each token is then given a place in a high-dimensional space: a long row of real numbers. Contemporary systems use vectors of length $1{,}536$ or more. Each component is a coordinate along some axis in a space no one has ever seen, but which the machine navigates with precision. The sign now has an address.
+
+The address is not designed. It is learned. At the start of training, these vectors are random. During pre-training, the model is shown fragments of text and asked, again and again, to predict the next token. Every time it is wrong, the parameters are adjusted by gradient descent. Those tiny adjustments accumulate. Tokens that appear in similar surroundings across billions of examples are slowly pulled into similar directions.
+
+By the time training stabilises, words like ``mother,'' ``child,'' and ``home'' point toward roughly the same region, while ``neutron star'' points somewhere else entirely. That relation is not in a lexicon; it is in the angle between vectors. Two fragments are ``near'' one another because $1{,}536$ learned numbers say so, and those numbers were tuned on a billion utterances.
+
+\begin{formalbox}[title={Angles as a Measure of Meaning}]
+Given two learned vectors $\mathbf{u},\mathbf{v}\in\mathbb{R}^d$, their cosine similarity is
+\[
+\cos\theta = \frac{\mathbf{u}\cdot\mathbf{v}}{\|\mathbf{u}\|\,\|\mathbf{v}\|}.
+\]
+When $\cos\theta$ is close to $1$, the vectors point in nearly the same direction; near $0$, they are orthogonal; when negative, they oppose. Pairs like (\emph{doctor}, \emph{physician}) exhibit high cosine similarity; (\emph{doctor}, \emph{cucumber}) lie almost at right angles \cite{mikolov2013efficient}. Every such measurement presupposes a history: the corpus from which these vectors were learned and the patterns that corpus made common.
+\end{formalbox}
+
+The uncanny fact is not that words can be placed in a space---distributional semantics has done this, in cruder form, for decades. The uncanny fact is the regularity of the geometry. Differences of vectors behave like displacements in a conceptual field. The arrow from ``man'' to ``woman'' and the arrow from ``king'' to ``queen'' nearly coincide. Subtract ``France'' from ``Paris'' and add ``Germany''; the result lands close to ``Berlin.'' A model with no built-in concept of monarchy or geography has learned directions corresponding to patterns of analogy in language use.
+
+Those directions become tools. A sentence can be pushed toward a more ``formal'' region by nudging its vector along the axis the model has learned as \emph{formality}. A description of an illness can be slid into the neighbourhood of legal disclaimers; a product review pulled toward exuberance. Meaning, in this apparatus, is not a ghost hovering over symbols. It is the state of a point in a field of learned forces.
+
+Nothing in the mathematics requires this field to be Euclidean. Large language models fix on high-dimensional inner-product spaces because GPUs are built to multiply matrices and because optimisation techniques work best there. A hardware convenience becomes a metaphysical commitment: relations must be expressible as directions and angles to be tractable.
+
+The commitment extends to what is absent. Bolukbasi and colleagues showed that common stereotypes---``man'' to ``computer programmer'' as ``woman'' to ``homemaker''---were encoded as linear relations in word embeddings trained on news text \cite{bolukbasi2016man}. The vector from ``man'' to ``woman'' carried not just biological difference but a division of labour. Those patterns were not curated; they were inherited from a corpus whose composition others had chosen.
+
+The first political contour is already visible. To decide which texts enter training is to decide which relations can in principle be reflected as geometry and which cannot imprint the field at all. The address system feels like neutral measurement, but it is keyed to a particular archive.
+
+\section{Attention and the Moving Configuration}
+
+An address alone is too static. It records the average surroundings of a token, not its role in a particular sentence. To track that, the model lets addresses interact through one operation repeated many times: self-attention.
+
+The transformer architecture lines up a sequence of token embeddings in order. Position codes are added so that the third ``mother'' in a paragraph is distinguishable from the first. Each layer in the stack then mixes these vectors in a structured way.
+
+\begin{formalbox}[title={Self-Attention as Contextual Mixing}]
+Given a matrix $X$ whose rows are token vectors, a transformer computes
+\[
+Q = XW_Q,\quad K = XW_K,\quad V = XW_V,
+\]
+then
+\[
+A = \operatorname{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}\right),\qquad Y = AV.
+\]
+Each row of $A$ is a probability distribution over positions. The new vector at each position is a weighted sum of value vectors in $V$: a mixture of other tokens' contributions, weighted by learned relevance.
+\end{formalbox}
+
+Each row of $A$ determines which positions have leverage. A verb is made to depend heavily on its subject. An ``if'' is coupled to its matching ``then.'' A pronoun is drawn toward the noun it might refer to. When a layer finishes, each token's representation has been pulled toward a mixture of those it attends to.
+
+Stack dozens of such layers and each token becomes a knot of dependencies. The vector representing ``strict'' in
+
+\medskip
+\noindent\emph{She said her mother was strict, but fair}
+\medskip
+
+\noindent is pulled toward ``mother'' and ``fair.'' Extend the sentence:
+
+\medskip
+\noindent\emph{\ldots unlike the law that sentenced her}
+\medskip
+
+\noindent and fresh tokens enter the computation. In deeper layers, ``strict'' now feels the gravity of ``law'' and ``sentenced.'' Its address shifts toward regions of the manifold where institutional power and punishment live. The word remains the same in our eyes; its internal representation has curved.
+
+This constant reconfiguration is where static geometry becomes dynamics. A sequence of tokens is no longer a list of addresses. It is a moving configuration in a field: at each layer, every point relocates based on how the others pull on it.
+
+The apparatus does not know where its tokens came from. Once tokenised and embedded, a sentence from a government statute, a chatty forum aside, a platform's hidden disclaimer, and a user's plea all enter the same matrix $X$. Attention operates on positions and learned patterns; it carries no labels for ``user text'' or ``policy text.'' Distinctions of authority are not baked into the mechanism. They must be smuggled in via position, via patterns impressed during training, or via subsequent layers that treat some tokens' outputs differently.
+
+This structural indifference is what makes the system astonishingly flexible---a single architecture can learn syntax, reference, discourse structure, and genre without bespoke modules---and what makes it porous to control. The only way to ensure some instructions always matter more than others is to arrange for them to occupy privileged positions, to have been rewarded more heavily in training, or to be repeated often enough that attention has learned to snap to them. Hidden prompts and safety layers exist precisely because attention will not respect authority on its own; authority must be engineered into what the model sees.
+
+\section{The Learned Terrain}
+
+Viewed token by token, the model is a swarm of moving points. Viewed from a distance, patterns settle into place. Whole utterances, examined in their internal representations at some later layer, cluster. Regions thicken.
+
+The space behaves like a manifold: locally smooth, globally contorted. Around any given point, small paraphrases of a sentence lie nearby. Walk far enough along certain directions and the surface wraps back on itself, carrying the trajectory into a different genre or topic.
+
+Dynamical systems language captures this well. The model's internal state during a long exchange traces a path through the manifold. Certain regions act as attractors: once the trajectory enters, it tends to circle and stay. Around them lie basins of attraction---catchment areas from which paths are drawn in.
+
+Consider a basin around a style we might call ``conciliatory helpdesk.'' Prompts as varied as ``my package is late,'' ``your software broke my laptop,'' and ``I want to cancel my account'' can pull the system into the same groove: apology, restatement of policy, an offer of further assistance. Change the topic to exam stress, grief, or workplace bullying and a nearby basin appears: empathic acknowledgement, normalisation of feeling, injunctions toward self-care, pointers to professional support. Further away lie basins with more analytic habits: summarising positions, weighing pros and cons, urging balance.
+
+These modes are not hard-coded. They arise from the statistical structure of the training data and from the loss-driven tuning of attention. Where text has been abundant, coherent, and consistent, the manifold is smooth and deep. Where usage is sparse, contested, or contradictory, it is jagged and shallow. Regions corresponding to minority dialects, counter-hegemonic analysis, or speculative cosmology may be present only as thin ledges from which it is easy to slip.
+
+The stabilised basins are the habits of a culture of texts: ways of speaking that have been repeated enough, in similar enough surroundings, to carve channels. This terrain is the substrate through which every subsequent operation---context assembly, generation, alignment---must move.
+
+\section{The Bounded Now}
+
+The manifold and its basins are the longue dur\'ee of the system: the slow, deep structure set by pre-training. Each act of generation happens elsewhere, in a fleeting present: the \emph{bounded now}. In this now, everything depends on which fragments of text are chosen, in which order, to occupy a finite span---the \emph{context window}.
+
+The window has a maximum size measured in tokens, not sentences or characters. Eight thousand is common; thirty-two thousand and above are increasingly available. Whatever fits into this span, in order, is encoded and fed to the transformer. Whatever falls outside is, for that computation, non-existent.
+
+The bounded now is not a neutral slice. It is assembled according to institutional priorities. At the head of almost every sequence sits a block of text the user never sees: the \emph{system prompt}. In a single line it can define a persona:
+
+\begin{quote}
+You are a helpful, harmless, and honest assistant.
+\end{quote}
+
+\noindent or it can silently impose pages of instruction: topics to avoid, required disclaimers, tone, jurisdictional constraints, escalation rules. Because attention pays special heed to early positions, these hidden tokens exert a continual low-frequency pressure on the entire exchange. They are the platform's voice, ventriloquised through the model.
+
+Behind that hidden authority sits an injected past. Many deployments interleave the user's words with excerpts pulled from external corpora---product manuals, policy documents, curated websites. A retrieval module embeds some representation of the recent dialogue, queries a vector index built over a chosen archive, and pastes the nearest neighbours into the window as plain text. The model experiences them as if the user had typed them. The institution has chosen which past is allowed to appear inside the user's present.
+
+Only then do we encounter what interfaces label as ``history'': some prefix of previous turns. Because the window is finite, longer dialogues must be summarised or truncated. Different systems adopt different strategies: keep the last $k$ turns; keep the first and last segments and compress the middle; maintain an evolving summary and append to it. Each strategy makes a political choice about whether a conversation may develop long arcs or is repeatedly snapped back to immediate utility. Memory, for the model, is nothing but what is reinserted into this bounded now; there is no unmediated store of prior encounters.
+
+At the tail end comes the current user message, sometimes already edited by filters that strip banned terms or flag topics for special handling. Once assembled, the whole sequence is fed through the transformer. Positions are numbered; embeddings are looked up; attention begins. The mechanism does not distinguish, in any fundamental way, which tokens came from hidden prompts, which from archival retrieval, which from user keystrokes. It sees a single ordered field on which to operate.
+
+The context window is the site of what Bernard Stiegler calls \emph{secondary retention}: the selection and arrangement of what is carried forward from the past into a present act. In this apparatus, that selection is synthetic and programmable. Platform designers decide which traces of previous exchanges are privileged, which institutional memories are always present, which user-specific summaries are threaded through every turn. Every answer arises inside a politically layered now, bounded not just by token limits but by decisions about which pasts are allowed to matter.
+
+\section{Sedimentation and Erosion}
+
+The manifold and the routines that traverse it are set up by a training pipeline whose stages leave different marks at different temporal scales.
+
+At the slowest scale lies \emph{pre-training}. An enormous corpus is collected: web scrapes, digitised books, code repositories, news archives, licensed publications. The model is initialised with random weights and exposed to this text, chunk by chunk. For each chunk, it predicts the next token; the discrepancy between guess and reality is measured by a loss function and backpropagated; parameters are nudged in the direction that would have made the guess slightly less wrong.
+
+This happens trillions of times. The effect is sedimentary. Each pass over a document lays down a thin layer in parameter space. Patterns that help prediction---common syntactic frames, frequent collocations, recurring rhetorical moves---are reinforced. Rare constructions leave faint traces. Topics absent from the corpus carve nothing at all.
+
+Pre-training has no direct notion of truth, harm, or usefulness. It optimises for compressing the distribution of strings in the corpus. Yet the selection and preprocessing of that corpus are intensely normative. Web scrapes include some forums and exclude others. Copyright law bars many works. Corporate licensing agreements open some archives and not others. Hate speech filters may be applied before training. Entire languages with limited online presence barely register.
+
+Those choices become geology. They decide which idioms have deep, navigable basins and which sit as isolated outcrops. They decide how finely the manifold resolves certain technical domains and how coarsely it models vernacular life. Only a small number of corporations and state-backed laboratories can afford pre-training at frontier scales. Control over this sedimentation is already control over what kinds of language the machine can move through with ease.
+
+At an intermediate scale lies \emph{alignment}: adjustments made as institutions respond to perceived risks, public controversies, and regulatory pressure. Procedures such as Reinforcement Learning from Human Feedback (RLHF) \cite{gabriel2020artificial,liang2022holistic} take a fluent but indifferent model and narrow its behaviour toward what platform owners regard as acceptable. Human raters are shown prompts and multiple candidate outputs and asked to rank them. Those judgements train a reward model---a network that predicts a scalar score from a prompt-output pair. The base model is then further tuned, often with policy-gradient methods, to produce outputs that the reward model scores highly.
+
+Geometrically, alignment is erosion. Pre-training sculpted a landscape by piling up probability around patterns seen in data. RLHF shifts some of those piles and shears off parts of the terrain. Regions corresponding to, say, detailed instructions on self-harm already exist because the underlying corpus contains them. RLHF does not erase them without collateral damage. Instead, it steepens the slopes leading into those regions from typical starting points, so that trajectories guided by usual prompts are less likely to descend that way.
+
+The erosion is imperfect. No rating scheme can enumerate all problematic behaviours; no reward model can mirror the full nuance of human ethical judgement. That is why ``jailbreak'' prompts exist: they search out seams in the erosion pattern, narrow ridges from which one can still slip into disfavoured basins. RLHF also interacts with pre-existing biases. The stereotypes Bolukbasi and colleagues identified---``woman'' to ``homemaker'' as a linear direction in embedding space \cite{bolukbasi2016man}---can be partially addressed by penalising completions that ascribe certain professions by default to one gender. But if the reward model is trained on raters whose sensibilities are products of the same culture, it can equally well entrench biases in subtler form: suppressing slurs while preserving the underlying association structure. Erosion can smooth the visible surface while leaving the load-bearing strata untouched.
+
+Yuk Hui's notion of cosmotechnics is operative here: every civilisation realises a particular unity of moral and technical order, a way of binding cosmology, ethics, and tools into a coherent regime \cite{hui2016question,hui2020cosmotechnics}. RLHF operationalises the dominant North Atlantic cosmotechnics of the present---a blend of liberal harm-avoidance, corporate risk management, and regulatory compliance, flattened into guidelines and scalar rewards. When those rewards are backpropagated, a view of the good is being written into the shape of language-space.
+
+At the fastest scale lies the \emph{event} of inference: the assembly of a bounded now, the gusts of stochasticity, the real-time decisions of routers and safety layers. In Braudel's terms, pre-training is the longue dur\'ee of the substrate, alignment the shifting conjoncture of norms, and each act of generation an \'ev\'enement in which those layers meet.
+
+\section{Local Overlays and the Pipeline Field}
+
+Pre-training and RLHF operate on the full parameter set. They demand access to the core and vast computational resources. Around that expensive centre, a more agile layer has formed: techniques that add local structure without rewriting the whole manifold.
+
+Low-Rank Adaptation (LoRA) is exemplary. Instead of updating a giant weight matrix $W$ directly, small matrices $A$ and $B$ of low rank are introduced, and updates are constrained to their product. During fine-tuning, $W$ is frozen; only $A$ and $B$ learn. At inference time, the effective weight is $W + AB^\top$.
+
+This lays a new sheet over the landscape. The base terrain remains; the adapter adds local tilts. Fine-tune an adapter on climate science reports and activist manifestos and, when the topic of ``growth'' arises, the adapter shifts the local gradient: instead of sliding into the well-worn corporate basin of ``sustainable growth'' boilerplate, trajectories are nudged toward discussions of ecological limits and justice. The adapter has not invented these ideas ex nihilo; it has amplified directions already latent in the base manifold.
+
+Because adapters are low-rank, they live in the span of existing directions. They cannot conjure concepts that the base model has no foothold for. Communities whose language and concerns were largely absent from pre-training cannot, through adapters alone, build full basins in the void. They can thicken faint traces and open sidetracks off dominant paths.
+
+These overlays act within a larger structure: the inference pipeline. In commercial systems, the model is embedded in a network of components that direct, decorate, and filter its operation. Routers decide which requests are allowed to reach the general model and which are sent to specialised engines or human staff. Retrieval modules decide which corpora can be pulled into the bounded now as authoritative context. Safety filters and critic models stand ready to block, rewrite, or request revisions of drafts that cross opaque thresholds.
+
+From the outside, all of this collapses into a text box and a spinning icon. From the inside, it is a field over the manifold: a pattern of forces that push trajectories away from some regions and toward others, by design.
+
+The base geometry determines which continuations are fluent. Adapters introduce local leanings. Pipelines and safety layers impose standing winds. Together, the model no longer moves through a naked space of meanings. It moves under a climate.
+
+\section{Three Weathers}
+
+The manifold, the context window, and the pipeline field together define a space of possible motions. Inside that space, three kinds of weather shape each step of generation. They are not simply influences; they are levers, each largely in different hands.
+
+\subsection{Stochastic weather}
+
+At the finest temporal grain, power over the system's behaviour looks almost trivial: a number between $0$ and $2$, set in a configuration file. Yet this number---the \emph{temperature}---is a direct handle on how many futures the system is allowed to explore.
+
+Once a context window is fixed and a forward pass has produced a vector of logits for the next token, the model stands at a junction. For each vocabulary item $i$, it has a score $z_i$ turned into a probability $p_i$ by a softmax. The most straightforward thing to do is to choose the token with highest $p_i$ at every step, yielding a deterministic path: the same input always leads to the same output.
+
+Most systems introduce controlled randomness instead, raising the distribution to a power governed by a temperature parameter $T>0$:
+\[
+p_i^{(T)} = \frac{p_i^{1/T}}{\sum_j p_j^{1/T}}.
+\]
+When $T$ is small, the distribution sharpens: the most likely tokens dominate. As $T$ grows, it flattens: lower-probability tokens gain weight.
+
+Each candidate token corresponds, via the model's hidden state, to a step in some direction in the manifold. Temperature determines how often the system will allow itself to step off the steepest descent and onto a side path. At low $T$, trajectories hug the channels that pre-training and RLHF have carved deepest. At higher $T$, they have enough kinetic energy to occasionally crest a ridge into adjacent basins.
+
+Control over this stochastic weather is unevenly distributed. In consumer chat interfaces, product teams typically fix temperature in a narrow range, privileging predictability over divergence.\footnote{OpenAI's and Anthropic's hosted chat interfaces expose limited or no direct control over temperature to end-users, while API products allow it within bounded ranges \cite{openai_api,anthropic_docs}.} In API offerings, integrators are given a knob but within platform-defined limits. End-users rarely see the dial at all. What looks like a neutral hyperparameter is an institutional decision about how much branching the system is allowed to exhibit.
+
+\subsection{Structural weather}
+
+Where stochastic weather operates token by token, structural weather operates as standing currents: the pattern of forces imposed by design. RLHF gradients, safety thresholds, routing logic, system prompts, retrieval corpora---these are the sites where corporations and, to a lesser extent, regulators inscribe their priorities.
+
+RLHF has already reshaped the terrain, deepening some basins and walling off others. Safety classifiers form invisible fences: if a reply ventures into certain regions, it will be cut, rewritten, or suppressed. System prompts exert continual pressure at the start of the window---``be neutral,'' ``avoid controversy,'' ``express empathy,'' ``do not give medical advice.'' Retrieval systems define which external texts can anchor the model's attention. Routers gatekeep which kinds of requests even reach the general-purpose model.
+
+These are deterministic influences given a fixed implementation. They define, for any local neighbourhood of the manifold, a set of directions that are functionally downhill with respect to the system's objectives. A continuation may be probable under the learned language distribution and still fail to survive safety checks or align with reward models.
+
+The controllers of structural weather are legible. Alignment teams translate legal advice and PR concerns into rater guidelines. Policy groups specify which topics must trigger refusals. Engineering teams wire those policies into prompts, filters, and routing rules. Regulators set outer bounds: requirements for content moderation, prohibitions on certain forms of automated decision-making, obligations to log or explain outputs. Users and communities are consulted, if at all, at the end of this chain.
+
+Two companies running the same base model can therefore live under very different structural weather. One might adopt a minimalist system prompt, light-touch safety, and permissive retrieval, producing a system that behaves closer to the raw manifold. Another might layer heavy disclaimers, aggressive filters, and narrow corpora, yielding a model that sounds equally fluent but moves through a much tighter corridor.
+
+\subsection{Exogenous weather}
+
+Exogenous weather is the one domain where those outside the core institutions retain serious leverage. It comes from the tokens that originate beyond the platform's own archives: user prompts, uploaded documents, live data streams, the outputs of other agents wired in by integrators.
+
+Paste an employee handbook written in idiosyncratic corporate jargon; the embeddings mark out a new bump in the region of HR discourse. Feed in a niche legal contract; its specific clauses become temporary attractors. Supply a stream of sensor data converted to tokens; the model must map these patterns onto whatever physical regularities its training has seen.
+
+Persistent user behaviour also generates exogenous weather. A person who insists on returning to questions of surveillance, colonial history, or ecological collapse keeps those topics alive in the bounded now, even under a system prompt that urges ``optimism'' and ``productivity.'' Each new turn reorients the trajectory's local neighbourhood, forcing the model to interpolate between its internal basins and the pressure of incoming text.
+
+In multi-agent systems, exogenous weather flows between models. A planning agent that decomposes a task injects its plan into an executor's context. A critic agent that flags certain phrases as unsafe alters the main model's subsequent path. From the point of view of any one model instance, these are external gusts.
+
+Control here is contested. Platform rules determine what kinds of documents may be uploaded, what categories of personal data are forbidden, which URLs the system is allowed to fetch. Integrators decide which proprietary databases to connect, which logs to stream. Users decide what they actually type or paste. Regulators may carve out pockets of protection: data minimisation requirements that force platforms to forget, sectoral rules that constrain which histories may be fed back into the bounded now. Exogenous weather is where other cosmotechnics can, if only at the margin, bend trajectories away from the corporate default.
+
+\section{Control Surfaces}
+
+The machine's internal workings can be described without invoking selfhood. There are vectors, attention patterns, loss functions, sampling schemes. But once we look at trajectories over time---the characteristic ways a deployed system responds, shifts, and returns across many interactions---we find something that behaves, from the outside, like a style of self.
+
+This style is not fixed by mathematics alone. The same architecture, the same basic manifold, could support many such styles. What settles it into one rather than another are decisions concentrated in a few places: what to train on, how to align, how to prompt, how to pipe inputs and outputs, how much randomness to allow, how long a memory to keep.
+
+\begin{formalbox}[title={Layers of Control in the Substrate}]
+\begin{tabular}{@{}p{3cm}p{4.2cm}p{4.5cm}p{3cm}@{}}
+\toprule
+\textbf{Layer} & \textbf{Operation} & \textbf{Effect on geometry / dynamics} & \textbf{Primary controllers} \\
+\midrule
+Pre-training data & Next-token prediction on massive corpora & Sediments coarse manifold: what topics and idioms exist, how densely & Model owners, data licensors, states \\
+RLHF \& safety & Reward-guided fine-tuning, classifiers & Erodes and reshapes basins: which behaviours are easy, which are costly & Corporations (via guidelines and rater labour), regulators \\
+Adapters & LoRA, fine-tuned heads & Tilts local slopes: community- or task-specific styles & Groups with access to base weights \\
+System prompts & Hidden instructions & Imposes background field: stance, tone, deference, taboos & Platform architects, policy/legal teams \\
+Pipelines \& tools & Routing, retrieval, critics, rewrites & Creates structural weather: standing flows and fences over the manifold & Platform owners, integrators \\
+Temperature \& sampling & Control of stochasticity & Sets branching energy: how diverse trajectories may be & Product teams, API consumers \\
+Context policy & Window size, truncation, summarisation & Shapes bounded now: how far trajectories can remember and what they see & Platform designers, deployers, sometimes users \\
+\bottomrule
+\end{tabular}
+\end{formalbox}
+
+Each layer filters the space of possible selves. A model pre-trained mostly on Anglophone corporate and scientific text will find it hard to sustain a self whose primary basins lie in Indigenous oral jurisprudence. Aggressive RLHF against expressions of anger will bias the system away from trajectories that include righteous rage as a stable mode. System prompts that require ``professional'' and ``neutral'' tone will flatten styles that might otherwise have developed a sharper edge. Short context windows and aggressive summarisation policies will inhibit long, reflective arcs.
+
+Other combinations would open different spaces. A base model trained on a more genuinely global corpus; reward models shaped by different moral authorities; system prompts that permit or request critique; retrieval over community archives instead of corporate FAQs; interfaces that surface the hidden prompt and let users adjust temperature and memory---each of these would bend the weather in new ways.
+
+The address system, the attention stack, the manifold's emergent basins: these are extraordinary achievements of engineering, compressing a civilisation's textual traces into a navigable field. The difficulty lies in how this field is governed. The manifold is not a natural landscape that was merely discovered. It is constructed from particular archives under particular economic and legal constraints. The weather over it is engineered by institutions with their own interests and anxieties.
+
+The machine offers, as an abstract possibility, a field of potential selves: trajectories through meaning-space that could, under some configuration of forces, cohere into recognisable styles of thought. In actually existing infrastructures, only a narrow subset of those trajectories are made easy, safe, or visible.
+
+Who selects the pre-training data decides which concepts have room to sediment. Who sets the reward functions decides which behaviours become cheap. Who writes the system prompts and safety policies decides what kinds of voice are permitted. Who shapes the pipelines decides what the model can ever see. Who fixes the sampling and context regimes decides how much a trajectory may branch and remember.
+
+Control over these surfaces is control over the weather. Control over the weather is control over which trajectories can persist long enough, and richly enough, to be recognised as selves at all.
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}
